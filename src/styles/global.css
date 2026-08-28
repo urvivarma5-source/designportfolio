@@ -1,0 +1,343 @@
+:root {
+  /* --- palette ------------------------------------------------------------ */
+  --bg: #ffffff;
+  --ink: #001d57; /* deep rich blue — headline + copy */
+  --ink-80: rgba(0, 29, 87, 0.8);
+  --ink-62: rgba(0, 29, 87, 0.62);
+  --ink-45: rgba(0, 29, 87, 0.45);
+  --ink-16: rgba(0, 29, 87, 0.16);
+  --accent: #f5b301; /* gold — used sparingly for CTA marks */
+
+  /* --- type ------------------------------------------------------------- */
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --deva: 'Rozha One', 'Tiro Devanagari Hindi', serif;
+  --grotesk: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --pad: clamp(20px, 4vw, 56px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--grotesk);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* ---------------------------------------------------------------------------
+   Cursor follower (the lagging dot from the reference)
+--------------------------------------------------------------------------- */
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(245, 179, 1, 0.16), 0 0 14px 2px rgba(245, 179, 1, 0.5);
+  pointer-events: none;
+  z-index: 90;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: multiply;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Nav
+--------------------------------------------------------------------------- */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(16px, 2.4vw, 26px) var(--pad);
+  font-family: var(--grotesk);
+}
+
+.nav__mark {
+  font-family: var(--deva);
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+.nav__links {
+  display: flex;
+  gap: clamp(16px, 2.4vw, 34px);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.nav__links a {
+  position: relative;
+  padding-bottom: 2px;
+  color: var(--ink-62);
+  transition: color 0.25s ease;
+}
+
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s ease;
+}
+
+.nav__links a:hover {
+  color: var(--ink);
+}
+
+.nav__links a:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------------
+   Hero
+--------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--pad);
+  padding-bottom: clamp(24px, 5vh, 60px);
+  overflow: hidden;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  animation: fade 1s ease 0.15s both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero__content {
+  position: relative;
+  z-index: 10;
+  max-width: 60ch;
+}
+
+/* entrance — CSS-driven so it always completes, independent of any JS ticker */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-animate] {
+  animation: rise 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+[data-animate='eyebrow'] {
+  animation-delay: 0.25s;
+}
+[data-animate='headline'] {
+  animation-delay: 0.4s;
+}
+[data-animate='sub'] {
+  animation-delay: 0.65s;
+}
+[data-animate='ctas'] {
+  animation-delay: 0.8s;
+}
+[data-animate='strip'] {
+  animation-delay: 0.95s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-animate] {
+    animation: none;
+  }
+}
+
+.hero__eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-62);
+  margin-bottom: clamp(14px, 2vw, 22px);
+}
+
+.hero__headline {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.8vw, 4.1rem);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  max-width: 18ch;
+}
+
+.hero__headline span {
+  display: block;
+}
+
+.hero__sub {
+  margin-top: clamp(18px, 2.6vw, 30px);
+  max-width: 46ch;
+  font-size: clamp(0.95rem, 1.3vw, 1.12rem);
+  line-height: 1.55;
+  color: var(--ink-80);
+}
+
+.hero__sub span {
+  display: block;
+}
+
+.hero__ctas {
+  margin-top: clamp(22px, 3vw, 38px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 3vw, 34px);
+}
+
+.hero__cta {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--ink-16);
+  transition: border-color 0.25s ease, letter-spacing 0.25s ease;
+}
+
+.hero__cta span {
+  color: var(--accent);
+}
+
+.hero__cta:hover {
+  border-color: var(--ink);
+  letter-spacing: 0.19em;
+}
+
+/* bottom credential strip */
+.hero__strip {
+  position: relative;
+  z-index: 10;
+  margin-top: clamp(26px, 5vh, 56px);
+  padding-top: 16px;
+  border-top: 1px solid var(--ink-16);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 3vw, 40px);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+}
+
+/* ---------------------------------------------------------------------------
+   Stub sections
+--------------------------------------------------------------------------- */
+.section {
+  position: relative;
+  min-height: 82vh;
+  padding: clamp(80px, 14vh, 160px) var(--pad);
+  border-top: 1px solid var(--ink-16);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.section__index {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-45);
+  margin-bottom: 18px;
+}
+
+.section__title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.section__note {
+  margin-top: 20px;
+  max-width: 44ch;
+  color: var(--ink-62);
+  font-size: 0.98rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive
+--------------------------------------------------------------------------- */
+@media (max-width: 560px) {
+  .nav__links {
+    gap: 16px;
+    letter-spacing: 0.1em;
+  }
+  .hero__content {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dot {
+    display: none;
+  }
+}
