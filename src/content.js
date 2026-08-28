@@ -7,39 +7,49 @@ export const content = {
   // The name rendered as the multi-colour sparkle field (Devanagari).
   name: 'उर्वी वर्मा',
   nameRoman: 'Urvi Varma',
+  markSuffix: 'उर्वी',
 
   nav: [
     { label: 'Work', href: '#work' },
     { label: 'About', href: '#about' },
+    { label: 'Photography', href: '#photography' },
     { label: 'Contact', href: '#contact' },
   ],
 
-  // Small tracked label above the headline (strangepixels-style).
-  eyebrow: 'PRODUCT DESIGN · DESIGN SYSTEMS · RESEARCH', // PLACEHOLDER
+  langs: [
+    { label: 'EN', href: '#', active: true },
+    { label: 'HI', href: '#', active: false },
+  ],
 
-  // Exactly three lines. Big Instrument Serif, deep blue. Keep each line short.
+  // Small tracked label above the headline. Parts joined by a dimmed middot.
+  eyebrow: ['Product Design', 'Research', 'Systems'],
+
+  // Exactly three lines. Big Instrument Serif, deep blue. `it` = italic line.
   headline: [
-    'I design clear, calm', // PLACEHOLDER
-    'software for complex,', // PLACEHOLDER
-    'high-stakes work.', // PLACEHOLDER
+    { text: 'Three lines of big' }, // PLACEHOLDER
+    { text: 'headline copy go' }, // PLACEHOLDER
+    { text: 'right here.', it: true }, // PLACEHOLDER
   ],
 
   // Exactly two lines. Smaller supporting copy.
   sub: [
-    'Currently — placeholder role at placeholder company.', // PLACEHOLDER
-    'Ten years across research, systems, and interface design.', // PLACEHOLDER
+    'Two lines of smaller supporting copy sit underneath —', // PLACEHOLDER
+    'enough room for a sentence and a half about the work.', // PLACEHOLDER
+  ],
+
+  // Set to null once the real copy is in.
+  phNote: "Placeholder — paste your copy and I'll drop it in",
+
+  // Bottom credential strip.
+  strip: [
+    'Product Designer',
+    'Currently at —', // PLACEHOLDER
+    'Research → Shipped',
+    'College Park, MD',
   ],
 
   ctas: [
     { label: 'See selected work', href: '#work' },
     { label: 'Get in touch', href: '#contact' },
-  ],
-
-  // Bottom credential strip — short comma-free fragments.
-  strip: [
-    '10 YEARS DESIGNING PRODUCTS', // PLACEHOLDER
-    'RESEARCH-LED', // PLACEHOLDER
-    'SYSTEMS + INTERFACE', // PLACEHOLDER
-    'PLACEHOLDER CITY', // PLACEHOLDER
   ],
 }

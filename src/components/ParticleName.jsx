@@ -3,285 +3,260 @@ import { useEffect, useRef } from 'react'
 /**
  * ParticleName
  * ------------
- * Renders `text` (Devanagari) as a field of ~8k jewel-tone particles sampled
- * from the glyph outlines, on a full-bleed <canvas>. A lagging pointer pushes
- * particles out of the way; a spring pulls each one home; every particle
- * twinkles. A brighter "glint" layer sits on top for sparkle.
+ * Renders `text` (Devanagari, Mukta 800) as a field of jewel-tone particles
+ * sampled from the glyph outlines onto a full-bleed <canvas>.
  *
- * Mirrors the strangepixels.co reference, re-tuned for a white background.
+ * Each particle springs toward its home pixel with a soft stiffness, so the
+ * field settles slowly and stays alive. The pointer repels anything within
+ * ~108px. Drawing is batched into one path per colour — roughly 11 fill()
+ * calls a frame instead of 12k — plus a sparse layer of brighter "glints"
+ * that pop above a twinkle threshold.
  */
 
-// jewel tones — magenta, ruby, gold, emerald, teal, sapphire, violet.
-// Repeated entries = higher spawn weight (keeps gold from dominating on white).
+// Jewel tones on white: magenta, ruby, gold, amber, emerald, green,
+// sapphire, indigo, violet, orchid.
 const PALETTE = [
-  '#d81b8c', '#d81b8c', // magenta
-  '#b5123f', // ruby
-  '#e0a200', // gold  (single weight)
-  '#1f9d57', '#1f9d57', // emerald
-  '#0f9aa6', '#0f9aa6', // teal
-  '#1f5fd0', '#1f5fd0', // sapphire
-  '#7b3fe4', '#7b3fe4', // violet
+  '#B3197A',
+  '#D6246B',
+  '#E08A00',
+  '#C25E00',
+  '#0E7C6B',
+  '#1E8A4D',
+  '#0F6FA8',
+  '#2A3FA8',
+  '#5B2BA8',
+  '#8A1FA0',
 ]
-// brighter, hotter jewels for the sparkle layer (must pop on white)
-const GLINTS = ['#ff2ea6', '#ff5cc8', '#7b3fe4', '#00c2b2', '#ffb800']
-const INK = '#001d57' // ~14% of particles — ties the name to the headline
+const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 
-const clamp = (n, a, b) => Math.max(a, Math.min(b, n))
-const rand = (a, b) => a + Math.random() * (b - a)
+const REPEL_R = 108
+const REPEL_R2 = REPEL_R * REPEL_R
 
-export default function ParticleName({ text, className }) {
+export default function ParticleName({ text, id = 'sparkles' }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d', { alpha: true })
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     let W = 0
     let H = 0
-    let dpr = 1
+    let DPR = 1
     let particles = []
+    let byColor = new Map()
     let raf = 0
-    let startedAt = 0
+    let cancelled = false
+    const mouse = { x: -9999, y: -9999, active: false }
+    const t0 = performance.now()
 
-    const pointer = { x: -9999, y: -9999, active: false, lastMove: -9999 }
-    const eased = { x: -9999, y: -9999 }
-
-    // ---- build the particle set from sampled glyph pixels -----------------
-    function build() {
-      const rect = canvas.getBoundingClientRect()
-      W = Math.max(1, Math.round(rect.width))
-      H = Math.max(1, Math.round(rect.height))
-      dpr = clamp(window.devicePixelRatio || 1, 1, 2)
-
-      canvas.width = W * dpr
-      canvas.height = H * dpr
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-
-      const isMobile = W < 720
-
-      // offscreen mask
+    // ---- sample the glyphs into a list of home coordinates ---------------
+    function sampleText() {
       const off = document.createElement('canvas')
-      off.width = W
-      off.height = H
-      const octx = off.getContext('2d')
+      const octx = off.getContext('2d', { willReadFrequently: true })
+      off.width = Math.max(320, Math.floor(W))
+      off.height = Math.max(240, Math.floor(H))
+
+      // fit the name to ~90% of the viewport width
+      const targetW = off.width * (off.width < 760 ? 0.92 : 0.88)
+      let size = 400
+      octx.font = '800 ' + size + 'px Mukta, system-ui, sans-serif'
+      const m = octx.measureText(text)
+      size = Math.max(48, Math.floor(size * (targetW / m.width)))
+      // cap so it never floods the viewport height
+      size = Math.min(size, Math.floor(off.height * 0.46))
+      octx.font = '800 ' + size + 'px Mukta, system-ui, sans-serif'
+
       octx.fillStyle = '#000'
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
-
-      let fontSize = clamp(W * (isMobile ? 0.22 : 0.19), 90, 360)
-      const measure = () => {
-        octx.font = `400 ${fontSize}px "Rozha One", "Tiro Devanagari Hindi", serif`
-        return octx.measureText(text).width
-      }
-      const maxW = W * (isMobile ? 0.9 : 0.82)
-      while (measure() > maxW && fontSize > 40) fontSize -= 4
-
-      const cx = W / 2
-      const cy = H * (isMobile ? 0.36 : 0.4)
+      const cx = off.width / 2
+      const cy = off.height * (off.width < 760 ? 0.4 : 0.435)
       octx.fillText(text, cx, cy)
-      const data = octx.getImageData(0, 0, W, H).data
 
-      // count ink to pick a sampling step that lands near the target count
-      let ink = 0
-      for (let i = 3; i < data.length; i += 16) if (data[i] > 110) ink += 4
-      const targetCount = isMobile ? 4400 : 9200
-      const step = clamp(Math.round(Math.sqrt(Math.max(ink, 1) / targetCount)), 2, 7)
+      const data = octx.getImageData(0, 0, off.width, off.height).data
+      const step = off.width < 760 ? 5 : off.width > 1700 ? 5 : 4
 
       const pts = []
-      for (let y = 0; y < H; y += step) {
-        for (let x = 0; x < W; x += step) {
-          if (data[(y * W + x) * 4 + 3] > 110) {
-            pts.push([x + rand(-1, 1) * step * 0.45, y + rand(-1, 1) * step * 0.45])
-          }
+      for (let y = 0; y < off.height; y += step) {
+        for (let x = 0; x < off.width; x += step) {
+          if (data[(y * off.width + x) * 4 + 3] > 140) pts.push(x, y)
         }
       }
-
-      particles = pts.map(([hx, hy]) => {
-        const isGlint = Math.random() < 0.05
-        const isInk = !isGlint && Math.random() < 0.14
-        const ang = Math.random() * Math.PI * 2
-        const dist = rand(30, 150)
-        return {
-          hx,
-          hy,
-          x: hx + Math.cos(ang) * dist,
-          y: hy + Math.sin(ang) * dist,
-          vx: 0,
-          vy: 0,
-          col: isGlint
-            ? GLINTS[(Math.random() * GLINTS.length) | 0]
-            : isInk
-              ? INK
-              : PALETTE[(Math.random() * PALETTE.length) | 0],
-          glint: isGlint,
-          size: isGlint ? rand(1.5, 2.7) : rand(0.9, 2.0),
-          spring: rand(0.12, 0.2),
-          twPhase: Math.random() * Math.PI * 2,
-          twSpeed: rand(1.4, 3.4) * (isGlint ? 1.8 : 1),
-        }
-      })
-      // glints last so they render on top
-      particles.sort((a, b) => (a.glint === b.glint ? 0 : a.glint ? 1 : -1))
-
-      // pre-warm: settle most of the way home before the first paint so the
-      // name is legible on frame 1 even if the display is running at a low
-      // frame rate. Motion/twinkle then only adds life on top.
-      for (let s = 0; s < 60; s++) {
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i]
-          p.vx += (p.hx - p.x) * p.spring
-          p.vy += (p.hy - p.y) * p.spring
-          p.vx *= 0.8
-          p.vy *= 0.8
-          p.x += p.vx
-          p.y += p.vy
-        }
-      }
+      return pts
     }
 
-    // ---- frame ---------------------------------------------------------
-    function frame(now) {
-      if (!startedAt) startedAt = now
-      const t = now * 0.001
+    function build() {
+      const pts = sampleText()
+      particles = []
+      const n = pts.length / 2
+      for (let i = 0; i < n; i++) {
+        const hx = pts[i * 2]
+        const hy = pts[i * 2 + 1]
+        // colour: mostly jewel tones, a minority anchored in the deep blue
+        const color =
+          Math.random() < 0.14 ? BLUE : PALETTE[(Math.random() * PALETTE.length) | 0]
+        const ang = Math.random() * Math.PI * 2
+        const rad = 60 + Math.random() * Math.max(W, H) * 0.5
+        particles.push({
+          hx,
+          hy,
+          x: reduced ? hx : hx + Math.cos(ang) * rad,
+          y: reduced ? hy : hy + Math.sin(ang) * rad,
+          vx: 0,
+          vy: 0,
+          c: color,
+          base: 0.85 + Math.random() * 1.25,
+          ph: Math.random() * Math.PI * 2,
+          sp: 0.7 + Math.random() * 1.6,
+          k: 0.01 + Math.random() * 0.02, // spring stiffness
+          bright: Math.random() < 0.035,
+        })
+      }
+      // group indices by colour so each frame is ~11 fill() calls, not 12k
+      byColor = new Map()
+      particles.forEach((p, i) => {
+        if (!byColor.has(p.c)) byColor.set(p.c, [])
+        byColor.get(p.c).push(i)
+      })
+    }
 
+    function resize() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2)
+      W = canvas.clientWidth
+      H = canvas.clientHeight
+      canvas.width = Math.floor(W * DPR)
+      canvas.height = Math.floor(H * DPR)
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0)
+      build()
+    }
+
+    // ---- draw ----------------------------------------------------------
+    function draw(t) {
       ctx.clearRect(0, 0, W, H)
 
-      if (pointer.active) {
-        eased.x += (pointer.x - eased.x) * 0.16
-        eased.y += (pointer.y - eased.y) * 0.16
+      ctx.globalAlpha = 1
+      byColor.forEach((idxs, color) => {
+        ctx.fillStyle = color
+        ctx.beginPath()
+        for (let j = 0; j < idxs.length; j++) {
+          const p = particles[idxs[j]]
+          const tw = 0.55 + 0.45 * Math.sin(t * p.sp + p.ph)
+          const s = p.base * (0.5 + tw * 0.95)
+          ctx.rect(p.x - s / 2, p.y - s / 2, s, s)
+        }
+        ctx.fill()
+      })
+
+      // a sparse layer of brighter "glints"
+      ctx.globalCompositeOperation = 'source-over'
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i]
+        if (!p.bright) continue
+        const tw = Math.sin(t * p.sp * 1.4 + p.ph)
+        if (tw < 0.72) continue
+        const s = p.base * 2.6 * tw
+        ctx.globalAlpha = ((tw - 0.72) / 0.28) * 0.9
+        ctx.fillStyle = p.c
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, s, 0, Math.PI * 2)
+        ctx.fill()
       }
-      const idle = now - pointer.lastMove > 2600
-      const R = 130
-      const R2 = R * R
+      ctx.globalAlpha = 1
+    }
+
+    function frame(now) {
+      if (cancelled) return
+      const t = (now - t0) / 1000
+      const mx = mouse.x
+      const my = mouse.y
+      const act = mouse.active
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
 
-        if (pointer.active && !idle) {
-          const dx = p.x - eased.x
-          const dy = p.y - eased.y
+        // spring home
+        p.vx += (p.hx - p.x) * p.k
+        p.vy += (p.hy - p.y) * p.k
+
+        if (act) {
+          const dx = p.x - mx
+          const dy = p.y - my
           const d2 = dx * dx + dy * dy
-          if (d2 < R2) {
-            const d = Math.sqrt(d2) || 1
-            const f = 1 - d / R
-            const push = f * f * 6
+          if (d2 < REPEL_R2 && d2 > 0.01) {
+            const d = Math.sqrt(d2)
+            const f = 1 - d / REPEL_R
+            const push = f * f * 7.5
             p.vx += (dx / d) * push
             p.vy += (dy / d) * push
           }
-        } else if (idle) {
-          p.vx += Math.sin(t * 1.3 + p.hy * 0.05) * 0.012
-          p.vy += Math.cos(t * 1.1 + p.hx * 0.05) * 0.012
         }
 
-        p.vx += (p.hx - p.x) * p.spring
-        p.vy += (p.hy - p.y) * p.spring
-        p.vx *= 0.8
-        p.vy *= 0.8
+        p.vx *= 0.865
+        p.vy *= 0.865
         p.x += p.vx
         p.y += p.vy
-
-        const tw = 0.5 + 0.5 * Math.sin(t * p.twSpeed + p.twPhase)
-
-        if (p.glint) {
-          const s = p.size * (0.7 + 0.6 * tw)
-          ctx.fillStyle = p.col
-          ctx.globalAlpha = 0.1 + 0.16 * tw
-          ctx.beginPath()
-          ctx.arc(p.x, p.y, s * 2.4, 0, 6.2832)
-          ctx.fill()
-          ctx.globalAlpha = 0.55 + 0.45 * tw
-          ctx.beginPath()
-          ctx.arc(p.x, p.y, s, 0, 6.2832)
-          ctx.fill()
-        } else {
-          const s = p.size
-          ctx.globalAlpha = 0.6 + 0.34 * tw
-          ctx.fillStyle = p.col
-          ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s)
-        }
       }
-      ctx.globalAlpha = 1
+
+      draw(t)
       raf = requestAnimationFrame(frame)
     }
 
-    function renderStatic() {
-      ctx.clearRect(0, 0, W, H)
-      for (const p of particles) {
-        ctx.globalAlpha = p.glint ? 0.85 : 0.82
-        ctx.fillStyle = p.col
-        if (p.glint) {
-          ctx.beginPath()
-          ctx.arc(p.hx, p.hy, p.size, 0, 6.2832)
-          ctx.fill()
-        } else {
-          ctx.fillRect(p.hx - p.size / 2, p.hy - p.size / 2, p.size, p.size)
-        }
-      }
-      ctx.globalAlpha = 1
-    }
-
-    // ---- events ------------------------------------------------------
+    // ---- events -------------------------------------------------------
     function onMove(e) {
-      const rect = canvas.getBoundingClientRect()
-      pointer.x = e.clientX - rect.left
-      pointer.y = e.clientY - rect.top
-      pointer.lastMove = performance.now()
-      if (!pointer.active) {
-        pointer.active = true
-        eased.x = pointer.x
-        eased.y = pointer.y
-      }
+      const r = canvas.getBoundingClientRect()
+      mouse.x = e.clientX - r.left
+      mouse.y = e.clientY - r.top
+      mouse.active = true
     }
-    const onLeave = () => {
-      pointer.active = false
+    const onOut = () => {
+      mouse.active = false
     }
 
-    let resizeTimer = 0
-    function onResize() {
-      clearTimeout(resizeTimer)
-      resizeTimer = setTimeout(() => {
-        build()
-        renderStatic()
+    let rt
+    const onResize = () => {
+      clearTimeout(rt)
+      rt = setTimeout(() => {
+        resize()
+        draw((performance.now() - t0) / 1000)
       }, 180)
     }
 
-    // ---- boot (after the Devanagari font is ready) -----------------
-    let cancelled = false
-    const boot = () => {
+    function start() {
       if (cancelled) return
-      build()
-      // Always paint one frame synchronously so the name is on screen even
-      // before requestAnimationFrame delivers its first tick.
-      renderStatic()
-      if (!reduce) {
-        raf = requestAnimationFrame(frame)
-      }
+      resize()
+      // paint once synchronously so the name is present before the first rAF
+      draw(0)
+      if (!reduced) raf = requestAnimationFrame(frame)
+
       window.addEventListener('pointermove', onMove, { passive: true })
       window.addEventListener('pointerdown', onMove, { passive: true })
-      canvas.addEventListener('pointerleave', onLeave)
+      window.addEventListener('pointerleave', onOut)
+      document.addEventListener('mouseleave', onOut)
       window.addEventListener('resize', onResize)
     }
 
+    // wait for the Devanagari face so the sampled shapes are correct
     if (document.fonts && document.fonts.load) {
       Promise.race([
-        document.fonts.load('400 120px "Rozha One"', text).then(() => document.fonts.ready),
-        new Promise((r) => setTimeout(r, 2000)),
-      ]).then(boot)
+        document.fonts.load('800 100px Mukta', text).then(() => document.fonts.ready),
+        new Promise((res) => setTimeout(res, 2500)),
+      ]).then(start)
     } else {
-      boot()
+      setTimeout(start, 400)
     }
 
     return () => {
       cancelled = true
       cancelAnimationFrame(raf)
-      clearTimeout(resizeTimer)
+      clearTimeout(rt)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerdown', onMove)
-      canvas.removeEventListener('pointerleave', onLeave)
+      window.removeEventListener('pointerleave', onOut)
+      document.removeEventListener('mouseleave', onOut)
       window.removeEventListener('resize', onResize)
     }
   }, [text])
 
-  return <canvas ref={canvasRef} className={className} aria-hidden="true" />
+  return <canvas ref={canvasRef} id={id} aria-hidden="true" />
 }

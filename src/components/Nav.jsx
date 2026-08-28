@@ -2,14 +2,23 @@ import { content } from '../content'
 
 export default function Nav() {
   return (
-    <nav className="nav" aria-label="Primary">
-      <a href="#top" className="nav__mark" aria-label={`${content.nameRoman} — home`}>
-        {content.name}
+    <nav className="nav">
+      <a className="mark" href="#top">
+        {content.nameRoman} <span>{content.markSuffix}</span>
       </a>
-      <div className="nav__links">
+
+      <div className="nav-links">
         {content.nav.map((item) => (
-          <a key={item.href} href={item.href}>
+          <a key={item.label} href={item.href}>
             {item.label}
+          </a>
+        ))}
+      </div>
+
+      <div className="nav-utils">
+        {content.langs.map((l) => (
+          <a key={l.label} href={l.href} className={l.active ? 'on' : undefined}>
+            {l.label}
           </a>
         ))}
       </div>
