@@ -6,6 +6,13 @@ and a spring pulls each one home (see `src/components/ParticleName.jsx`).
 
 Live: **https://urvivarma5-source.github.io/designportfolio/**
 
+## Working on this project
+
+**Read [DESIGN.md](DESIGN.md) first.** It is the system of record: the design
+system, every component's tokens, the hero's runtime measurement contracts, and
+the traps already hit. [CLAUDE.md](CLAUDE.md) carries the working rules for
+agents. Both must be updated in the same commit as any change they describe.
+
 ## Develop
 
 ```bash
