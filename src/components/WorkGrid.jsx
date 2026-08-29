@@ -20,10 +20,13 @@ export default function WorkGrid() {
                   <span className="work-card__media" aria-hidden="true">
                     <span className="work-card__wave" />
                   </span>
+                  {/* note and desc are always rendered, empty when absent, so
+                      every card reserves the same space and they all match
+                      height across categories */}
                   <span className="work-card__meta">
-                    {p.note && <span className="work-card__note">{p.note}</span>}
+                    <span className="work-card__note">{p.note || ''}</span>
                     <span className="work-card__title">{p.title}</span>
-                    {p.desc && <span className="work-card__desc">{p.desc}</span>}
+                    <span className="work-card__desc">{p.desc || ''}</span>
                   </span>
                 </Link>
               </li>

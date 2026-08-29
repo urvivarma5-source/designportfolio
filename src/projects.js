@@ -64,11 +64,8 @@ export const categories = [
         title: 'Navigating Campus Spaces',
         desc: 'Understanding the iSchool student experience.',
       },
-      {
-        slug: 'employee-tool-use-at-intuit',
-        title: 'Mapping Employee Tool Use at Intuit',
-        note: 'Placeholder name, rename freely',
-      },
+      // title is a placeholder — rename freely
+      { slug: 'employee-tool-use-at-intuit', title: 'Mapping Employee Tool Use at Intuit' },
       {
         slug: 'elderease',
         title: 'ElderEase',

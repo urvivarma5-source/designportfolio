@@ -118,7 +118,7 @@ values live in [§4](#4-component-tokens).
 | `--ink` | `#001d57` | Alias of `--blue`, set as `body` colour. |
 | `--muted` | `#4a5875` | Secondary prose only (`.sub`, `.section__note`, `.project__note`). |
 | `--rule` | `rgba(0, 29, 87, 0.14)` | Every hairline divider. Always this, never a solid grey. |
-| `--rule-dash` | `#d6576b` | The dashed frame stroke, taken from the supplied SVG reference. Used only by `.dash-frame`. |
+| `--rule-dash` | `#b3197a` | The dashed frame stroke. The reference SVG used `#D6576B`; **our accent is used instead**. |
 | `--accent` | `#b3197a` | Magenta. Eyebrow text, nav hover underline, CTA underline, hover states. |
 
 **Opacity is a token too.** Hierarchy below `--blue` is expressed as opacity on
@@ -320,7 +320,8 @@ card grid. Modelled on the strangepixels work page.
 | --- | --- | --- |
 | `.work` | layout | flex column, gap `clamp(48px, 8vh, 96px)` between categories |
 | `.work-cat__label` | type | `--sans` `14px` / `600`, `0.2em`, `uppercase`, **`--blue`** |
-| `.work-grid` | layout | `repeat(3, 1fr)`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
+| `.work-grid` | layout | `repeat(3, 1fr)`, `grid-auto-rows: 1fr`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
+| `.work-grid li` | `display: flex` so the card fills its stretched cell |
 | `.work-card` | frame | `<DashFrame />`, see [§4.6b](#46b-dashed-frame--dash-frame--dashframejsx) — the edge is on the **card**, so image and text sit inside one frame |
 | | padding / radius | `16px` / `9px` |
 | | hover | `translateY(-3px)` |
@@ -332,8 +333,15 @@ card grid. Modelled on the strangepixels work page.
 
 | `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
 | `.work-card__title` | type | `--serif` `400`, `clamp(17px, 1.4vw, 23px)`, lh `1.15`; `--accent` on hover |
-| `.work-card__note` | type | `9px` / `600`, `0.16em`, `uppercase`, `--accent` (e.g. "Part 1") |
-| `.work-card__desc` | type | `13px`, lh `1.5`, `--muted`, `44ch` |
+| `.work-card__note` | type | `9px` / `600`, `0.16em`, `uppercase`, `--accent` (e.g. "Part 1"); lh `1.2`, `min-height: 1.2em` |
+| `.work-card__title` | reserve | `min-height: 2.3em` (two lines) |
+| `.work-card__desc` | type | `13px`, lh `1.5`, `--muted`, `44ch`; `min-height: 4.5em` (three lines) |
+
+**Every card is the same size.** `note` and `desc` are always rendered — empty
+when absent — and each reserves fixed line-space, so cards match across
+categories and leave whitespace rather than shrinking. `grid-auto-rows: 1fr`
+alone is not enough: each category is its own grid, so it only equalises within
+one. Measured: all 11 cards 516 × 551.
 
 `.work-card__media` is a **placeholder**. When real images exist, add an
 `image` field per project and swap the div for an `<img>` — the aspect ratio
@@ -350,7 +358,7 @@ Matches the supplied SVG reference exactly:
 
 | Property | Value |
 | --- | --- |
-| `stroke` | `var(--rule-dash)` = `#D6576B` |
+| `stroke` | `var(--rule-dash)` = `#B3197A`, our accent (the reference's `#D6576B` was not adopted) |
 | `stroke-width` | `2` |
 | `stroke-dasharray` | `10 10` |
 | `rx` | `9px` |
@@ -796,6 +804,13 @@ This bit once: restyling the pills to use the card's `DashFrame` changed their
 padding from `6px 10px` to `7px 12px` and shifted the name. If you touch the
 pills, re-measure the hero afterwards ([§10.2](#102-checklist-for-a-hero-change)).
 
+### 9.11 `note` is UI copy, not a comment
+
+`note` in `projects.js` renders as the accent label above a card title. A note
+reading "Placeholder name, rename freely" shipped to the page as a visible
+label. Annotations for a human reader belong in a `//` comment; `note` is only
+for real labels like "Part 1".
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -844,6 +859,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Dash frame uses our accent, not the reference's rose; all cards forced to one size with reserved line-space; removed a placeholder note that was rendering as visible card copy |
 | _pending_ | Reverted pills to their own 1px dashed accent border — the card `DashFrame` is for cards only; this also restores the particle name's position |
 | `28fd08b` | Dashed edges unified into `DashFrame.jsx`, matching the supplied SVG exactly (2px, 10/10, rx 9, `#D6576B`); replaces both the CSS border and the gradient approach |
 | `afe616c` | Section titles accent + heading rule; category labels blue at 14px; card is one dashed frame (gradient dashes, wider spacing) containing media and text; scroll cue replaced with sparkle chevrons; palette extracted to lib |

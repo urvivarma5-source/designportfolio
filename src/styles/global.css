@@ -9,8 +9,8 @@
   --ink: #001d57;
   --muted: #4a5875;
   --rule: rgba(0, 29, 87, 0.14);
-  /* dashed frames — the stroke colour from the supplied SVG reference */
-  --rule-dash: #d6576b;
+  /* dashed frames. The reference SVG used #D6576B; we use our own accent. */
+  --rule-dash: #b3197a;
   --accent: #b3197a;
 
   --serif: 'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -481,12 +481,23 @@ body {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  /* every row the height of the tallest card, so all cards match regardless of
+     how far their title wraps or whether they have a description */
+  grid-auto-rows: 1fr;
   gap: clamp(28px, 3.4vw, 56px) clamp(24px, 2.6vw, 44px);
+}
+
+.work-grid li {
+  /* the grid row stretches every cell to the tallest card */
+  display: flex;
 }
 
 .work-card {
   display: flex;
   flex-direction: column;
+  /* fill the stretched cell so all cards in a row match height; the meta
+     below absorbs the slack as whitespace when a card has no description */
+  flex: 1;
   text-decoration: none;
   color: var(--blue);
   cursor: none;
@@ -547,6 +558,10 @@ body {
 }
 
 .work-card__note {
+  /* reserved even when empty; line-height is pinned so an empty note occupies
+     exactly the same box as a filled one */
+  line-height: 1.2;
+  min-height: 1.2em;
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -557,6 +572,8 @@ body {
 .work-card__desc {
   font-size: 13px;
   line-height: 1.5;
+  /* three lines reserved; empty on cards without a description */
+  min-height: 4.5em;
   color: var(--muted);
   max-width: 44ch;
 }
@@ -566,6 +583,8 @@ body {
   font-weight: 400;
   font-size: clamp(17px, 1.4vw, 23px);
   line-height: 1.15;
+  /* two lines reserved */
+  min-height: 2.3em;
   letter-spacing: -0.005em;
   transition: color 0.2s;
 }
