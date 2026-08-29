@@ -12,10 +12,10 @@ export const content = {
   logo: 'UV',
 
   nav: [
-    { label: 'Work', href: '#work' },
-    { label: 'About', href: '#about' },
-    { label: 'Photography', href: '#photography' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Work', href: '/#work' },
+    { label: 'About', href: '/#about' },
+    { label: 'Photography', href: '/#photography' },
+    { label: 'Contact', href: '/#contact' },
   ],
 
   // Small tracked label above the headline. Parts joined by a dimmed middot.
@@ -46,7 +46,7 @@ export const content = {
   ],
 
   ctas: [
-    { label: 'See selected work', href: '#work' },
-    { label: 'Get in touch', href: '#contact' },
+    { label: 'See selected work', href: '/#work' },
+    { label: 'Get in touch', href: '/#contact' },
   ],
 }

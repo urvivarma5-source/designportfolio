@@ -148,7 +148,8 @@ body {
   position: relative;
   z-index: 2;
   margin-top: auto;
-  max-width: min(980px, 76vw);
+  /* stays inside the left column so the name never sits behind it */
+  max-width: min(760px, 52vw);
   pointer-events: none;
 }
 
@@ -172,7 +173,7 @@ body {
   font-family: var(--serif);
   font-weight: 400;
   color: var(--blue);
-  font-size: clamp(38px, 5.5vw, 82px);
+  font-size: clamp(36px, 4.4vw, 68px);
   line-height: 1.14;
   letter-spacing: 0.005em;
   word-spacing: 0.06em;
@@ -280,15 +281,6 @@ ul.strip {
   justify-content: center;
 }
 
-.section__index {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 18px;
-}
-
 .section__title {
   font-family: var(--serif);
   font-weight: 400;
@@ -355,6 +347,12 @@ ul.strip {
 /* ---------------------------------------------------------------------------
    Responsive
 --------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .copy {
+    max-width: none;
+  }
+}
+
 @media (max-width: 820px) {
   .nav-links {
     gap: 14px;
@@ -380,4 +378,95 @@ ul.strip {
   #sparkles {
     animation: none;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Work grid — names only for now
+--------------------------------------------------------------------------- */
+.work-grid {
+  margin: clamp(28px, 5vh, 56px) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.work-grid li {
+  border-bottom: 1px solid var(--rule);
+}
+
+.work-card {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(18px, 2.6vw, 30px) 0;
+  color: var(--blue);
+  text-decoration: none;
+  transition: padding-left 0.3s cubic-bezier(0.2, 0.7, 0.3, 1), color 0.2s;
+}
+
+.work-card:hover {
+  padding-left: 14px;
+  color: var(--accent);
+}
+
+.work-card__title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(22px, 2.6vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+
+.work-card__arw {
+  font-size: 14px;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.25s, transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.work-card:hover .work-card__arw {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ---------------------------------------------------------------------------
+   Project detail — intentionally blank for now
+--------------------------------------------------------------------------- */
+.project {
+  min-height: 100svh;
+  padding: clamp(96px, 18vh, 190px) clamp(20px, 3.4vw, 46px) 80px;
+}
+
+.project__back {
+  display: inline-block;
+  margin-bottom: clamp(22px, 4vh, 44px);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blue);
+  opacity: 0.6;
+  text-decoration: none;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.project__back:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.project__title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(38px, 5.6vw, 84px);
+  line-height: 1.06;
+  letter-spacing: -0.012em;
+  color: var(--blue);
+  max-width: 20ch;
+}
+
+.project__note {
+  margin-top: 18px;
+  color: var(--muted);
 }

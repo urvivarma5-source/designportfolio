@@ -12,9 +12,9 @@ import { useEffect, useRef } from 'react'
  * calls a frame instead of 12k — plus a sparse layer of brighter "glints"
  * that pop above a twinkle threshold.
  *
- * A very light blurred copy of the glyphs is pre-rendered once and blitted
- * behind the particles each frame, so the name reads as a soft mass even
- * where the headline copy crosses it.
+ * On wide viewports the name is pushed to the right so the copy column on the
+ * left stays on clean white — legibility comes from the layout, not from
+ * dimming the sparkles.
  *
  * `onLayout` receives the measured box of each whitespace-separated word in
  * CSS pixels, so the Latin labels can be pinned above them. `bar` is the
@@ -57,7 +57,6 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
     let DPR = 1
     let particles = []
     let byColor = new Map()
-    let shadow = null // pre-rendered soft blur behind the glyphs
     let raf = 0
     let cancelled = false
     const mouse = { x: -9999, y: -9999, active: false }
@@ -72,18 +71,19 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
       off.width = Math.max(320, Math.floor(W))
       off.height = Math.max(200, Math.floor(H))
 
-      const narrow = off.width < 760
+      const narrow = off.width < 900
 
       octx.fillStyle = '#000'
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
 
-      // fit the name across most of the viewport
-      const targetW = off.width * (narrow ? 0.92 : 0.8)
+      // Wide: the name takes the right-hand field, clear of the copy column.
+      // Narrow: it centres and the copy simply sits below it.
+      const targetW = off.width * (narrow ? 0.92 : 0.58)
       let size = 400
       octx.font = fontAt(size)
       size = Math.max(40, Math.floor(size * (targetW / octx.measureText(text).width)))
-      size = Math.min(size, Math.floor(off.height * (narrow ? 0.4 : 0.56)))
+      size = Math.min(size, Math.floor(off.height * (narrow ? 0.4 : 0.62)))
 
       // Anchor off the real ink box rather than a guessed fraction: reserve a
       // strip at the top for the nav and the Latin labels, and keep the
@@ -100,10 +100,11 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
       }
 
       octx.font = fontAt(size)
-      const cx = off.width / 2
+      // right-align the block to a 96% gutter on wide screens
+      const cx = narrow
+        ? off.width / 2
+        : off.width * 0.96 - octx.measureText(text).width / 2
       octx.fillText(text, cx, cy)
-
-      renderShadow(size, cx, cy)
 
       // measure where each word starts, so labels can be pinned above them
       const full = octx.measureText(text).width
@@ -156,27 +157,6 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
       return pts
     }
 
-    // A single blurred, very low-alpha pass of the glyphs, rendered once per
-    // resize and blitted behind the particles — far cheaper than filtering
-    // the live canvas every frame.
-    function renderShadow(size, cx, cy) {
-      shadow = null
-      const sc = document.createElement('canvas')
-      sc.width = Math.floor(W * DPR)
-      sc.height = Math.floor(H * DPR)
-      const sctx = sc.getContext('2d')
-      if (!('filter' in sctx)) return // no blur support: skip it entirely
-      sctx.setTransform(DPR, 0, 0, DPR, 0, 0)
-      sctx.filter = `blur(${Math.max(10, Math.round(size * 0.09))}px)`
-      sctx.globalAlpha = 0.09
-      sctx.fillStyle = BLUE
-      sctx.font = fontAt(size)
-      sctx.textAlign = 'center'
-      sctx.textBaseline = 'middle'
-      sctx.fillText(text, cx, cy)
-      shadow = sc
-    }
-
     function build() {
       const pts = sampleText()
       particles = []
@@ -225,8 +205,6 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
     // ---- draw ----------------------------------------------------------
     function draw(t) {
       ctx.clearRect(0, 0, W, H)
-
-      if (shadow) ctx.drawImage(shadow, 0, 0, W, H)
 
       ctx.globalAlpha = 1
       byColor.forEach((idxs, color) => {

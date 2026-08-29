@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
+import { Link } from 'react-router-dom'
 import Nav from './Nav'
 import ParticleName from './ParticleName'
 import { content } from '../content'
@@ -87,9 +88,9 @@ export default function Hero() {
         ))}
         <li className="cta">
           {content.ctas.map((cta) => (
-            <a key={cta.label} href={cta.href}>
+            <Link key={cta.label} to={cta.href}>
               {cta.label} <span className="arw">&rarr;</span>
-            </a>
+            </Link>
           ))}
         </li>
       </ul>

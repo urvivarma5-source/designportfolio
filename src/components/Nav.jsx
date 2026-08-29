@@ -1,17 +1,18 @@
+import { Link } from 'react-router-dom'
 import { content } from '../content'
 
 export default function Nav() {
   return (
     <nav className="nav">
-      <a className="mark" href="#top" aria-label={content.nameRoman}>
+      <Link className="mark" to="/" aria-label={content.nameRoman}>
         {content.logo}
-      </a>
+      </Link>
 
       <div className="nav-links">
         {content.nav.map((item) => (
-          <a key={item.label} href={item.href}>
+          <Link key={item.label} to={item.href}>
             {item.label}
-          </a>
+          </Link>
         ))}
       </div>
     </nav>
