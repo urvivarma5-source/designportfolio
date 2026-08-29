@@ -47,8 +47,4 @@ export const content = {
     'San Francisco, CA',
   ],
 
-  ctas: [
-    { label: 'See selected work', href: '/#work' },
-    { label: 'Get in touch', href: '/#contact' },
-  ],
 }

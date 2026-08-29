@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { Link } from 'react-router-dom'
 import Nav from './Nav'
 import ParticleName from './ParticleName'
 import { content } from '../content'
+import { nameRatios } from '../lib/nameMetrics'
 
 /** Offset of `el` from `ancestor`'s padding edge, walking the offsetParent
  *  chain. Transform-independent, unlike getBoundingClientRect. */
@@ -43,9 +44,9 @@ export default function Hero() {
   const headlineRef = useRef(null)
 
   // The band the particle block may occupy: from the headline's cap height
-  // down to the credential strip. The name is sized to spec, so this floor is
-  // only a safety stop on short viewports. The canvas is inset:0 within .hero,
-  // so both share the hero's padding edge as their origin.
+  // The band is the copy column's own extent, so the two columns start and end
+  // on the same lines. The canvas is inset:0 within .hero, so both share the
+  // hero's padding edge as their origin.
   const align = useCallback(() => {
     const h1 = headlineRef.current
     const copy = copyRef.current
@@ -75,6 +76,78 @@ export default function Hero() {
     const left = copyBox.right - heroBox.left + 72
 
     return { top: chain + cap, bottom: floor, left }
+  }, [])
+
+  // ------------------------------------------------------------------
+  // Make the two columns end on the same line.
+  //
+  // The name is right-aligned into whatever width is left beside the copy,
+  // which caps how tall it can be. When the copy is taller than that cap the
+  // name cannot reach the bottom — so the copy is scaled down to meet it.
+  // Without this the columns are misaligned by however much the name falls
+  // short (measured at 87px before this existed).
+  // ------------------------------------------------------------------
+  useLayoutEffect(() => {
+    const copy = copyRef.current
+    const hero = copy?.closest('.hero')
+    if (!copy || !hero) return
+
+    let cancelled = false
+    // fit() dispatches a resize so the canvas re-reads geometry; this flag
+    // stops our own resize listener from re-entering fit() forever.
+    let selfDispatched = false
+
+    const copyBand = () => {
+      const first = copy.firstElementChild
+      const last = copy.lastElementChild
+      if (!first || !last) return 0
+      const cap = capTopOf(first) ?? 0
+      return last.offsetTop + last.offsetHeight - (first.offsetTop + cap)
+    }
+
+    const fit = () => {
+      if (cancelled) return
+      copy.style.setProperty('--copy-scale', '1')
+
+      const heroBox = hero.getBoundingClientRect()
+      const gutter = 72
+      const availW = heroBox.width * 0.96 - (copy.getBoundingClientRect().right - heroBox.left + gutter)
+      const { widthR, heightR } = nameRatios(content.nameLines)
+      const maxNameH = (availW / widthR) * heightR
+
+      const natural = copyBand()
+      // Only ever shrink: growing the copy past its designed size is not wanted.
+      if (natural > 0 && maxNameH > 0 && maxNameH < natural) {
+        let scale = 1
+        for (let i = 0; i < 8; i++) {
+          const h = copyBand()
+          if (Math.abs(h - maxNameH) <= 2) break
+          scale = Math.max(0.55, Math.min(1, scale * (maxNameH / h)))
+          copy.style.setProperty('--copy-scale', String(scale))
+        }
+      }
+
+      // let the canvas re-read the settled geometry
+      selfDispatched = true
+      window.dispatchEvent(new Event('resize'))
+      selfDispatched = false
+    }
+
+    const run = () => (document.fonts?.ready ? document.fonts.ready.then(fit) : fit())
+    run()
+
+    let t
+    const onResize = () => {
+      if (selfDispatched) return
+      clearTimeout(t)
+      t = setTimeout(fit, 150)
+    }
+    window.addEventListener('resize', onResize)
+    return () => {
+      cancelled = true
+      clearTimeout(t)
+      window.removeEventListener('resize', onResize)
+    }
   }, [])
 
   useEffect(() => {
@@ -131,15 +204,6 @@ export default function Hero() {
         </ul>
       </div>
 
-      <ul className="strip" data-animate="strip">
-        <li className="cta">
-          {content.ctas.map((cta) => (
-            <Link key={cta.label} to={cta.href}>
-              {cta.label} <span className="arw">&rarr;</span>
-            </Link>
-          ))}
-        </li>
-      </ul>
     </section>
   )
 }

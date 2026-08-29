@@ -181,7 +181,6 @@ always completes, whereas a stalled JS ticker would leave the hero blank. See
 | `headline` | `0.38s` |
 | `sub` | `0.58s` |
 | `pills` | `0.72s` |
-| `strip` | `0.85s` |
 
 `rise` = `opacity 0→1`, `translateY(22px)→0`, `0.8s`.
 `#sparkles` uses `fade` = `opacity 0→1`, `1s ease 0.15s`.
@@ -263,30 +262,28 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 | | line-height / colour | `1.6` / `--muted` |
 | | max-width | `46ch` |
 | `.pills` | layout | flex, wrap, gap `8px`, margin-top `clamp(20px, 2.6vh, 32px)` |
-| `.pills li` | border | `1px dotted var(--rule-strong)`, radius `999px` |
-| | padding | `6px 14px` |
-| | type | `9px` / `500`, `0.13em`, `uppercase`, `nowrap` |
-| | colour | `--blue` at `0.72` |
+| `.pills li` | border | `1px dashed var(--accent)`, radius `3.5px` |
+| | shadow | `0 0 8px rgba(0, 0, 0, 0.2)` |
+| | padding | `9px 16px` |
+| | type | `10px` / `500`, `0.12em`, `uppercase`, `nowrap` |
+| | colour | `--blue` |
+
+Pills follow a supplied SVG: `rx 3.5`, `stroke #B3197A`, `stroke-dasharray 4 4`,
+and a zero-offset drop shadow at `stdDeviation 4` — which is ~`8px` of CSS blur,
+since CSS blur radius ≈ 2 × SVG stdDeviation. They size to their content.
+
+`.copy h1` and `.sub` are multiplied by **`var(--copy-scale, 1)`**, set from JS
+— see [§6.2](#62-fitting-the-two-columns-to-one-band).
 
 `padding-bottom: clamp(24px, 5vh, 72px)` is an intentional optical lift above
-true centre. The credentials live here as pills, **not** in the bottom strip.
+true centre.
 
-### 4.3 Bottom strip — `ul.strip`
+### 4.3 Bottom strip — removed
 
-Now the **CTA row only** — the credentials moved up into `.pills` in the copy
-column. The strip is what keeps the hairline above the fold.
-
-| Element | Property | Value |
-| --- | --- | --- |
-| `ul.strip` | border-top | `1px solid var(--rule)` |
-| | padding-top | `14px` |
-| | margin | `0` — **must stay 0**, see [§9.5](#95-the-strips-margin-broke-optical-centring) |
-| | layout | flex, `justify-content: flex-end` |
-| `.cta` | position | `margin-left: auto`, gap `26px`; full-width row at `≤820px` |
-| `.cta a` | size / weight | `10px` / `600`, `0.15em`, `uppercase` |
-| | border-bottom | `1px solid var(--accent)` |
-| | hover | colour → `--accent` |
-| `.cta a .arw` | hover | `translateX(4px)` over `0.25s` standard ease |
+The CTA row and credential strip are **gone**. Credentials are pills in the copy
+column; there is no bottom rule. Do not reintroduce a strip without checking
+[§6.2](#62-fitting-the-two-columns-to-one-band) — it changes the band the name
+is fitted to.
 
 ### 4.4 Section — `.section`
 
@@ -386,17 +383,16 @@ A **crisp** glyph-shaped fill sits behind the particles:
 
 | Constant | Value |
 | --- | --- |
-| `BACKING` | `rgba(0, 76, 228, 0.05)` — `#004CE4` at 5% |
+| `BACKING` | `rgba(0, 76, 228, 0.03)` — `#004CE4` at 3% |
 
 Rendered once per resize into its own canvas and blitted with a single
 `drawImage` per frame. **No blur** — the edges stay sharp. This is deliberately
 unlike the soft shadow that was tried and removed; if you find yourself adding
 a `filter`, you are re-introducing that mistake.
 
-Verified by pixel readback: dominant backing pixel `0,78,235` at alpha `13`
-(13/255 = 5.1%). The 2-unit RGB drift from `0,76,228` is canvas
-premultiplied-alpha readback quantization at low alpha, not a colour error —
-composited on white it lands on `#F2F6FE`, which is correct.
+Verified by pixel readback: dominant backing pixel at alpha `8` (8/255 = 3.1%).
+Small RGB drift from `0,76,228` on readback is canvas premultiplied-alpha
+quantization at low alpha, not a colour error.
 
 ### 5.4 Physics
 
@@ -472,16 +468,36 @@ capTop      = baseline − actualBoundingBoxAscent
 At the current headline size these differ by ~10px — aligning to the line-box
 top looks visibly wrong.
 
-### 6.2 One shared band
+### 6.2 Fitting the two columns to one band
 
-The name is solved to fill exactly `[top, bottom]` — the copy column's own
-extent. So the two columns start and end on the same lines, and centring the
-copy centres the whole composition.
+**This is the part that was repeatedly got wrong, so read it before changing
+either column.**
 
-This replaced an earlier feedback loop that measured how far the name hung
-below the copy and reserved that as padding. It is gone: the name can no longer
-exceed the band, so the overhang is always zero. If you reintroduce a name that
-can outgrow the copy column, you will need that mechanism back.
+The name is right-aligned into whatever width is left beside the copy column.
+That width **caps how tall the name can be**:
+
+```
+availW    = heroW × 0.96 − (copyRight + 72)
+maxNameH  = (availW / widthR) × heightR      // ratios from lib/nameMetrics
+```
+
+If the copy is taller than `maxNameH`, the name physically cannot reach the
+bottom of the band and the columns end on different lines. Growing the name
+does not help — it is width-bound, not height-bound.
+
+So `Hero` runs a layout pass that **shrinks the copy to the name's achievable
+height**, via `--copy-scale` on the headline and sub, iterating at most 8 times
+to within 2px. Then the band `[copy cap top, copy bottom]` is handed to
+`ParticleName`, which fills it exactly.
+
+Measured at 1728×970: before this, copy `220–697` vs name `228–610` — **87px
+adrift at the bottom.** After: copy `273–673`, name `279–665`, both deltas
+within the 4px sampling step.
+
+The ratio maths lives in `src/lib/nameMetrics.js` and is imported by *both*
+`Hero` and `ParticleName`, so the two cannot disagree about the geometry.
+
+**Only ever shrink.** Scaling the copy up past its designed size is not wanted.
 
 ### 6.3 Legibility comes from layout
 
@@ -559,8 +575,7 @@ The router `basename` needs no change — it follows `BASE_URL`.
 | `headline` | `{text, it?}[]` | **Exactly 3**, each ≤ ~20 chars so it cannot wrap — see [§9.8](#98-headline-lines-silently-wrap-and-the-usual-wrap-check-is-a-lie). `it: true` marks the italic line |
 | `sub` | `string[]` | **Exactly 2** |
 | `phNote` | `string \| null` | Placeholder marker. Currently `null` — real copy is in |
-| `credentials` | `string[]` | Rendered as dotted pills **inside the copy column**, not in the bottom strip |
-| `ctas` | `{label, href}[]` | |
+| `credentials` | `string[]` | Rendered as dashed pills **inside the copy column**. There is no bottom strip |
 
 Hero copy is now real, not placeholder. `phNote` is `null`.
 
@@ -642,6 +657,15 @@ r.getBoundingClientRect().width <= columnWidth
 
 ---
 
+### 9.9 A fit pass that dispatches `resize` will re-enter itself
+
+`Hero`'s fit pass dispatches a synthetic `resize` so the canvas re-reads the
+settled geometry — and `Hero` also *listens* for `resize` to re-fit. Without a
+guard that is an infinite loop. A `selfDispatched` flag brackets the dispatch;
+`dispatchEvent` is synchronous, so listeners run before the flag resets.
+
+If you add another listener-plus-dispatch pair, guard it the same way.
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -670,6 +694,8 @@ const inkTop = pct(0.01) / dpr, inkBottom = pct(0.99) / dpr
 - [ ] Space above the band ≈ space below it
 - [ ] Checked at wide (2000×1263), mid (1440×820) and mobile (375×812)
 - [ ] Each headline line still renders as **one** row (see §9.8 — not `getClientRects`)
+- [ ] Name top **and bottom** are within ~8px of the copy column's — the bottom
+      is the one that drifts (see §6.2)
 - [ ] `prefers-reduced-motion` still renders the name
 
 ### 10.3 Checklist for a routing or deploy change
@@ -688,7 +714,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Eyebrow → Strategy; credentials moved into dotted pills in the copy column; sub reduced; name now fills the shared band; crisp `#004CE4` 5% backing behind the letters; overhang loop removed |
+| _pending_ | Columns fitted to one band via `--copy-scale`; CTA row removed; pills restyled to the supplied SVG; backing 5% → 3%; shared `lib/nameMetrics` |
+| `2501dd1` | Eyebrow → Strategy; credentials moved into dotted pills in the copy column; sub reduced; name now fills the shared band; crisp `#004CE4` 5% backing behind the letters; overhang loop removed |
 | `97871a4` | Real hero copy in (Currently / Previously / MS HCI). Headline reworded to fit the column width budget; §9.8 added |
 | `54fbd1f` | Added DESIGN.md, CLAUDE.md, AGENTS.md |
 | `0cc76da` | Configured for the `designportfolio` project repo: base path, router basename, 404 shim, FontFace loading |

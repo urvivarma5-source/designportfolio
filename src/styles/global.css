@@ -164,7 +164,7 @@ body {
   font-family: var(--serif);
   font-weight: 400;
   color: var(--blue);
-  font-size: clamp(36px, 4.4vw, 68px);
+  font-size: calc(clamp(36px, 4.4vw, 68px) * var(--copy-scale, 1));
   line-height: 1.14;
   letter-spacing: 0.005em;
   word-spacing: 0.06em;
@@ -180,7 +180,7 @@ body {
 }
 
 .sub {
-  font-size: clamp(13px, 0.95vw, 16px);
+  font-size: calc(clamp(13px, 0.95vw, 16px) * var(--copy-scale, 1));
   line-height: 1.6;
   color: var(--muted);
   max-width: 46ch;
@@ -198,66 +198,22 @@ body {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .pills li {
-  border: 1px dotted var(--rule-strong);
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--blue);
-  opacity: 0.72;
-  white-space: nowrap;
-}
-
-/* ---------- bottom strip ---------- */
-ul.strip {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  padding-top: 14px;
-  padding-inline-start: 0;
-  border-top: 1px solid var(--rule);
-  display: flex;
-  justify-content: flex-end;
-  list-style: none;
-}
-
-.cta {
-  margin-left: auto;
-  display: flex;
-  gap: 26px;
-  align-items: baseline;
-  opacity: 1 !important;
-}
-
-.cta a {
+  /* matches the supplied SVG: 1px dashed #B3197A, 4-4 dash, rx 3.5,
+     and a soft 0-offset shadow (SVG stdDeviation 4 ≈ 8px CSS blur) */
+  border: 1px dashed var(--accent);
+  border-radius: 3.5px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  padding: 9px 16px;
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--blue);
-  text-decoration: none;
-  border-bottom: 1px solid var(--accent);
-  padding-bottom: 2px;
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.cta a:hover {
-  color: var(--accent);
-}
-
-.cta a .arw {
-  display: inline-block;
-  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.cta a:hover .arw {
-  transform: translateX(4px);
+  white-space: nowrap;
 }
 
 /* ---------------------------------------------------------------------------
@@ -332,9 +288,6 @@ ul.strip {
 [data-animate='pills'] {
   animation-delay: 0.72s;
 }
-[data-animate='strip'] {
-  animation-delay: 0.85s;
-}
 
 /* ---------------------------------------------------------------------------
    Responsive
@@ -354,11 +307,6 @@ ul.strip {
   }
   .copy {
     max-width: none;
-  }
-  .cta {
-    margin-left: 0;
-    width: 100%;
-    margin-top: 10px;
   }
 }
 

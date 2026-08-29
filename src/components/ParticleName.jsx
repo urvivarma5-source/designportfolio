@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { GAP_RATIO, nameRatios } from '../lib/nameMetrics'
 
 /**
  * ParticleName
@@ -38,12 +39,9 @@ const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 const REPEL_R = 108
 const REPEL_R2 = REPEL_R * REPEL_R
 
-// Gap between lines, as a ratio of cap height (the original 210/70 spec).
-const GAP_RATIO = 70 / 210
-
 // Crisp glyph-shaped backing behind the particles. Not a blur — the edges
 // stay sharp, which is what separates this from the soft shadow we removed.
-const BACKING = 'rgba(0, 76, 228, 0.05)' // #004CE4 @ 5%
+const BACKING = 'rgba(0, 76, 228, 0.03)' // #004CE4 @ 3%
 
 export default function ParticleName({ lines, id = 'sparkles', align }) {
   const canvasRef = useRef(null)
@@ -106,14 +104,9 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
       // the copy column share the same top and bottom lines, so the type grows
       // or shrinks to meet them. Ratios are measured once at 100px, so the
       // solve is direct — no iteration.
-      octx.font = fontAt(100)
-      const m100 = lines.map((l) => octx.measureText(l))
-      const ascR = Math.max(...m100.map((m) => m.actualBoundingBoxAscent)) / 100
-      const descR = Math.max(...m100.map((m) => m.actualBoundingBoxDescent)) / 100
-      const blockPerPx = ascR + ascR * (1 + GAP_RATIO) * (lines.length - 1) + descR
-
+      const { heightR } = nameRatios(lines)
       const bandH = Math.max(40, bottomLimit - topInset)
-      let size = Math.max(24, Math.floor(bandH / blockPerPx))
+      let size = Math.max(24, Math.floor(bandH / heightR))
 
       // ...but never wider than the space beside the copy column.
       const w = widest(size)
