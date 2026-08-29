@@ -95,7 +95,7 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
 
       // Wide: everything to the right of the copy column is the name's to use.
       // Narrow: it centres and the copy simply stacks below it.
-      const rightEdge = off.width * 0.96
+      const rightEdge = off.width * 0.975
       const targetW = narrow
         ? off.width * 0.92
         : Math.max(160, rightEdge - (usePin && Number.isFinite(pin.left) ? pin.left : off.width * 0.52))

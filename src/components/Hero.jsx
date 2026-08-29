@@ -110,19 +110,22 @@ export default function Hero() {
       copy.style.setProperty('--copy-scale', '1')
 
       const heroBox = hero.getBoundingClientRect()
-      const gutter = 72
-      const availW = heroBox.width * 0.96 - (copy.getBoundingClientRect().right - heroBox.left + gutter)
+      const gutter = 56
+      const availW = heroBox.width * 0.975 - (copy.getBoundingClientRect().right - heroBox.left + gutter)
       const { widthR, heightR } = nameRatios(content.nameLines)
       const maxNameH = (availW / widthR) * heightR
 
       const natural = copyBand()
-      // Only ever shrink: growing the copy past its designed size is not wanted.
+      // Shrink only, and only gently. Crushing the headline to force a perfect
+      // bottom match reads far worse than a small residual gap — the reference
+      // tolerates ~12px. MIN_SCALE keeps the headline near full size.
+      const MIN_SCALE = 0.92
       if (natural > 0 && maxNameH > 0 && maxNameH < natural) {
         let scale = 1
         for (let i = 0; i < 8; i++) {
           const h = copyBand()
-          if (Math.abs(h - maxNameH) <= 2) break
-          scale = Math.max(0.55, Math.min(1, scale * (maxNameH / h)))
+          if (Math.abs(h - maxNameH) <= 2 || scale <= MIN_SCALE) break
+          scale = Math.max(MIN_SCALE, Math.min(1, scale * (maxNameH / h)))
           copy.style.setProperty('--copy-scale', String(scale))
         }
       }

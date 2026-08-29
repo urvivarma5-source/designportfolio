@@ -1,19 +1,33 @@
 import { Link } from 'react-router-dom'
-import { projects } from '../projects'
+import { categories } from '../projects'
 
+// Two-column card grid per category. The media block is a placeholder until
+// real images exist — add an `image` field per project and swap the div for an
+// <img> when they do.
 export default function WorkGrid() {
   return (
-    <ul className="work-grid">
-      {projects.map((p) => (
-        <li key={p.slug}>
-          <Link className="work-card" to={`/work/${p.slug}`}>
-            <span className="work-card__title">{p.title}</span>
-            <span className="work-card__arw" aria-hidden="true">
-              &rarr;
-            </span>
-          </Link>
-        </li>
+    <div className="work">
+      {categories.map((cat) => (
+        <section className="work-cat" key={cat.id}>
+          <h3 className="work-cat__label">{cat.label}</h3>
+
+          <ul className="work-grid">
+            {cat.projects.map((p) => (
+              <li key={p.slug}>
+                <Link className="work-card" to={`/work/${p.slug}`} data-cursor="view">
+                  <span className="work-card__media" aria-hidden="true">
+                    <span className="work-card__wave" />
+                  </span>
+                  <span className="work-card__meta">
+                    <span className="work-card__title">{p.title}</span>
+                    <span className="work-card__cat">{cat.label}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </ul>
+    </div>
   )
 }

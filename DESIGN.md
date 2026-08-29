@@ -262,15 +262,18 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 | | line-height / colour | `1.6` / `--muted` |
 | | max-width | `46ch` |
 | `.pills` | layout | flex, wrap, gap `8px`, margin-top `clamp(20px, 2.6vh, 32px)` |
+| `.pills` | gap | `6px` |
 | `.pills li` | border | `1px dashed var(--accent)`, radius `3.5px` |
-| | shadow | `0 0 8px rgba(0, 0, 0, 0.2)` |
-| | padding | `9px 16px` |
-| | type | `10px` / `500`, `0.12em`, `uppercase`, `nowrap` |
+| | shadow | **none** — flat, same line weight as the cards |
+| | padding | `5px 9px` |
+| | type | `9px` / `500`, `0.01em`, sentence case, `nowrap` |
 | | colour | `--blue` |
 
-Pills follow a supplied SVG: `rx 3.5`, `stroke #B3197A`, `stroke-dasharray 4 4`,
-and a zero-offset drop shadow at `stdDeviation 4` — which is ~`8px` of CSS blur,
-since CSS blur radius ≈ 2 × SVG stdDeviation. They size to their content.
+Pills are **sentence case, not uppercase**, and sized to sit on a single row —
+wrapping to two rows makes the copy column taller than the name can reach.
+
+Pills follow a supplied SVG: `rx 3.5`, `stroke #B3197A`, `stroke-dasharray 4 4`.
+The SVG's drop shadow was **explicitly dropped** — no shadows anywhere.
 
 `.copy h1` and `.sub` are multiplied by **`var(--copy-scale, 1)`**, set from JS
 — see [§6.2](#62-fitting-the-two-columns-to-one-band).
@@ -299,21 +302,45 @@ is fitted to.
 **Sections carry no index numbers.** `01 —`, `02 —` etc. were removed
 deliberately; do not reintroduce them.
 
-### 4.5 Work grid — `.work-grid` / `.work-card`
+### 4.5 Work — `.work` / `.work-card`
 
-A ruled list, not a card grid. One project per row.
+Projects are grouped into three labelled categories, each with a two-column
+card grid. Modelled on the strangepixels work page.
 
 | Element | Property | Value |
 | --- | --- | --- |
-| `.work-grid` | margin-top | `clamp(28px, 5vh, 56px)` |
-| | border-top | `1px solid var(--rule)` |
-| `.work-grid li` | border-bottom | `1px solid var(--rule)` |
-| `.work-card` | layout | flex, `space-between`, `align-items: baseline`, gap `24px` |
-| | padding | `clamp(18px, 2.6vw, 30px) 0` |
-| | hover | `padding-left: 14px`, colour → `--accent`, `0.3s` standard ease |
-| `.work-card__title` | `--serif` `400`, `clamp(22px, 2.6vw, 40px)`, lh `1.1`, tracking `-0.005em` |
-| `.work-card__arw` | rest | `opacity 0`, `translateX(-8px)` |
-| | hover | `opacity 1`, `translateX(0)`, `0.25s` |
+| `.work` | layout | flex column, gap `clamp(48px, 8vh, 96px)` between categories |
+| `.work-cat__label` | type | `--sans` `11px` / `600`, `0.2em`, `uppercase`, `--accent` |
+| `.work-grid` | layout | `grid-template-columns: repeat(2, 1fr)`, gap `clamp(24px, 3vw, 48px)`; one column at `≤820px` |
+| `.work-card` | cursor | `none` — the follower stands in, see [§4.7](#47-cursor-follower--cursor) |
+| `.work-card__media` | aspect | `4 / 3` |
+| | border | `1px dashed var(--accent)`, radius `3.5px` — same line as the pills, **no shadow** |
+| | background | `rgba(0, 29, 87, 0.06)` placeholder |
+| `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
+| `.work-card__title` | type | `--serif` `400`, `clamp(20px, 2vw, 30px)`, lh `1.12`; `--accent` on hover |
+| `.work-card__cat` | type | `10px` / `500`, `0.15em`, `uppercase`, `--blue` at `0.5` |
+
+`.work-card__media` is a **placeholder**. When real images exist, add an
+`image` field per project and swap the div for an `<img>` — the aspect ratio
+and border stay.
+
+### 4.7 Cursor follower — `.cursor`
+
+A lagging dot that swells into a "View" badge over anything carrying
+`data-cursor="view"`.
+
+| State | Value |
+| --- | --- |
+| Rest | `10px` circle, `--accent` |
+| Over a card (`.is-view`) | `84px` circle, label `opacity 0 → 1` |
+| Transition | `0.28s` standard ease |
+| Follow | GSAP `quickTo`, `0.42s`, `power3` |
+| Label | `--sans` `10px` / `600`, `0.14em`, `uppercase`, white |
+
+Hover is detected by `elementFromPoint(...).closest('[data-cursor="view"]')` on
+pointermove rather than per-card listeners, so cards rendered later need no
+wiring. Hidden entirely for coarse pointers and reduced motion, where the
+native cursor is left alone.
 
 ### 4.6 Project detail — `.project`
 
@@ -497,7 +524,15 @@ within the 4px sampling step.
 The ratio maths lives in `src/lib/nameMetrics.js` and is imported by *both*
 `Hero` and `ParticleName`, so the two cannot disagree about the geometry.
 
-**Only ever shrink.** Scaling the copy up past its designed size is not wanted.
+**Only ever shrink, and only gently.** `MIN_SCALE = 0.92`. Crushing the
+headline to force a perfect bottom match reads far worse than a small residual
+gap — a supplied WRONG/RIGHT comparison made this explicit: the RIGHT version
+keeps the headline near full size and tolerates ~12px of mismatch. An earlier
+build shrank the headline from 68px to 49px to close the gap, and that was
+rejected. Current: headline 63px, residual gap 18px.
+
+The other levers, used before touching scale: keep the pills on **one row**,
+gutter `56px`, and the name's right edge at `0.975` of the hero width.
 
 ### 6.3 Legibility comes from layout
 
@@ -581,9 +616,16 @@ Hero copy is now real, not placeholder. `phNote` is `null`.
 
 ### 8.2 `src/projects.js`
 
-`{ slug, title }[]` — **names only, deliberately.** Detail pages are blank by
-design, for navigation testing. Seven projects, slugs matching the original
-Adobe Portfolio URLs where they existed.
+Exports `categories` (the grouped, rendered structure), `uncategorised`
+(projects deliberately not shown — currently ElderEase, kept rather than
+deleted so it can be restored by moving it into a category), `projects` (a flat
+list with `category` attached), and `getProject(slug)` which searches both.
+
+
+Each project is `{ slug, title, note? }`. Detail pages are still blank by
+design. Slugs match the original Adobe Portfolio URLs where they existed; three
+projects are new and have no page content: `smarter-project`,
+`branding-for-sugar-rush`, `employee-tool-use-at-intuit`.
 
 When adding metadata (year, role, thumbnail), add the fields here, extend
 `WorkGrid`, and **document the new card tokens in [§4.5](#45-work-grid--work-grid--work-card)**.
@@ -714,7 +756,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Columns fitted to one band via `--copy-scale`; CTA row removed; pills restyled to the supplied SVG; backing 5% → 3%; shared `lib/nameMetrics` |
+| _pending_ | Work grouped into three categories with a two-column card grid; cursor follower with "View" badge and card wave; pill shadows and caps removed; headline no longer crushed (MIN_SCALE 0.92) |
+| `2675800` | Columns fitted to one band via `--copy-scale`; CTA row removed; pills restyled to the supplied SVG; backing 5% → 3%; shared `lib/nameMetrics` |
 | `2501dd1` | Eyebrow → Strategy; credentials moved into dotted pills in the copy column; sub reduced; name now fills the shared band; crisp `#004CE4` 5% backing behind the letters; overhang loop removed |
 | `97871a4` | Real hero copy in (Currently / Previously / MS HCI). Headline reworded to fit the column width budget; §9.8 added |
 | `54fbd1f` | Added DESIGN.md, CLAUDE.md, AGENTS.md |
