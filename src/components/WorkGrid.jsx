@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import DashFrame from './DashFrame'
 import { categories } from '../projects'
 
 // Two-column card grid per category. The media block is a placeholder until
@@ -15,6 +16,7 @@ export default function WorkGrid() {
             {cat.projects.map((p) => (
               <li key={p.slug}>
                 <Link className="work-card" to={`/work/${p.slug}`} data-cursor="view">
+                  <DashFrame />
                   <span className="work-card__media" aria-hidden="true">
                     <span className="work-card__wave" />
                   </span>

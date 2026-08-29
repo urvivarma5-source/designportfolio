@@ -93,6 +93,7 @@ src/
     Nav.jsx             UV mark + links
     ParticleName.jsx    The canvas particle system
     ScrollCue.jsx       Sparkle chevrons at the foot of the hero
+    DashFrame.jsx       The shared dashed SVG frame
     CursorFollower.jsx  Lagging dot / "View" badge
     Section.jsx         Generic section wrapper
     WorkGrid.jsx        Project card list
@@ -117,7 +118,7 @@ values live in [§4](#4-component-tokens).
 | `--ink` | `#001d57` | Alias of `--blue`, set as `body` colour. |
 | `--muted` | `#4a5875` | Secondary prose only (`.sub`, `.section__note`, `.project__note`). |
 | `--rule` | `rgba(0, 29, 87, 0.14)` | Every hairline divider. Always this, never a solid grey. |
-| `--rule-strong` | `rgba(0, 29, 87, 0.3)` | Dotted/dashed edges only (the credential pills). A dotted edge at 14% is effectively invisible. |
+| `--rule-dash` | `#d6576b` | The dashed frame stroke, taken from the supplied SVG reference. Used only by `.dash-frame`. |
 | `--accent` | `#b3197a` | Magenta. Eyebrow text, nav hover underline, CTA underline, hover states. |
 
 **Opacity is a token too.** Hierarchy below `--blue` is expressed as opacity on
@@ -268,9 +269,8 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 | | max-width | `none` — fills the column, so each sentence is one row rather than two |
 | `.pills` | layout | flex, wrap, gap `8px`, margin-top `clamp(20px, 2.6vh, 32px)` |
 | `.pills` | gap | `6px`, margin-top `clamp(14px, 1.9vh, 24px)`. Three pills; a fourth pushes them to two rows |
-| `.pills li` | border | `1px dashed var(--accent)`, radius `3.5px` |
-| | shadow | **none** — flat, same line weight as the cards |
-| | padding | `6px 10px` |
+| `.pills li` | frame | `<DashFrame />` — identical stroke to the cards |
+| | padding | `7px 12px`, `position: relative` |
 | | type | `11px` / `500`, `0.01em`, sentence case, `nowrap` |
 | | colour | `--blue` |
 | | hover | `box-shadow: 0 2px 10px rgba(0, 29, 87, 0.13)`, border `--blue`, `translateY(-1px)` |
@@ -278,8 +278,8 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 Pills are **sentence case, not uppercase**, and sized to sit on a single row —
 wrapping to two rows makes the copy column taller than the name can reach.
 
-Pills follow a supplied SVG: `rx 3.5`, `stroke #B3197A`, `stroke-dasharray 4 4`.
-The SVG's drop shadow was **explicitly dropped** — no shadows anywhere.
+Pills use the same `DashFrame` as the cards. The original SVG's drop shadow was
+**explicitly dropped**; only the hover state carries one.
 
 `.copy h1` and `.sub` are multiplied by **`var(--copy-scale, 1)`**, set from JS
 — see [§6.2](#62-fitting-the-two-columns-to-one-band).
@@ -319,19 +319,15 @@ card grid. Modelled on the strangepixels work page.
 | `.work` | layout | flex column, gap `clamp(48px, 8vh, 96px)` between categories |
 | `.work-cat__label` | type | `--sans` `14px` / `600`, `0.2em`, `uppercase`, **`--blue`** |
 | `.work-grid` | layout | `repeat(3, 1fr)`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
-| `.work-card` | frame | **the dashed edge is on the card**, not the media — image and text sit inside one frame |
-| | padding / radius | `14px` / `4px` |
+| `.work-card` | frame | `<DashFrame />`, see [§4.6b](#46b-dashed-frame--dash-frame--dashframejsx) — the edge is on the **card**, so image and text sit inside one frame |
+| | padding / radius | `16px` / `9px` |
 | | hover | `translateY(-3px)` |
 | | cursor | `none` — the follower stands in, see [§4.8](#48-cursor-follower--cursor) |
 | `.work-card__media` | aspect | `4 / 3`, radius `2px`, no border |
 | | background | `rgba(0, 29, 87, 0.06)` placeholder |
 | `.work-card__meta` | padding | `16px 4px 6px`, `flex: 1` |
 
-**The dashed edge is drawn with gradients, not `border: dashed`.** CSS gives no
-control over dash length — it is derived from `border-width` — and the dashes
-needed to be more widely spaced. Four repeating linear-gradient tracks at
-`18px` (9px dash, 9px gap), one per edge. Changing the spacing means changing
-`background-size`, not a border property.
+
 | `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
 | `.work-card__title` | type | `--serif` `400`, `clamp(17px, 1.4vw, 23px)`, lh `1.15`; `--accent` on hover |
 | `.work-card__note` | type | `9px` / `600`, `0.16em`, `uppercase`, `--accent` (e.g. "Part 1") |
@@ -340,6 +336,33 @@ needed to be more widely spaced. Four repeating linear-gradient tracks at
 `.work-card__media` is a **placeholder**. When real images exist, add an
 `image` field per project and swap the div for an `<img>` — the aspect ratio
 and border stay.
+
+### 4.6b Dashed frame — `.dash-frame` / `DashFrame.jsx`
+
+One component draws every dashed edge — project cards and credential pills —
+so they cannot drift apart. Matches the supplied SVG reference exactly:
+
+| Property | Value |
+| --- | --- |
+| `stroke` | `var(--rule-dash)` = `#D6576B` |
+| `stroke-width` | `2` |
+| `stroke-dasharray` | `10 10` |
+| `rx` | `9px` |
+| `fill` | `none` |
+| Inset | `x/y: 1px`, `width/height: calc(100% - 2px)` — the reference's 283×202 rect in a 285×204 box |
+
+**Why a real `<svg>` and not CSS.** Two earlier attempts failed:
+
+- `border: dashed` derives dash length from `border-width`. There is no way to
+  ask for 10/10.
+- Repeating linear-gradients give arbitrary dash lengths but **cannot follow a
+  rounded corner**, and the reference has `rx 9`.
+
+The `<svg>` carries **no `viewBox`**, so SVG user units are CSS pixels and the
+dashes never stretch with the box. Geometry is set from CSS rather than
+presentation attributes because CSS allows `calc()`.
+
+Host elements need `position: relative`.
 
 ### 4.7 Scroll cue — `.scroll-cue` / `ScrollCue.jsx`
 
@@ -804,7 +827,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Section titles accent + heading rule; category labels blue at 14px; card is one dashed frame (gradient dashes, wider spacing) containing media and text; scroll cue replaced with sparkle chevrons; palette extracted to lib |
+| _pending_ | Dashed edges unified into `DashFrame.jsx`, matching the supplied SVG exactly (2px, 10/10, rx 9, `#D6576B`); replaces both the CSS border and the gradient approach |
+| `afe616c` | Section titles accent + heading rule; category labels blue at 14px; card is one dashed frame (gradient dashes, wider spacing) containing media and text; scroll cue replaced with sparkle chevrons; palette extracted to lib |
 | `0eb3d8c` | Copy pulled back inside the 45% line; San Francisco pill dropped; scroll cue added; section rules removed; card titles/descriptions taken from the reference artwork; ElderEase restored; Guide App split into Part 1 and Part 2 |
 | `b6d6bb6` | Copy column widened to 880 so the sub is one line per sentence; eyebrow separators became rules; pills 11px with hover shadow; em dashes removed from copy; work grid to three columns; `nameLeftBound()` unified so align and fit agree |
 | `7443d04` | Work grouped into three categories with a two-column card grid; cursor follower with "View" badge and card wave; pill shadows and caps removed; headline no longer crushed (MIN_SCALE 0.92) |
