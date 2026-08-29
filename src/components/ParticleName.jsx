@@ -38,18 +38,18 @@ const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 const REPEL_R = 108
 const REPEL_R2 = REPEL_R * REPEL_R
 
-// Design spec: 210px cap height, 70px between the two lines. Kept as a ratio
-// so the pair scales together when a smaller viewport forces it down.
-const CAP_TARGET = 210
+// Gap between lines, as a ratio of cap height (the original 210/70 spec).
 const GAP_RATIO = 70 / 210
 
-export default function ParticleName({ lines, id = 'sparkles', align, onMetrics, rebuildRef }) {
+// Crisp glyph-shaped backing behind the particles. Not a blur — the edges
+// stay sharp, which is what separates this from the soft shadow we removed.
+const BACKING = 'rgba(0, 76, 228, 0.05)' // #004CE4 @ 5%
+
+export default function ParticleName({ lines, id = 'sparkles', align }) {
   const canvasRef = useRef(null)
   const key = lines.join('\n')
   const alignRef = useRef(align)
   alignRef.current = align
-  const metricsRef = useRef(onMetrics)
-  metricsRef.current = onMetrics
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -61,6 +61,7 @@ export default function ParticleName({ lines, id = 'sparkles', align, onMetrics,
     let DPR = 1
     let particles = []
     let byColor = new Map()
+    let backing = null // pre-rendered crisp glyph fill behind the particles
     let raf = 0
     let cancelled = false
     const mouse = { x: -9999, y: -9999, active: false }
@@ -101,41 +102,34 @@ export default function ParticleName({ lines, id = 'sparkles', align, onMetrics,
         ? off.width * 0.92
         : Math.max(160, rightEdge - (usePin && Number.isFinite(pin.left) ? pin.left : off.width * 0.52))
 
-      // Size from the cap height rather than the font size — the spec is
-      // optical. capAt100 is this face's cap height at 100px.
+      // Fill the band rather than targeting a fixed cap height: the name and
+      // the copy column share the same top and bottom lines, so the type grows
+      // or shrinks to meet them. Ratios are measured once at 100px, so the
+      // solve is direct — no iteration.
       octx.font = fontAt(100)
-      const capAt100 = octx.measureText(lines[0]).actualBoundingBoxAscent || 70
-      let size = Math.max(24, Math.round((CAP_TARGET * 100) / capAt100))
+      const m100 = lines.map((l) => octx.measureText(l))
+      const ascR = Math.max(...m100.map((m) => m.actualBoundingBoxAscent)) / 100
+      const descR = Math.max(...m100.map((m) => m.actualBoundingBoxDescent)) / 100
+      const blockPerPx = ascR + ascR * (1 + GAP_RATIO) * (lines.length - 1) + descR
 
-      // Constrain by the column width; the cap:gap ratio is preserved because
-      // the gap is derived from the measured ascent below.
+      const bandH = Math.max(40, bottomLimit - topInset)
+      let size = Math.max(24, Math.floor(bandH / blockPerPx))
+
+      // ...but never wider than the space beside the copy column.
       const w = widest(size)
       if (w > targetW) size = Math.max(24, Math.floor((size * targetW) / w))
 
-      // ...and by the band, so it can never run into the strip below.
-      let asc = 0
-      let lh = 0
-      let blockH = 0
-      for (let attempt = 0; attempt < 16; attempt++) {
-        octx.font = fontAt(size)
-        const ms = lines.map((l) => octx.measureText(l))
-        asc = Math.max(...ms.map((m) => m.actualBoundingBoxAscent))
-        const desc = Math.max(...ms.map((m) => m.actualBoundingBoxDescent))
-        lh = asc * (1 + GAP_RATIO)
-        blockH = asc + lh * (lines.length - 1) + desc
-        if (topInset + blockH <= bottomLimit || size <= 24) break
-        size = Math.floor(size * 0.94)
-      }
-
       octx.font = fontAt(size)
+      const ms = lines.map((l) => octx.measureText(l))
+      const asc = Math.max(...ms.map((m) => m.actualBoundingBoxAscent))
+      const lh = asc * (1 + GAP_RATIO)
+
       const x = narrow ? off.width / 2 : off.width * 0.96
       lines.forEach((line, i) => {
         octx.fillText(line, x, topInset + asc + i * lh)
       })
 
-      // Report the band actually occupied, so the layout can reserve room for
-      // however far the block hangs below the text column.
-      metricsRef.current?.({ top: topInset, bottom: topInset + blockH })
+      renderBacking(size, x, topInset + asc, lh, narrow)
 
       const data = octx.getImageData(0, 0, off.width, off.height).data
       const step = narrow ? 5 : off.width > 1700 ? 5 : 4
@@ -147,6 +141,22 @@ export default function ParticleName({ lines, id = 'sparkles', align, onMetrics,
         }
       }
       return pts
+    }
+
+    // One crisp pass of the glyphs at 5% alpha, rendered per resize and
+    // blitted behind the particles — one drawImage a frame, no filter.
+    function renderBacking(size, x, firstBaseline, lh, narrow) {
+      const bc = document.createElement('canvas')
+      bc.width = Math.floor(W * DPR)
+      bc.height = Math.floor(H * DPR)
+      const bctx = bc.getContext('2d')
+      bctx.setTransform(DPR, 0, 0, DPR, 0, 0)
+      bctx.fillStyle = BACKING
+      bctx.textAlign = narrow ? 'center' : 'right'
+      bctx.textBaseline = 'alphabetic'
+      bctx.font = fontAt(size)
+      lines.forEach((line, i) => bctx.fillText(line, x, firstBaseline + i * lh))
+      backing = bc
     }
 
     function build() {
@@ -197,6 +207,8 @@ export default function ParticleName({ lines, id = 'sparkles', align, onMetrics,
     // ---- draw ----------------------------------------------------------
     function draw(t) {
       ctx.clearRect(0, 0, W, H)
+
+      if (backing) ctx.drawImage(backing, 0, 0, W, H)
 
       ctx.globalAlpha = 1
       byColor.forEach((idxs, color) => {
@@ -297,12 +309,6 @@ export default function ParticleName({ lines, id = 'sparkles', align, onMetrics,
       window.addEventListener('pointerleave', onOut)
       document.addEventListener('mouseleave', onOut)
       window.addEventListener('resize', onResize)
-      if (rebuildRef) {
-        rebuildRef.current = () => {
-          build()
-          draw((performance.now() - t0) / 1000)
-        }
-      }
     }
 
     // wait for the Devanagari face so the sampled shapes are correct
@@ -324,7 +330,6 @@ export default function ParticleName({ lines, id = 'sparkles', align, onMetrics,
       window.removeEventListener('pointerleave', onOut)
       document.removeEventListener('mouseleave', onOut)
       window.removeEventListener('resize', onResize)
-      if (rebuildRef) rebuildRef.current = null
     }
   }, [key])
 

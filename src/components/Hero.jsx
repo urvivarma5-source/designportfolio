@@ -41,8 +41,6 @@ function capTopOf(el) {
 export default function Hero() {
   const copyRef = useRef(null)
   const headlineRef = useRef(null)
-  const rebuildRef = useRef(null)
-  const overhangRef = useRef(-1)
 
   // The band the particle block may occupy: from the headline's cap height
   // down to the credential strip. The name is sized to spec, so this floor is
@@ -62,9 +60,12 @@ export default function Hero() {
     const cap = capTopOf(anchor)
     if (chain == null || cap == null) return null
 
-    const strip = hero.querySelector('.strip')
-    const stripTop = strip ? offsetTopWithin(strip, hero) : null
-    const floor = stripTop == null ? hero.clientHeight : stripTop - 16
+    // The name fills the same band as the copy column, so the two columns
+    // start and end on the same lines.
+    const last = copy.lastElementChild
+    const copyTop = offsetTopWithin(copy, hero)
+    const floor =
+      copyTop == null || !last ? hero.clientHeight : copyTop + last.offsetTop + last.offsetHeight
 
     // Left bound: the name may use everything to the right of the copy
     // column plus a gutter. Giving it the real remaining width (rather than a
@@ -74,27 +75,6 @@ export default function Hero() {
     const left = copyBox.right - heroBox.left + 72
 
     return { top: chain + cap, bottom: floor, left }
-  }, [])
-
-  // Reserve however far the name hangs below the text column, so the copy's
-  // auto margins centre the whole composition instead of just the text. The
-  // overhang is independent of the copy's own position, so re-pinning after
-  // the shift yields the same value and this settles in one extra pass.
-  const onMetrics = useCallback((m) => {
-    const copy = copyRef.current
-    const hero = copy?.closest('.hero')
-    const last = copy?.lastElementChild
-    if (!copy || !hero || !last || !m) return
-
-    const copyTop = offsetTopWithin(copy, hero)
-    if (copyTop == null) return
-    const contentBottom = copyTop + last.offsetTop + last.offsetHeight
-    const overhang = Math.max(0, Math.round(m.bottom - contentBottom))
-
-    if (Math.abs(overhang - overhangRef.current) <= 1) return
-    overhangRef.current = overhang
-    copy.style.setProperty('--overhang', `${overhang}px`)
-    requestAnimationFrame(() => rebuildRef.current?.())
   }, [])
 
   useEffect(() => {
@@ -115,12 +95,7 @@ export default function Hero() {
       {/* Full-bleed backdrop; on wide screens it occupies the right-hand
           field so the copy column below stays on clean white. */}
       <div className="namefield">
-        <ParticleName
-          lines={content.nameLines}
-          align={align}
-          onMetrics={onMetrics}
-          rebuildRef={rebuildRef}
-        />
+        <ParticleName lines={content.nameLines} align={align} />
       </div>
 
       <div className="copy" ref={copyRef}>
@@ -149,17 +124,14 @@ export default function Hero() {
           ))}
         </p>
 
-        {content.phNote && (
-          <p className="ph-note" data-animate="note">
-            {content.phNote}
-          </p>
-        )}
+        <ul className="pills" data-animate="pills">
+          {content.credentials.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
       </div>
 
       <ul className="strip" data-animate="strip">
-        {content.strip.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
         <li className="cta">
           {content.ctas.map((cta) => (
             <Link key={cta.label} to={cta.href}>

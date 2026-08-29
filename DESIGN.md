@@ -112,6 +112,7 @@ values live in [§4](#4-component-tokens).
 | `--ink` | `#001d57` | Alias of `--blue`, set as `body` colour. |
 | `--muted` | `#4a5875` | Secondary prose only (`.sub`, `.section__note`, `.project__note`). |
 | `--rule` | `rgba(0, 29, 87, 0.14)` | Every hairline divider. Always this, never a solid grey. |
+| `--rule-strong` | `rgba(0, 29, 87, 0.3)` | Dotted/dashed edges only (the credential pills). A dotted edge at 14% is effectively invisible. |
 | `--accent` | `#b3197a` | Magenta. Eyebrow text, nav hover underline, CTA underline, hover states. |
 
 **Opacity is a token too.** Hierarchy below `--blue` is expressed as opacity on
@@ -123,8 +124,8 @@ values live in [§4](#4-component-tokens).
 | `0.72` | Nav links at rest |
 | `0.6` | Project back-link at rest |
 | `0.55` | Strip items |
+| `0.72` | Credential pills |
 | `0.45` | Eyebrow separators (`·`) |
-| `0.35` | Placeholder note |
 
 ### 2.2 Type
 
@@ -179,7 +180,7 @@ always completes, whereas a stalled JS ticker would leave the hero blank. See
 | `eyebrow` | `0.25s` |
 | `headline` | `0.38s` |
 | `sub` | `0.58s` |
-| `note` | `0.72s` |
+| `pills` | `0.72s` |
 | `strip` | `0.85s` |
 
 `rise` = `opacity 0→1`, `translateY(22px)→0`, `0.8s`.
@@ -258,31 +259,31 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 | | word-spacing | `0.06em` |
 | | margin | `0 0 26px` |
 | `.copy h1 .it` | third line | `font-style: italic` |
-| `.sub` | size | `clamp(15px, 1.25vw, 19px)` |
-| | line-height / colour | `1.55` / `--muted` |
+| `.sub` | size | `clamp(13px, 0.95vw, 16px)` |
+| | line-height / colour | `1.6` / `--muted` |
 | | max-width | `46ch` |
-| `.ph-note` | size | `10px`, `0.14em`, `uppercase` |
-| | colour | `--blue` at `0.35` |
-| | margin-top | `28px` |
+| `.pills` | layout | flex, wrap, gap `8px`, margin-top `clamp(20px, 2.6vh, 32px)` |
+| `.pills li` | border | `1px dotted var(--rule-strong)`, radius `999px` |
+| | padding | `6px 14px` |
+| | type | `9px` / `500`, `0.13em`, `uppercase`, `nowrap` |
+| | colour | `--blue` at `0.72` |
 
-`--overhang` is **set from JS at runtime** — see [§6.2](#62-the-overhang-feedback-loop).
-The `clamp(24px, 5vh, 72px)` term is an intentional optical lift above true centre.
+`padding-bottom: clamp(24px, 5vh, 72px)` is an intentional optical lift above
+true centre. The credentials live here as pills, **not** in the bottom strip.
 
-### 4.3 Credential strip — `ul.strip`
+### 4.3 Bottom strip — `ul.strip`
+
+Now the **CTA row only** — the credentials moved up into `.pills` in the copy
+column. The strip is what keeps the hairline above the fold.
 
 | Element | Property | Value |
 | --- | --- | --- |
 | `ul.strip` | border-top | `1px solid var(--rule)` |
 | | padding-top | `14px` |
 | | margin | `0` — **must stay 0**, see [§9.5](#95-the-strips-margin-broke-optical-centring) |
-| | layout | flex, wrap, `align-items: baseline` |
-| | gap | `8px clamp(18px, 2.6vw, 40px)` |
-| `.strip li` | size / weight | `10px` / `500` |
-| | letter-spacing | `0.15em`, `uppercase` |
-| | colour | `--blue` at `0.55` |
+| | layout | flex, `justify-content: flex-end` |
 | `.cta` | position | `margin-left: auto`, gap `26px`; full-width row at `≤820px` |
-| | opacity | `1 !important` (overrides the `li` rule) |
-| `.cta a` | size / weight | `10px` / `600` |
+| `.cta a` | size / weight | `10px` / `600`, `0.15em`, `uppercase` |
 | | border-bottom | `1px solid var(--accent)` |
 | | hover | colour → `--accent` |
 | `.cta a .arw` | hover | `translateX(4px)` over `0.25s` standard ease |
@@ -356,35 +357,46 @@ and twinkle continuously.
 Ten jewel tones: magenta, ruby, gold, amber, emerald, green, sapphire, indigo,
 violet, orchid. Tuned for white — do not reuse on a dark ground.
 
-### 5.3 Sizing — the spec is optical
+### 5.3 Sizing — fills the band
+
+The name and the copy column **share one band**: same top line, same bottom
+line. The type is solved to fill that band rather than targeting a fixed size.
 
 | Constant | Value | Meaning |
 | --- | --- | --- |
-| `CAP_TARGET` | `210` | Target **cap height** in px, not font-size |
-| `GAP_RATIO` | `70 / 210` | Gap between lines as a ratio of cap height |
+| `GAP_RATIO` | `70 / 210` | Gap between lines as a ratio of cap height (from the original 210/70 spec) |
 
-Size is derived from the measured cap height at 100px
-(`measureText(lines[0]).actualBoundingBoxAscent`), so the spec holds across
-typefaces. The ratio is preserved when the block must shrink.
+Ratios are measured once at 100px, so the solve is **direct, not iterative**:
 
-Three constraints apply in order:
+```
+blockPerPx = ascR + ascR × (1 + GAP_RATIO) × (lines − 1) + descR
+size       = (bottomLimit − topInset) / blockPerPx
+```
 
-1. **Cap target** — `size = CAP_TARGET * 100 / capAt100`
-2. **Column width** — if the widest line exceeds `targetW`, scale down
-3. **Band height** — shrink by `×0.94` (max 16 iterations) until the block fits
-   between `topInset` and `bottomLimit`
+Then one width clamp: if the widest line exceeds `targetW`, scale down.
+`targetW` is everything right of the copy column plus a **72px gutter**, passed
+in as `pin.left` — never a fixed viewport fraction (see [§9.6](#96-fixed-width-fractions-cannot-hold-a-cap-height-spec)).
 
-`targetW` on wide = everything right of the copy column plus a **72px gutter**
-(passed in as `pin.left`), *not* a fixed viewport fraction. A 210px cap needs
-~1104px of width; any fixed fraction was silently shrinking the name at every
-viewport. On narrow, `targetW = 0.92 × width`.
+Because the name can only ever be *shorter* than the band (never taller), it
+cannot hang below the copy — which is why the old overhang mechanism was removed.
 
-**Measured outcomes:**
+### 5.3b Backing
 
-| Viewport | Cap | Gap | Binding constraint |
-| --- | --- | --- | --- |
-| 2000×1263 | **210** | **70** | none — exact spec |
-| 1600×1000 | 145 | 48 | column width |
+A **crisp** glyph-shaped fill sits behind the particles:
+
+| Constant | Value |
+| --- | --- |
+| `BACKING` | `rgba(0, 76, 228, 0.05)` — `#004CE4` at 5% |
+
+Rendered once per resize into its own canvas and blitted with a single
+`drawImage` per frame. **No blur** — the edges stay sharp. This is deliberately
+unlike the soft shadow that was tried and removed; if you find yourself adding
+a `filter`, you are re-introducing that mistake.
+
+Verified by pixel readback: dominant backing pixel `0,78,235` at alpha `13`
+(13/255 = 5.1%). The 2-unit RGB drift from `0,76,228` is canvas
+premultiplied-alpha readback quantization at low alpha, not a colour error —
+composited on white it lands on `#F2F6FE`, which is correct.
 
 ### 5.4 Physics
 
@@ -446,7 +458,7 @@ inside one band.
 | Field | Derivation |
 | --- | --- |
 | `top` | `offsetTopWithin(eyebrow, hero) + capTopOf(eyebrow)` |
-| `bottom` | `offsetTopWithin(strip, hero) − 16` — a safety floor, not a target |
+| `bottom` | `copyTop + last.offsetTop + last.offsetHeight` — the copy column's own bottom. A **target**, not a floor: the name fills to it |
 | `left` | `copy.getBoundingClientRect().right − hero.left + 72` |
 
 `capTopOf()` computes the **true optical cap top**, not the line-box top:
@@ -460,23 +472,16 @@ capTop      = baseline − actualBoundingBoxAscent
 At the current headline size these differ by ~10px — aligning to the line-box
 top looks visibly wrong.
 
-### 6.2 The overhang feedback loop
+### 6.2 One shared band
 
-The name usually hangs **below** the copy column. If `.copy` auto-centred on its
-own box, the composition would sit too low. So:
+The name is solved to fill exactly `[top, bottom]` — the copy column's own
+extent. So the two columns start and end on the same lines, and centring the
+copy centres the whole composition.
 
-1. `ParticleName` reports its band via `onMetrics`
-2. `Hero` computes `overhang = max(0, bandBottom − copyContentBottom)`
-3. `Hero` sets `--overhang` on `.copy`, which becomes `padding-bottom`
-4. `.copy`'s auto margins now centre **copy + overhang** = the whole composition
-5. `Hero` triggers `rebuildRef.current()` so the name re-pins to the moved copy
-
-This terminates because **the overhang is independent of the copy's vertical
-position** — both shift together, so pass two computes the same value and the
-`±1px` guard stops it. Do not remove that guard.
-
-`copyContentBottom` uses `lastElementChild.offsetTop + offsetHeight`, **not**
-`copy.offsetHeight` — the latter now includes the padding we are computing.
+This replaced an earlier feedback loop that measured how far the name hung
+below the copy and reserved that as padding. It is gone: the name can no longer
+exceed the band, so the overhang is always zero. If you reintroduce a name that
+can outgrow the copy column, you will need that mechanism back.
 
 ### 6.3 Legibility comes from layout
 
@@ -550,11 +555,11 @@ The router `basename` needs no change — it follows `BASE_URL`.
 | `nameRoman` | `string` | Accessible label |
 | `logo` | `string` | Wordmark, currently `UV` |
 | `nav` | `{label, href}[]` | Hrefs absolute (`/#work`) |
-| `eyebrow` | `string[]` | Joined with a dimmed `·` |
+| `eyebrow` | `string[]` | Joined with a dimmed `·`. Currently Product Design · Research · Strategy |
 | `headline` | `{text, it?}[]` | **Exactly 3**, each ≤ ~20 chars so it cannot wrap — see [§9.8](#98-headline-lines-silently-wrap-and-the-usual-wrap-check-is-a-lie). `it: true` marks the italic line |
 | `sub` | `string[]` | **Exactly 2** |
 | `phNote` | `string \| null` | Placeholder marker. Currently `null` — real copy is in |
-| `strip` | `string[]` | Credential fragments |
+| `credentials` | `string[]` | Rendered as dotted pills **inside the copy column**, not in the bottom strip |
 | `ctas` | `{label, href}[]` | |
 
 Hero copy is now real, not placeholder. `phNote` is `null`.
@@ -683,7 +688,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Real hero copy in (Currently / Previously / MS HCI). Headline reworded to fit the column width budget; §9.8 added |
+| _pending_ | Eyebrow → Strategy; credentials moved into dotted pills in the copy column; sub reduced; name now fills the shared band; crisp `#004CE4` 5% backing behind the letters; overhang loop removed |
+| `97871a4` | Real hero copy in (Currently / Previously / MS HCI). Headline reworded to fit the column width budget; §9.8 added |
 | `54fbd1f` | Added DESIGN.md, CLAUDE.md, AGENTS.md |
 | `0cc76da` | Configured for the `designportfolio` project repo: base path, router basename, 404 shim, FontFace loading |
 | `0be7cce` | Self Modern set up self-hosted with Newsreader stand-in; name pinned to the copy column's top so everything shares one band; composition lifted above true centre |

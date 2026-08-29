@@ -9,6 +9,8 @@
   --ink: #001d57;
   --muted: #4a5875;
   --rule: rgba(0, 29, 87, 0.14);
+  /* dotted/dashed edges need more presence than a hairline to read at all */
+  --rule-strong: rgba(0, 29, 87, 0.3);
   --accent: #b3197a;
 
   --serif: 'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -131,13 +133,12 @@ body {
 .copy {
   position: relative;
   z-index: 2;
-  /* centred between the nav and the strip, not pinned to the bottom. The
-     padding reserves the name's overhang so the auto margins balance the
-     whole composition rather than just the text column. */
+  /* centred between the nav and the strip. The name fills this same band, so
+     centring the column centres the whole composition. */
   margin-block: auto;
-  /* the extra term lifts the block slightly above true centre — optical
-     centring reads better than mathematical centring */
-  padding-bottom: calc(var(--overhang, 0px) + clamp(24px, 5vh, 72px));
+  /* lifts the block slightly above true centre — optical centring reads
+     better than mathematical centring */
+  padding-bottom: clamp(24px, 5vh, 72px);
   /* stays inside the left column so the name never sits behind it */
   max-width: min(660px, 46vw);
   pointer-events: none;
@@ -179,8 +180,8 @@ body {
 }
 
 .sub {
-  font-size: clamp(15px, 1.25vw, 19px);
-  line-height: 1.55;
+  font-size: clamp(13px, 0.95vw, 16px);
+  line-height: 1.6;
   color: var(--muted);
   max-width: 46ch;
   margin: 0;
@@ -190,15 +191,27 @@ body {
   display: block;
 }
 
-.ph-note {
-  position: relative;
-  z-index: 2;
-  margin: 28px 0 0;
-  font-size: 10px;
-  letter-spacing: 0.14em;
+/* credentials, moved up out of the bottom strip */
+.pills {
+  list-style: none;
+  margin: clamp(20px, 2.6vh, 32px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pills li {
+  border: 1px dotted var(--rule-strong);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--blue);
-  opacity: 0.35;
+  opacity: 0.72;
+  white-space: nowrap;
 }
 
 /* ---------- bottom strip ---------- */
@@ -210,19 +223,8 @@ ul.strip {
   padding-inline-start: 0;
   border-top: 1px solid var(--rule);
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px clamp(18px, 2.6vw, 40px);
-  align-items: baseline;
-}
-
-.strip li {
+  justify-content: flex-end;
   list-style: none;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--blue);
-  opacity: 0.55;
 }
 
 .cta {
@@ -327,7 +329,7 @@ ul.strip {
 [data-animate='sub'] {
   animation-delay: 0.58s;
 }
-[data-animate='note'] {
+[data-animate='pills'] {
   animation-delay: 0.72s;
 }
 [data-animate='strip'] {

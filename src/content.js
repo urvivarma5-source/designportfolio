@@ -17,7 +17,7 @@ export const content = {
   ],
 
   // Small tracked label above the headline. Parts joined by a dimmed middot.
-  eyebrow: ['Product Design', 'Research', 'Photography'],
+  eyebrow: ['Product Design', 'Research', 'Strategy'],
 
   // Exactly three lines. Display serif, deep blue. `it` = italic line.
   // WIDTH BUDGET: each line must fit the copy column unbroken. At the largest
@@ -39,8 +39,8 @@ export const content = {
   // Real copy is in, so the placeholder note is hidden.
   phNote: null,
 
-  // Bottom credential strip.
-  strip: [
+  // Dotted pills inside the copy column, under the sub copy.
+  credentials: [
     'Currently — University of Utah Health',
     'Previously — Intuit',
     'MS HCI, University of Maryland',
