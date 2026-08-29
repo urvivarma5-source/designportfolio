@@ -43,11 +43,13 @@ const REPEL_R2 = REPEL_R * REPEL_R
 const CAP_TARGET = 210
 const GAP_RATIO = 70 / 210
 
-export default function ParticleName({ lines, id = 'sparkles', align }) {
+export default function ParticleName({ lines, id = 'sparkles', align, onMetrics, rebuildRef }) {
   const canvasRef = useRef(null)
   const key = lines.join('\n')
   const alignRef = useRef(align)
   alignRef.current = align
+  const metricsRef = useRef(onMetrics)
+  metricsRef.current = onMetrics
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -113,13 +115,14 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
       // ...and by the band, so it can never run into the strip below.
       let asc = 0
       let lh = 0
+      let blockH = 0
       for (let attempt = 0; attempt < 16; attempt++) {
         octx.font = fontAt(size)
         const ms = lines.map((l) => octx.measureText(l))
         asc = Math.max(...ms.map((m) => m.actualBoundingBoxAscent))
         const desc = Math.max(...ms.map((m) => m.actualBoundingBoxDescent))
         lh = asc * (1 + GAP_RATIO)
-        const blockH = asc + lh * (lines.length - 1) + desc
+        blockH = asc + lh * (lines.length - 1) + desc
         if (topInset + blockH <= bottomLimit || size <= 24) break
         size = Math.floor(size * 0.94)
       }
@@ -129,6 +132,10 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
       lines.forEach((line, i) => {
         octx.fillText(line, x, topInset + asc + i * lh)
       })
+
+      // Report the band actually occupied, so the layout can reserve room for
+      // however far the block hangs below the text column.
+      metricsRef.current?.({ top: topInset, bottom: topInset + blockH })
 
       const data = octx.getImageData(0, 0, off.width, off.height).data
       const step = narrow ? 5 : off.width > 1700 ? 5 : 4
@@ -290,6 +297,12 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
       window.addEventListener('pointerleave', onOut)
       document.addEventListener('mouseleave', onOut)
       window.addEventListener('resize', onResize)
+      if (rebuildRef) {
+        rebuildRef.current = () => {
+          build()
+          draw((performance.now() - t0) / 1000)
+        }
+      }
     }
 
     // wait for the Devanagari face so the sampled shapes are correct
@@ -311,6 +324,7 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
       window.removeEventListener('pointerleave', onOut)
       document.removeEventListener('mouseleave', onOut)
       window.removeEventListener('resize', onResize)
+      if (rebuildRef) rebuildRef.current = null
     }
   }, [key])
 

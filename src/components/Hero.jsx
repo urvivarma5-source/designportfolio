@@ -41,6 +41,8 @@ function capTopOf(el) {
 export default function Hero() {
   const copyRef = useRef(null)
   const headlineRef = useRef(null)
+  const rebuildRef = useRef(null)
+  const overhangRef = useRef(-1)
 
   // The band the particle block may occupy: from the headline's cap height
   // down to the credential strip. The name is sized to spec, so this floor is
@@ -52,9 +54,12 @@ export default function Hero() {
     const hero = h1?.closest('.hero')
     if (!h1 || !copy || !hero) return null
 
-    const first = h1.querySelector('.line') || h1
-    const chain = offsetTopWithin(first, hero)
-    const cap = capTopOf(first)
+    // Pin to the TOP of the copy column (the eyebrow), not the headline, so
+    // every element sits inside the same band.
+    const eyebrow = copy.querySelector('.eyebrow')
+    const anchor = eyebrow || h1.querySelector('.line') || h1
+    const chain = offsetTopWithin(anchor, hero)
+    const cap = capTopOf(anchor)
     if (chain == null || cap == null) return null
 
     const strip = hero.querySelector('.strip')
@@ -69,6 +74,27 @@ export default function Hero() {
     const left = copyBox.right - heroBox.left + 72
 
     return { top: chain + cap, bottom: floor, left }
+  }, [])
+
+  // Reserve however far the name hangs below the text column, so the copy's
+  // auto margins centre the whole composition instead of just the text. The
+  // overhang is independent of the copy's own position, so re-pinning after
+  // the shift yields the same value and this settles in one extra pass.
+  const onMetrics = useCallback((m) => {
+    const copy = copyRef.current
+    const hero = copy?.closest('.hero')
+    const last = copy?.lastElementChild
+    if (!copy || !hero || !last || !m) return
+
+    const copyTop = offsetTopWithin(copy, hero)
+    if (copyTop == null) return
+    const contentBottom = copyTop + last.offsetTop + last.offsetHeight
+    const overhang = Math.max(0, Math.round(m.bottom - contentBottom))
+
+    if (Math.abs(overhang - overhangRef.current) <= 1) return
+    overhangRef.current = overhang
+    copy.style.setProperty('--overhang', `${overhang}px`)
+    requestAnimationFrame(() => rebuildRef.current?.())
   }, [])
 
   useEffect(() => {
@@ -89,7 +115,12 @@ export default function Hero() {
       {/* Full-bleed backdrop; on wide screens it occupies the right-hand
           field so the copy column below stays on clean white. */}
       <div className="namefield">
-        <ParticleName lines={content.nameLines} align={align} />
+        <ParticleName
+          lines={content.nameLines}
+          align={align}
+          onMetrics={onMetrics}
+          rebuildRef={rebuildRef}
+        />
       </div>
 
       <div className="copy" ref={copyRef}>

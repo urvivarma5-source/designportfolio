@@ -1,3 +1,24 @@
+/* Self Modern — Velvetyne Type Foundry (SIL OFL). Not on Google Fonts, so it
+   is self-hosted. Drop SelfModern-Regular.woff2 / SelfModern-Italic.woff2 into
+   public/fonts/ and it takes over; until then Newsreader stands in — the
+   closest match on Google Fonts for its vertical stress, moderate contrast
+   and fine flat unbracketed serifs. */
+@font-face {
+  font-family: 'Self Modern';
+  src: url('/fonts/SelfModern-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Self Modern';
+  src: url('/fonts/SelfModern-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --blue: #001d57;
   --bg: #ffffff;
@@ -6,7 +27,7 @@
   --rule: rgba(0, 29, 87, 0.14);
   --accent: #b3197a;
 
-  --serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --serif: 'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   --deva: 'Mukta', system-ui, sans-serif;
 }
@@ -126,8 +147,13 @@ body {
 .copy {
   position: relative;
   z-index: 2;
-  /* centred between the nav and the strip, not pinned to the bottom */
+  /* centred between the nav and the strip, not pinned to the bottom. The
+     padding reserves the name's overhang so the auto margins balance the
+     whole composition rather than just the text column. */
   margin-block: auto;
+  /* the extra term lifts the block slightly above true centre — optical
+     centring reads better than mathematical centring */
+  padding-bottom: calc(var(--overhang, 0px) + clamp(24px, 5vh, 72px));
   /* stays inside the left column so the name never sits behind it */
   max-width: min(660px, 46vw);
   pointer-events: none;
