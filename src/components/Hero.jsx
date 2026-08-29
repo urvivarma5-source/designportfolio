@@ -222,6 +222,10 @@ export default function Hero() {
         </ul>
       </div>
 
+      <div className="scroll-cue" aria-hidden="true">
+        <span className="scroll-cue__label">Scroll</span>
+        <span className="scroll-cue__line" />
+      </div>
     </section>
   )
 }

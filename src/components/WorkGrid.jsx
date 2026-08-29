@@ -19,8 +19,9 @@ export default function WorkGrid() {
                     <span className="work-card__wave" />
                   </span>
                   <span className="work-card__meta">
+                    {p.note && <span className="work-card__note">{p.note}</span>}
                     <span className="work-card__title">{p.title}</span>
-                    <span className="work-card__cat">{cat.label}</span>
+                    {p.desc && <span className="work-card__desc">{p.desc}</span>}
                   </span>
                 </Link>
               </li>

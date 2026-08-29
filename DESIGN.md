@@ -244,7 +244,7 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 
 | Element | Property | Value |
 | --- | --- | --- |
-| `.copy` | max-width | `min(880px, 54vw)` |
+| `.copy` | max-width | `min(760px, 42vw)` — the copy must stay left of ~45% of the viewport |
 | | padding-bottom | `calc(var(--overhang, 0px) + clamp(24px, 5vh, 72px))` |
 | `.eyebrow` | size / weight | `11px` / `600` |
 | | letter-spacing | `0.2em`, `uppercase` |
@@ -258,11 +258,11 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 | | word-spacing | `0.06em` |
 | | margin | `0 0 18px` |
 | `.copy h1 .it` | third line | `font-style: italic` |
-| `.sub` | size | `clamp(14px, 1.05vw, 17px)` |
+| `.sub` | size | `clamp(13px, 0.88vw, 15px)` |
 | | line-height / colour | `1.6` / `--muted` |
 | | max-width | `none` — fills the column, so each sentence is one row rather than two |
 | `.pills` | layout | flex, wrap, gap `8px`, margin-top `clamp(20px, 2.6vh, 32px)` |
-| `.pills` | gap | `6px`, margin-top `clamp(14px, 1.9vh, 24px)` |
+| `.pills` | gap | `6px`, margin-top `clamp(14px, 1.9vh, 24px)`. Three pills; a fourth pushes them to two rows |
 | `.pills li` | border | `1px dashed var(--accent)`, radius `3.5px` |
 | | shadow | **none** — flat, same line weight as the cards |
 | | padding | `6px 10px` |
@@ -295,7 +295,7 @@ is fitted to.
 | --- | --- |
 | min-height | `78vh` |
 | padding | `clamp(80px, 14vh, 160px) clamp(20px, 3.4vw, 46px)` |
-| border-top | `1px solid var(--rule)` |
+| border-top | **none** — sections are separated by whitespace only |
 | layout | flex column, `justify-content: center` |
 | `.section__title` | `--serif` `400`, `clamp(34px, 5vw, 68px)`, lh `1`, tracking `-0.012em` |
 | `.section__note` | `clamp(15px, 1.25vw, 19px)`, lh `1.55`, `--muted`, `46ch`, margin-top `18px` |
@@ -313,19 +313,34 @@ card grid. Modelled on the strangepixels work page.
 | `.work` | layout | flex column, gap `clamp(48px, 8vh, 96px)` between categories |
 | `.work-cat__label` | type | `--sans` `11px` / `600`, `0.2em`, `uppercase`, `--accent` |
 | `.work-grid` | layout | `repeat(3, 1fr)`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
-| `.work-card` | cursor | `none` — the follower stands in, see [§4.7](#47-cursor-follower--cursor) |
+| `.work-card` | cursor | `none` — the follower stands in, see [§4.8](#48-cursor-follower--cursor) |
 | `.work-card__media` | aspect | `4 / 3` |
 | | border | `1px dashed var(--accent)`, radius `3.5px` — same line as the pills, **no shadow** |
 | | background | `rgba(0, 29, 87, 0.06)` placeholder |
 | `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
 | `.work-card__title` | type | `--serif` `400`, `clamp(17px, 1.4vw, 23px)`, lh `1.15`; `--accent` on hover |
-| `.work-card__cat` | type | `10px` / `500`, `0.15em`, `uppercase`, `--blue` at `0.5` |
+| `.work-card__note` | type | `9px` / `600`, `0.16em`, `uppercase`, `--accent` (e.g. "Part 1") |
+| `.work-card__desc` | type | `13px`, lh `1.5`, `--muted`, `44ch` |
 
 `.work-card__media` is a **placeholder**. When real images exist, add an
 `image` field per project and swap the div for an `<img>` — the aspect ratio
 and border stay.
 
-### 4.7 Cursor follower — `.cursor`
+### 4.7 Scroll cue — `.scroll-cue`
+
+A quiet prompt at the foot of the hero: the word "Scroll" over a hairline that
+fills downward, then empties downward, on a `2.6s` loop.
+
+| Element | Property | Value |
+| --- | --- | --- |
+| `.scroll-cue` | position | absolute, centred, `clamp(16px, 3vh, 34px)` off the hero's bottom |
+| `.scroll-cue__label` | type | `9px` / `500`, `0.24em`, `uppercase`, `--blue` at `0.4` |
+| `.scroll-cue__line` | track | `1px × 34px`, `--rule` |
+| `::after` | fill | `--accent`, `scaleY` origin flips top → bottom mid-keyframe so it drains rather than rewinds |
+
+Static (filled, half opacity) under `prefers-reduced-motion`.
+
+### 4.8 Cursor follower — `.cursor`
 
 A lagging dot that swells into a "View" badge over anything carrying
 `data-cursor="view"`.
@@ -626,13 +641,14 @@ Hero copy is now real, not placeholder. `phNote` is `null`.
 
 ### 8.2 `src/projects.js`
 
-Exports `categories` (the grouped, rendered structure), `uncategorised`
-(projects deliberately not shown — currently ElderEase, kept rather than
-deleted so it can be restored by moving it into a category), `projects` (a flat
-list with `category` attached), and `getProject(slug)` which searches both.
+Exports `categories` (the grouped, rendered structure), `projects` (a flat list
+with `category` attached), and `getProject(slug)`. ElderEase is back in
+UX Research — it appears in the supplied reference artwork.
 
 
-Each project is `{ slug, title, note? }`. Detail pages are still blank by
+Each project is `{ slug, title, note?, desc? }` — `desc` is the one-line
+summary shown on the card, `note` a small accent label above the title (e.g.
+"Part 1"). Titles and descriptions come from the supplied case-study artwork. Detail pages are still blank by
 design. Slugs match the original Adobe Portfolio URLs where they existed; three
 projects are new and have no page content: `smarter-project`,
 `branding-for-sugar-rush`, `employee-tool-use-at-intuit`.
@@ -766,7 +782,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Copy column widened to 880 so the sub is one line per sentence; eyebrow separators became rules; pills 11px with hover shadow; em dashes removed from copy; work grid to three columns; `nameLeftBound()` unified so align and fit agree |
+| _pending_ | Copy pulled back inside the 45% line; San Francisco pill dropped; scroll cue added; section rules removed; card titles/descriptions taken from the reference artwork; ElderEase restored; Guide App split into Part 1 and Part 2 |
+| `b6d6bb6` | Copy column widened to 880 so the sub is one line per sentence; eyebrow separators became rules; pills 11px with hover shadow; em dashes removed from copy; work grid to three columns; `nameLeftBound()` unified so align and fit agree |
 | `7443d04` | Work grouped into three categories with a two-column card grid; cursor follower with "View" badge and card wave; pill shadows and caps removed; headline no longer crushed (MIN_SCALE 0.92) |
 | `2675800` | Columns fitted to one band via `--copy-scale`; CTA row removed; pills restyled to the supplied SVG; backing 5% → 3%; shared `lib/nameMetrics` |
 | `2501dd1` | Eyebrow → Strategy; credentials moved into dotted pills in the copy column; sub reduced; name now fills the shared band; crisp `#004CE4` 5% backing behind the letters; overhang loop removed |

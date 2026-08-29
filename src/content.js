@@ -44,7 +44,6 @@ export const content = {
     'Currently at University of Utah Health',
     'Previously at Intuit',
     'MS HCI, University of Maryland',
-    'San Francisco, CA',
   ],
 
 }
