@@ -38,9 +38,11 @@ const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 const REPEL_R = 108
 const REPEL_R2 = REPEL_R * REPEL_R
 
-export default function ParticleName({ lines, id = 'sparkles' }) {
+export default function ParticleName({ lines, id = 'sparkles', align }) {
   const canvasRef = useRef(null)
   const key = lines.join('\n')
+  const alignRef = useRef(align)
+  alignRef.current = align
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -81,11 +83,16 @@ export default function ParticleName({ lines, id = 'sparkles' }) {
       }
       let size = Math.max(40, Math.floor(400 * (targetW / widest(400))))
 
-      // Reserve a strip at the top for the nav, and keep the block clear of
-      // the copy below. Shrink until the stack fits between the two.
-      // Narrow stacks the copy under the block, so it gets a tighter ceiling.
-      const topInset = narrow ? 76 : Math.max(off.height * 0.16, 78)
-      const bottomLimit = off.height * (narrow ? 0.34 : 0.86)
+      // Wide: the block is pinned to the copy column — ink top on the
+      // headline's cap height, and shrunk until it ends level with the bottom
+      // of the copy, so the two columns read as a matched pair.
+      // Narrow: the copy stacks underneath, so it just needs a tight ceiling.
+      const pin = narrow ? null : alignRef.current?.()
+      const usePin = pin && Number.isFinite(pin.top) && Number.isFinite(pin.bottom)
+      const topInset = usePin ? pin.top : narrow ? 76 : Math.max(off.height * 0.16, 78)
+      const bottomLimit = usePin
+        ? pin.bottom
+        : off.height * (narrow ? 0.34 : 0.97)
       let asc = 0
       let lh = 0
       for (let attempt = 0; attempt < 14; attempt++) {

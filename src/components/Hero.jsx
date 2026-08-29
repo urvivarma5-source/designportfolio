@@ -1,12 +1,66 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { Link } from 'react-router-dom'
 import Nav from './Nav'
 import ParticleName from './ParticleName'
 import { content } from '../content'
 
+/** Offset of `el` from `ancestor`'s padding edge, walking the offsetParent
+ *  chain. Transform-independent, unlike getBoundingClientRect. */
+function offsetTopWithin(el, ancestor) {
+  let y = 0
+  let node = el
+  while (node && node !== ancestor) {
+    y += node.offsetTop
+    node = node.offsetParent
+  }
+  return node === ancestor ? y : null
+}
+
+/**
+ * Y of the cap-height line of an element's first line of text, relative to its
+ * own box. Added to the offset chain it gives the exact optical top of the
+ * text — the line the particle block should align to.
+ */
+function capTopOf(el) {
+  const cs = getComputedStyle(el)
+  const fontSize = parseFloat(cs.fontSize)
+  const lineHeight = cs.lineHeight === 'normal' ? fontSize * 1.2 : parseFloat(cs.lineHeight)
+
+  const ctx = document.createElement('canvas').getContext('2d')
+  ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${fontSize}px ${cs.fontFamily}`
+  const m = ctx.measureText(el.textContent.trim() || 'T')
+  if (!Number.isFinite(m.fontBoundingBoxAscent)) return null
+
+  // The font box is centred in the line box; the baseline sits one ascent down.
+  const halfLeading = (lineHeight - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2
+  const baseline = halfLeading + m.fontBoundingBoxAscent
+  return baseline - m.actualBoundingBoxAscent
+}
+
 export default function Hero() {
   const copyRef = useRef(null)
+  const headlineRef = useRef(null)
+
+  // The band the particle block should occupy: from the headline's cap height
+  // down to the bottom of the copy column. The canvas is inset:0 within .hero,
+  // so both share the hero's padding edge as their origin.
+  const align = useCallback(() => {
+    const h1 = headlineRef.current
+    const copy = copyRef.current
+    const hero = h1?.closest('.hero')
+    if (!h1 || !copy || !hero) return null
+
+    const first = h1.querySelector('.line') || h1
+    const chain = offsetTopWithin(first, hero)
+    const cap = capTopOf(first)
+    if (chain == null || cap == null) return null
+
+    const copyTop = offsetTopWithin(copy, hero)
+    if (copyTop == null) return null
+
+    return { top: chain + cap, bottom: copyTop + copy.offsetHeight }
+  }, [])
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -26,7 +80,7 @@ export default function Hero() {
       {/* Full-bleed backdrop; on wide screens it occupies the right-hand
           field so the copy column below stays on clean white. */}
       <div className="namefield">
-        <ParticleName lines={content.nameLines} />
+        <ParticleName lines={content.nameLines} align={align} />
       </div>
 
       <div className="copy" ref={copyRef}>
@@ -39,7 +93,7 @@ export default function Hero() {
           ))}
         </p>
 
-        <h1 data-animate="headline">
+        <h1 data-animate="headline" ref={headlineRef}>
           {content.headline.map((line, i) => (
             <span key={i} className={line.it ? 'line it' : 'line'}>
               {line.text}
