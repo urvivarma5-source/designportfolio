@@ -38,6 +38,11 @@ const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 const REPEL_R = 108
 const REPEL_R2 = REPEL_R * REPEL_R
 
+// Design spec: 210px cap height, 70px between the two lines. Kept as a ratio
+// so the pair scales together when a smaller viewport forces it down.
+const CAP_TARGET = 210
+const GAP_RATIO = 70 / 210
+
 export default function ParticleName({ lines, id = 'sparkles', align }) {
   const canvasRef = useRef(null)
   const key = lines.join('\n')
@@ -74,36 +79,49 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
       octx.textAlign = narrow ? 'center' : 'right'
       octx.textBaseline = 'alphabetic'
 
-      // Wide: the block takes the right-hand field, clear of the copy column.
-      // Narrow: it centres and the copy simply sits below it.
-      const targetW = off.width * (narrow ? 0.92 : 0.44)
       const widest = (px) => {
         octx.font = fontAt(px)
         return Math.max(...lines.map((l) => octx.measureText(l).width))
       }
-      let size = Math.max(40, Math.floor(400 * (targetW / widest(400))))
 
-      // Wide: the block is pinned to the copy column — ink top on the
-      // headline's cap height, and shrunk until it ends level with the bottom
-      // of the copy, so the two columns read as a matched pair.
+      // Wide: the ink top is pinned to the headline's cap height so the two
+      // columns start on the same optical line.
       // Narrow: the copy stacks underneath, so it just needs a tight ceiling.
       const pin = narrow ? null : alignRef.current?.()
       const usePin = pin && Number.isFinite(pin.top) && Number.isFinite(pin.bottom)
       const topInset = usePin ? pin.top : narrow ? 76 : Math.max(off.height * 0.16, 78)
-      const bottomLimit = usePin
-        ? pin.bottom
-        : off.height * (narrow ? 0.34 : 0.97)
+      const bottomLimit = usePin ? pin.bottom : off.height * (narrow ? 0.34 : 0.97)
+
+      // Wide: everything to the right of the copy column is the name's to use.
+      // Narrow: it centres and the copy simply stacks below it.
+      const rightEdge = off.width * 0.96
+      const targetW = narrow
+        ? off.width * 0.92
+        : Math.max(160, rightEdge - (usePin && Number.isFinite(pin.left) ? pin.left : off.width * 0.52))
+
+      // Size from the cap height rather than the font size — the spec is
+      // optical. capAt100 is this face's cap height at 100px.
+      octx.font = fontAt(100)
+      const capAt100 = octx.measureText(lines[0]).actualBoundingBoxAscent || 70
+      let size = Math.max(24, Math.round((CAP_TARGET * 100) / capAt100))
+
+      // Constrain by the column width; the cap:gap ratio is preserved because
+      // the gap is derived from the measured ascent below.
+      const w = widest(size)
+      if (w > targetW) size = Math.max(24, Math.floor((size * targetW) / w))
+
+      // ...and by the band, so it can never run into the strip below.
       let asc = 0
       let lh = 0
-      for (let attempt = 0; attempt < 14; attempt++) {
+      for (let attempt = 0; attempt < 16; attempt++) {
         octx.font = fontAt(size)
         const ms = lines.map((l) => octx.measureText(l))
         asc = Math.max(...ms.map((m) => m.actualBoundingBoxAscent))
         const desc = Math.max(...ms.map((m) => m.actualBoundingBoxDescent))
-        lh = asc * 2.05 // baseline-to-baseline, matching the reference leading
+        lh = asc * (1 + GAP_RATIO)
         const blockH = asc + lh * (lines.length - 1) + desc
-        if (topInset + blockH <= bottomLimit || size <= 40) break
-        size = Math.floor(size * 0.92)
+        if (topInset + blockH <= bottomLimit || size <= 24) break
+        size = Math.floor(size * 0.94)
       }
 
       octx.font = fontAt(size)

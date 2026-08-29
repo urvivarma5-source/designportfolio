@@ -42,8 +42,9 @@ export default function Hero() {
   const copyRef = useRef(null)
   const headlineRef = useRef(null)
 
-  // The band the particle block should occupy: from the headline's cap height
-  // down to the bottom of the copy column. The canvas is inset:0 within .hero,
+  // The band the particle block may occupy: from the headline's cap height
+  // down to the credential strip. The name is sized to spec, so this floor is
+  // only a safety stop on short viewports. The canvas is inset:0 within .hero,
   // so both share the hero's padding edge as their origin.
   const align = useCallback(() => {
     const h1 = headlineRef.current
@@ -56,10 +57,18 @@ export default function Hero() {
     const cap = capTopOf(first)
     if (chain == null || cap == null) return null
 
-    const copyTop = offsetTopWithin(copy, hero)
-    if (copyTop == null) return null
+    const strip = hero.querySelector('.strip')
+    const stripTop = strip ? offsetTopWithin(strip, hero) : null
+    const floor = stripTop == null ? hero.clientHeight : stripTop - 16
 
-    return { top: chain + cap, bottom: copyTop + copy.offsetHeight }
+    // Left bound: the name may use everything to the right of the copy
+    // column plus a gutter. Giving it the real remaining width (rather than a
+    // fixed fraction) lets it reach the 210px cap height on wide screens.
+    const heroBox = hero.getBoundingClientRect()
+    const copyBox = copy.getBoundingClientRect()
+    const left = copyBox.right - heroBox.left + 72
+
+    return { top: chain + cap, bottom: floor, left }
   }, [])
 
   useEffect(() => {

@@ -6,7 +6,7 @@
   --rule: rgba(0, 29, 87, 0.14);
   --accent: #b3197a;
 
-  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   --deva: 'Mukta', system-ui, sans-serif;
 }
@@ -126,7 +126,8 @@ body {
 .copy {
   position: relative;
   z-index: 2;
-  margin-top: auto;
+  /* centred between the nav and the strip, not pinned to the bottom */
+  margin-block: auto;
   /* stays inside the left column so the name never sits behind it */
   max-width: min(660px, 46vw);
   pointer-events: none;
@@ -194,7 +195,7 @@ body {
 ul.strip {
   position: relative;
   z-index: 2;
-  margin: clamp(40px, 7vh, 86px) 0 0;
+  margin: 0;
   padding-top: 14px;
   padding-inline-start: 0;
   border-top: 1px solid var(--rule);
