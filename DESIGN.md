@@ -244,30 +244,31 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 
 | Element | Property | Value |
 | --- | --- | --- |
-| `.copy` | max-width | `min(660px, 46vw)` |
+| `.copy` | max-width | `min(880px, 54vw)` |
 | | padding-bottom | `calc(var(--overhang, 0px) + clamp(24px, 5vh, 72px))` |
 | `.eyebrow` | size / weight | `11px` / `600` |
 | | letter-spacing | `0.2em`, `uppercase` |
 | | colour | `--accent` |
-| | margin | `0 0 20px` |
-| `.eyebrow em` | separator `·` | `--blue` at `0.45` opacity, `margin: 0 6px`, `font-style: normal` |
+| | margin | `0 0 14px` |
+| `.eyebrow em` | separator | a **rule**, not a middot: `2px × 13px`, `--accent`, `margin: 0 12px`. Rendered as an empty `<em>`. Height is fixed px on purpose — an `em`-based height collapses to 0 if `font-size` is zeroed |
 | `.copy h1` | family / weight | `--serif` / `400` |
 | | size | `clamp(36px, 4.4vw, 68px)` |
 | | line-height | `1.14` |
 | | letter-spacing | `0.005em` |
 | | word-spacing | `0.06em` |
-| | margin | `0 0 26px` |
+| | margin | `0 0 18px` |
 | `.copy h1 .it` | third line | `font-style: italic` |
-| `.sub` | size | `clamp(13px, 0.95vw, 16px)` |
+| `.sub` | size | `clamp(14px, 1.05vw, 17px)` |
 | | line-height / colour | `1.6` / `--muted` |
-| | max-width | `46ch` |
+| | max-width | `none` — fills the column, so each sentence is one row rather than two |
 | `.pills` | layout | flex, wrap, gap `8px`, margin-top `clamp(20px, 2.6vh, 32px)` |
-| `.pills` | gap | `6px` |
+| `.pills` | gap | `6px`, margin-top `clamp(14px, 1.9vh, 24px)` |
 | `.pills li` | border | `1px dashed var(--accent)`, radius `3.5px` |
 | | shadow | **none** — flat, same line weight as the cards |
-| | padding | `5px 9px` |
-| | type | `9px` / `500`, `0.01em`, sentence case, `nowrap` |
+| | padding | `6px 10px` |
+| | type | `11px` / `500`, `0.01em`, sentence case, `nowrap` |
 | | colour | `--blue` |
+| | hover | `box-shadow: 0 2px 10px rgba(0, 29, 87, 0.13)`, border `--blue`, `translateY(-1px)` |
 
 Pills are **sentence case, not uppercase**, and sized to sit on a single row —
 wrapping to two rows makes the copy column taller than the name can reach.
@@ -311,13 +312,13 @@ card grid. Modelled on the strangepixels work page.
 | --- | --- | --- |
 | `.work` | layout | flex column, gap `clamp(48px, 8vh, 96px)` between categories |
 | `.work-cat__label` | type | `--sans` `11px` / `600`, `0.2em`, `uppercase`, `--accent` |
-| `.work-grid` | layout | `grid-template-columns: repeat(2, 1fr)`, gap `clamp(24px, 3vw, 48px)`; one column at `≤820px` |
+| `.work-grid` | layout | `repeat(3, 1fr)`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
 | `.work-card` | cursor | `none` — the follower stands in, see [§4.7](#47-cursor-follower--cursor) |
 | `.work-card__media` | aspect | `4 / 3` |
 | | border | `1px dashed var(--accent)`, radius `3.5px` — same line as the pills, **no shadow** |
 | | background | `rgba(0, 29, 87, 0.06)` placeholder |
 | `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
-| `.work-card__title` | type | `--serif` `400`, `clamp(20px, 2vw, 30px)`, lh `1.12`; `--accent` on hover |
+| `.work-card__title` | type | `--serif` `400`, `clamp(17px, 1.4vw, 23px)`, lh `1.15`; `--accent` on hover |
 | `.work-card__cat` | type | `10px` / `500`, `0.15em`, `uppercase`, `--blue` at `0.5` |
 
 `.work-card__media` is a **placeholder**. When real images exist, add an
@@ -524,7 +525,15 @@ within the 4px sampling step.
 The ratio maths lives in `src/lib/nameMetrics.js` and is imported by *both*
 `Hero` and `ParticleName`, so the two cannot disagree about the geometry.
 
-**Only ever shrink, and only gently.** `MIN_SCALE = 0.92`. Crushing the
+**Both sides must measure the name's left bound identically.** `nameLeftBound()`
+is the single source: the right edge of the copy's widest **text** (a `Range`,
+not the column box — the box is wider than the text fills) plus `GUTTER = 40`.
+`align()` and the fit pass both call it. When they disagreed — the fit pass
+measuring text, `align()` measuring the box plus 72 — the name was sized more
+conservatively than the fit assumed and sat 46px short at the bottom. That is
+subtle and was mistaken for a sizing problem three times.
+
+**Only ever shrink, and only gently.** `MIN_SCALE = 0.88`. Crushing the
 headline to force a perfect bottom match reads far worse than a small residual
 gap — a supplied WRONG/RIGHT comparison made this explicit: the RIGHT version
 keeps the headline near full size and tolerates ~12px of mismatch. An earlier
@@ -532,7 +541,8 @@ build shrank the headline from 68px to 49px to close the gap, and that was
 rejected. Current: headline 63px, residual gap 18px.
 
 The other levers, used before touching scale: keep the pills on **one row**,
-gutter `56px`, and the name's right edge at `0.975` of the hero width.
+keep each sub sentence to **one line**, `GUTTER = 40`, and the name's right
+edge at `0.985` of the hero width. Current: headline 63px, top +5, bottom −6.
 
 ### 6.3 Legibility comes from layout
 
@@ -756,7 +766,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Work grouped into three categories with a two-column card grid; cursor follower with "View" badge and card wave; pill shadows and caps removed; headline no longer crushed (MIN_SCALE 0.92) |
+| _pending_ | Copy column widened to 880 so the sub is one line per sentence; eyebrow separators became rules; pills 11px with hover shadow; em dashes removed from copy; work grid to three columns; `nameLeftBound()` unified so align and fit agree |
+| `7443d04` | Work grouped into three categories with a two-column card grid; cursor follower with "View" badge and card wave; pill shadows and caps removed; headline no longer crushed (MIN_SCALE 0.92) |
 | `2675800` | Columns fitted to one band via `--copy-scale`; CTA row removed; pills restyled to the supplied SVG; backing 5% → 3%; shared `lib/nameMetrics` |
 | `2501dd1` | Eyebrow → Strategy; credentials moved into dotted pills in the copy column; sub reduced; name now fills the shared band; crisp `#004CE4` 5% backing behind the letters; overhang loop removed |
 | `97871a4` | Real hero copy in (Currently / Previously / MS HCI). Headline reworded to fit the column width budget; §9.8 added |

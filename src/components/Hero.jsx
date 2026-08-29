@@ -6,6 +6,25 @@ import ParticleName from './ParticleName'
 import { content } from '../content'
 import { nameRatios } from '../lib/nameMetrics'
 
+/** Gutter between the copy column's text and the name. */
+const GUTTER = 40
+
+/**
+ * The x the name may start from: the right edge of the copy's widest *text*
+ * (not its box, which is usually wider than the text fills) plus the gutter.
+ * align() and the fit pass must use the same value or they size the name
+ * differently and it stops reaching the bottom of the band.
+ */
+function nameLeftBound(copy, heroBox) {
+  let textRight = 0
+  for (const el of copy.querySelectorAll('.eyebrow, h1 .line, .sub .line, .pills')) {
+    const r = document.createRange()
+    r.selectNodeContents(el)
+    textRight = Math.max(textRight, r.getBoundingClientRect().right - heroBox.left)
+  }
+  return textRight + GUTTER
+}
+
 /** Offset of `el` from `ancestor`'s padding edge, walking the offsetParent
  *  chain. Transform-independent, unlike getBoundingClientRect. */
 function offsetTopWithin(el, ancestor) {
@@ -72,10 +91,7 @@ export default function Hero() {
     // column plus a gutter. Giving it the real remaining width (rather than a
     // fixed fraction) lets it reach the 210px cap height on wide screens.
     const heroBox = hero.getBoundingClientRect()
-    const copyBox = copy.getBoundingClientRect()
-    const left = copyBox.right - heroBox.left + 72
-
-    return { top: chain + cap, bottom: floor, left }
+    return { top: chain + cap, bottom: floor, left: nameLeftBound(copy, heroBox) }
   }, [])
 
   // ------------------------------------------------------------------
@@ -110,8 +126,7 @@ export default function Hero() {
       copy.style.setProperty('--copy-scale', '1')
 
       const heroBox = hero.getBoundingClientRect()
-      const gutter = 56
-      const availW = heroBox.width * 0.975 - (copy.getBoundingClientRect().right - heroBox.left + gutter)
+      const availW = heroBox.width * 0.985 - nameLeftBound(copy, heroBox)
       const { widthR, heightR } = nameRatios(content.nameLines)
       const maxNameH = (availW / widthR) * heightR
 
@@ -119,7 +134,7 @@ export default function Hero() {
       // Shrink only, and only gently. Crushing the headline to force a perfect
       // bottom match reads far worse than a small residual gap — the reference
       // tolerates ~12px. MIN_SCALE keeps the headline near full size.
-      const MIN_SCALE = 0.92
+      const MIN_SCALE = 0.88
       if (natural > 0 && maxNameH > 0 && maxNameH < natural) {
         let scale = 1
         for (let i = 0; i < 8; i++) {
@@ -178,7 +193,7 @@ export default function Hero() {
         <p className="eyebrow" data-animate="eyebrow">
           {content.eyebrow.map((part, i) => (
             <span key={part}>
-              {i > 0 && <em>·</em>}
+              {i > 0 && <em aria-hidden="true" />}
               {part}
             </span>
           ))}

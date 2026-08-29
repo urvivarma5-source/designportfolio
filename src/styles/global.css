@@ -140,7 +140,7 @@ body {
      better than mathematical centring */
   padding-bottom: clamp(24px, 5vh, 72px);
   /* stays inside the left column so the name never sits behind it */
-  max-width: min(660px, 46vw);
+  max-width: min(880px, 54vw);
   pointer-events: none;
 }
 
@@ -150,14 +150,18 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
-  margin: 0 0 20px;
+  margin: 0 0 14px;
 }
 
 .eyebrow em {
-  font-style: normal;
-  color: var(--blue);
-  opacity: 0.45;
-  margin: 0 6px;
+  /* a vertical rule, not a middot */
+  display: inline-block;
+  width: 2px;
+  /* fixed px: an em-based height collapses to 0 if font-size is zeroed */
+  height: 13px;
+  margin: 0 12px;
+  vertical-align: -2px;
+  background: var(--accent);
 }
 
 .copy h1 {
@@ -168,7 +172,7 @@ body {
   line-height: 1.14;
   letter-spacing: 0.005em;
   word-spacing: 0.06em;
-  margin: 0 0 26px;
+  margin: 0 0 18px;
 }
 
 .copy h1 .line {
@@ -180,10 +184,12 @@ body {
 }
 
 .sub {
-  font-size: calc(clamp(13px, 0.95vw, 16px) * var(--copy-scale, 1));
+  font-size: calc(clamp(14px, 1.05vw, 17px) * var(--copy-scale, 1));
   line-height: 1.6;
   color: var(--muted);
-  max-width: 46ch;
+  /* fills the copy column rather than a 46ch measure — longer lines, fewer
+     of them, and no dead space to the right */
+  max-width: none;
   margin: 0;
 }
 
@@ -194,7 +200,7 @@ body {
 /* credentials, moved up out of the bottom strip */
 .pills {
   list-style: none;
-  margin: clamp(20px, 2.6vh, 32px) 0 0;
+  margin: clamp(14px, 1.9vh, 24px) 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -206,12 +212,19 @@ body {
      No shadow — flat, same line weight as the cards. */
   border: 1px dashed var(--accent);
   border-radius: 3.5px;
-  padding: 5px 9px;
-  font-size: 9px;
+  padding: 6px 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--blue);
   white-space: nowrap;
+  transition: box-shadow 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+}
+
+.pills li:hover {
+  box-shadow: 0 2px 10px rgba(0, 29, 87, 0.13);
+  border-color: var(--blue);
+  transform: translateY(-1px);
 }
 
 /* ---------------------------------------------------------------------------
@@ -431,8 +444,8 @@ body {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: clamp(24px, 3vw, 48px);
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(28px, 3.4vw, 56px) clamp(24px, 2.6vw, 44px);
 }
 
 .work-card {
@@ -491,8 +504,8 @@ body {
 .work-card__title {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(20px, 2vw, 30px);
-  line-height: 1.12;
+  font-size: clamp(17px, 1.4vw, 23px);
+  line-height: 1.15;
   letter-spacing: -0.005em;
   transition: color 0.2s;
 }
@@ -510,7 +523,13 @@ body {
   opacity: 0.5;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 1100px) {
+  .work-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
   .work-grid {
     grid-template-columns: 1fr;
   }

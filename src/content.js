@@ -33,7 +33,7 @@ export const content = {
   // Exactly two lines. Smaller supporting copy.
   sub: [
     'Product Researcher and Designer, working through evidence-driven research and empathetic design thinking.',
-    'Creating digital solutions that bridge technology and human needs — through collaboration and empathy.',
+    'Creating digital solutions that bridge technology and human needs, through collaboration and empathy.',
   ],
 
   // Real copy is in, so the placeholder note is hidden.
@@ -41,8 +41,8 @@ export const content = {
 
   // Dotted pills inside the copy column, under the sub copy.
   credentials: [
-    'Currently — University of Utah Health',
-    'Previously — Intuit',
+    'Currently at University of Utah Health',
+    'Previously at Intuit',
     'MS HCI, University of Maryland',
     'San Francisco, CA',
   ],
