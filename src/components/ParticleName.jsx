@@ -4,13 +4,17 @@ import { useEffect, useRef } from 'react'
  * ParticleName
  * ------------
  * Renders `text` (Devanagari, Mukta 800) as a field of jewel-tone particles
- * sampled from the glyph outlines onto a full-bleed <canvas>.
+ * sampled from the glyph outlines onto a <canvas> that fills its parent.
  *
  * Each particle springs toward its home pixel with a soft stiffness, so the
  * field settles slowly and stays alive. The pointer repels anything within
  * ~108px. Drawing is batched into one path per colour — roughly 11 fill()
  * calls a frame instead of 12k — plus a sparse layer of brighter "glints"
  * that pop above a twinkle threshold.
+ *
+ * `onLayout` receives the measured box of each whitespace-separated word in
+ * CSS pixels, so the Latin labels can be pinned above them:
+ *   [{ left, top, width }, ...]
  */
 
 // Jewel tones on white: magenta, ruby, gold, amber, emerald, green,
@@ -32,8 +36,10 @@ const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 const REPEL_R = 108
 const REPEL_R2 = REPEL_R * REPEL_R
 
-export default function ParticleName({ text, id = 'sparkles' }) {
+export default function ParticleName({ text, id = 'sparkles', onLayout }) {
   const canvasRef = useRef(null)
+  const layoutRef = useRef(onLayout)
+  layoutRef.current = onLayout
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -50,39 +56,66 @@ export default function ParticleName({ text, id = 'sparkles' }) {
     const mouse = { x: -9999, y: -9999, active: false }
     const t0 = performance.now()
 
-    // ---- sample the glyphs into a list of home coordinates ---------------
+    const fontAt = (px) => '800 ' + px + 'px Mukta, system-ui, sans-serif'
+
+    // ---- sample the glyphs into home coordinates + per-word boxes ---------
     function sampleText() {
       const off = document.createElement('canvas')
       const octx = off.getContext('2d', { willReadFrequently: true })
       off.width = Math.max(320, Math.floor(W))
-      off.height = Math.max(240, Math.floor(H))
+      off.height = Math.max(200, Math.floor(H))
 
-      // fit the name to ~90% of the viewport width
-      const targetW = off.width * (off.width < 760 ? 0.92 : 0.88)
+      const narrow = off.width < 760
+
+      // fit the name to ~90% of the band width
+      const targetW = off.width * (narrow ? 0.92 : 0.88)
       let size = 400
-      octx.font = '800 ' + size + 'px Mukta, system-ui, sans-serif'
-      const m = octx.measureText(text)
-      size = Math.max(48, Math.floor(size * (targetW / m.width)))
-      // cap so it never floods the viewport height
-      size = Math.min(size, Math.floor(off.height * 0.46))
-      octx.font = '800 ' + size + 'px Mukta, system-ui, sans-serif'
+      octx.font = fontAt(size)
+      size = Math.max(40, Math.floor(size * (targetW / octx.measureText(text).width)))
+      // cap so it never outgrows the band it sits in
+      size = Math.min(size, Math.floor(off.height * 0.72))
+      octx.font = fontAt(size)
 
       octx.fillStyle = '#000'
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
       const cx = off.width / 2
-      const cy = off.height * (off.width < 760 ? 0.4 : 0.435)
+      // sits low in its band, leaving headroom for the Latin labels above
+      const cy = off.height * 0.58
       octx.fillText(text, cx, cy)
 
+      // measure where each word starts, so labels can be pinned above them
+      const full = octx.measureText(text).width
+      const spaceW = octx.measureText(' ').width
+      const words = text.split(' ')
+      let run = cx - full / 2
+      const boxes = words.map((w) => {
+        const width = octx.measureText(w).width
+        const box = { left: run, width, top: Infinity }
+        run += width + spaceW
+        return box
+      })
+
       const data = octx.getImageData(0, 0, off.width, off.height).data
-      const step = off.width < 760 ? 5 : off.width > 1700 ? 5 : 4
+      const step = narrow ? 5 : off.width > 1700 ? 5 : 4
 
       const pts = []
       for (let y = 0; y < off.height; y += step) {
         for (let x = 0; x < off.width; x += step) {
-          if (data[(y * off.width + x) * 4 + 3] > 140) pts.push(x, y)
+          if (data[(y * off.width + x) * 4 + 3] > 140) {
+            pts.push(x, y)
+            // remember the highest ink in each word's column range
+            for (let b = 0; b < boxes.length; b++) {
+              const bx = boxes[b]
+              if (x >= bx.left && x <= bx.left + bx.width && y < bx.top) bx.top = y
+            }
+          }
         }
       }
+
+      const valid = boxes.every((b) => Number.isFinite(b.top))
+      layoutRef.current?.(valid ? boxes : null)
+
       return pts
     }
 

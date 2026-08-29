@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import Nav from './Nav'
 import ParticleName from './ParticleName'
@@ -6,6 +6,10 @@ import { content } from '../content'
 
 export default function Hero() {
   const copyRef = useRef(null)
+  // measured boxes of each Devanagari word, so the Latin labels sit above them
+  const [wordBoxes, setWordBoxes] = useState(null)
+
+  const onLayout = useCallback((boxes) => setWordBoxes(boxes), [])
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -20,9 +24,29 @@ export default function Hero() {
 
   return (
     <section className="hero" id="top">
-      <ParticleName text={content.name} />
-
       <Nav />
+
+      {/* The name gets its own band, so the sparkles can never collide with
+          the copy below no matter how short the viewport is. */}
+      <div className="namefield">
+        <ParticleName text={content.name} onLayout={onLayout} />
+
+        {wordBoxes && (
+          <div className="namefield__labels" aria-hidden="true">
+            {content.nameLatin.map((label, i) =>
+              wordBoxes[i] ? (
+                <span
+                  key={label}
+                  className="latin-label"
+                  style={{ left: wordBoxes[i].left, top: wordBoxes[i].top }}
+                >
+                  {label}
+                </span>
+              ) : null,
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="copy" ref={copyRef}>
         <p className="eyebrow" data-animate="eyebrow">

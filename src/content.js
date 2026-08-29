@@ -7,18 +7,15 @@ export const content = {
   // The name rendered as the multi-colour sparkle field (Devanagari).
   name: 'उर्वी वर्मा',
   nameRoman: 'Urvi Varma',
-  markSuffix: 'उर्वी',
+  // Latin labels pinned above each Devanagari word, in order.
+  nameLatin: ['Urvi', 'Varma'],
+  logo: 'UV',
 
   nav: [
     { label: 'Work', href: '#work' },
     { label: 'About', href: '#about' },
     { label: 'Photography', href: '#photography' },
     { label: 'Contact', href: '#contact' },
-  ],
-
-  langs: [
-    { label: 'EN', href: '#', active: true },
-    { label: 'HI', href: '#', active: false },
   ],
 
   // Small tracked label above the headline. Parts joined by a dimmed middot.
@@ -43,9 +40,9 @@ export const content = {
   // Bottom credential strip.
   strip: [
     'Product Designer',
-    'Currently at —', // PLACEHOLDER
+    'Currently at University of Utah Health',
     'Research → Shipped',
-    'College Park, MD',
+    'San Francisco, CA',
   ],
 
   ctas: [
