@@ -1,23 +1,7 @@
-/* Self Modern — Velvetyne Type Foundry (SIL OFL). Not on Google Fonts, so it
-   is self-hosted. Drop SelfModern-Regular.woff2 / SelfModern-Italic.woff2 into
-   public/fonts/ and it takes over; until then Newsreader stands in — the
-   closest match on Google Fonts for its vertical stress, moderate contrast
-   and fine flat unbracketed serifs. */
-@font-face {
-  font-family: 'Self Modern';
-  src: url('/fonts/SelfModern-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Self Modern';
-  src: url('/fonts/SelfModern-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
+/* Self Modern is registered from src/fonts.js so its URL picks up Vite's
+   base path — absolute public-asset URLs in CSS are not rewritten by Vite,
+   so an @font-face here would 404 under /designportfolio/. Newsreader stands
+   in until the files are present. */
 
 :root {
   --blue: #001d57;

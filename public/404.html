@@ -2,20 +2,27 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>उर्वी वर्मा</title>
+    <title>Urvi Varma</title>
     <script>
       // GitHub Pages has no server-side rewrite, so a deep link like
-      // /work/elderease lands here. Encode the path into a query string and
-      // bounce to the app, which decodes it back in index.html.
-      // pathSegmentsToKeep = 0 because this is a user site served from root.
+      // /designportfolio/work/elderease lands here. Encode the path into a
+      // query string and bounce to the app, which decodes it in index.html.
+      // pathSegmentsToKeep = 1 keeps the /designportfolio/ repo segment.
+      var pathSegmentsToKeep = 1
       var l = window.location
       l.replace(
         l.protocol +
           '//' +
           l.hostname +
           (l.port ? ':' + l.port : '') +
+          l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') +
           '/?/' +
-          l.pathname.slice(1).replace(/&/g, '~and~') +
+          l.pathname
+            .slice(1)
+            .split('/')
+            .slice(pathSegmentsToKeep)
+            .join('/')
+            .replace(/&/g, '~and~') +
           (l.search ? '&' + l.search.slice(1) : '') +
           l.hash,
       )
