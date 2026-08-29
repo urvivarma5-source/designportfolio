@@ -12,9 +12,15 @@ import { useEffect, useRef } from 'react'
  * calls a frame instead of 12k — plus a sparse layer of brighter "glints"
  * that pop above a twinkle threshold.
  *
+ * A very light blurred copy of the glyphs is pre-rendered once and blitted
+ * behind the particles each frame, so the name reads as a soft mass even
+ * where the headline copy crosses it.
+ *
  * `onLayout` receives the measured box of each whitespace-separated word in
- * CSS pixels, so the Latin labels can be pinned above them:
- *   [{ left, top, width }, ...]
+ * CSS pixels, so the Latin labels can be pinned above them. `bar` is the
+ * shirorekha (the horizontal headstroke) — the labels hang off that, not off
+ * the tallest matra:
+ *   [{ left, width, top, bar }, ...]
  */
 
 // Jewel tones on white: magenta, ruby, gold, amber, emerald, green,
@@ -51,6 +57,7 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
     let DPR = 1
     let particles = []
     let byColor = new Map()
+    let shadow = null // pre-rendered soft blur behind the glyphs
     let raf = 0
     let cancelled = false
     const mouse = { x: -9999, y: -9999, active: false }
@@ -67,22 +74,36 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
 
       const narrow = off.width < 760
 
-      // fit the name to ~90% of the band width
-      const targetW = off.width * (narrow ? 0.92 : 0.88)
-      let size = 400
-      octx.font = fontAt(size)
-      size = Math.max(40, Math.floor(size * (targetW / octx.measureText(text).width)))
-      // cap so it never outgrows the band it sits in
-      size = Math.min(size, Math.floor(off.height * 0.72))
-      octx.font = fontAt(size)
-
       octx.fillStyle = '#000'
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
+
+      // fit the name across most of the viewport
+      const targetW = off.width * (narrow ? 0.92 : 0.8)
+      let size = 400
+      octx.font = fontAt(size)
+      size = Math.max(40, Math.floor(size * (targetW / octx.measureText(text).width)))
+      size = Math.min(size, Math.floor(off.height * (narrow ? 0.4 : 0.56)))
+
+      // Anchor off the real ink box rather than a guessed fraction: reserve a
+      // strip at the top for the nav and the Latin labels, and keep the
+      // descenders clear of the copy below. Shrink until both hold.
+      const topInset = Math.max(off.height * 0.19, 92)
+      const bottomLimit = off.height * (narrow ? 0.72 : 0.8)
+      let cy = topInset
+      for (let attempt = 0; attempt < 12; attempt++) {
+        octx.font = fontAt(size)
+        const m = octx.measureText(text)
+        cy = topInset + m.actualBoundingBoxAscent
+        if (cy + m.actualBoundingBoxDescent <= bottomLimit || size <= 40) break
+        size = Math.floor(size * 0.92)
+      }
+
+      octx.font = fontAt(size)
       const cx = off.width / 2
-      // sits low in its band, leaving headroom for the Latin labels above
-      const cy = off.height * 0.58
       octx.fillText(text, cx, cy)
+
+      renderShadow(size, cx, cy)
 
       // measure where each word starts, so labels can be pinned above them
       const full = octx.measureText(text).width
@@ -91,7 +112,7 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
       let run = cx - full / 2
       const boxes = words.map((w) => {
         const width = octx.measureText(w).width
-        const box = { left: run, width, top: Infinity }
+        const box = { left: run, width, top: Infinity, bar: 0, rows: new Map() }
         run += width + spaceW
         return box
       })
@@ -104,19 +125,56 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
         for (let x = 0; x < off.width; x += step) {
           if (data[(y * off.width + x) * 4 + 3] > 140) {
             pts.push(x, y)
-            // remember the highest ink in each word's column range
+            // per word: highest ink, and an ink-per-row tally so the
+            // shirorekha (the densest row) can be found
             for (let b = 0; b < boxes.length; b++) {
               const bx = boxes[b]
-              if (x >= bx.left && x <= bx.left + bx.width && y < bx.top) bx.top = y
+              if (x >= bx.left && x <= bx.left + bx.width) {
+                if (y < bx.top) bx.top = y
+                bx.rows.set(y, (bx.rows.get(y) || 0) + 1)
+              }
             }
           }
         }
       }
 
-      const valid = boxes.every((b) => Number.isFinite(b.top))
+      // the headstroke is the row carrying the most ink
+      boxes.forEach((b) => {
+        let best = 0
+        b.rows.forEach((count, y) => {
+          if (count > best) {
+            best = count
+            b.bar = y
+          }
+        })
+        delete b.rows
+      })
+
+      const valid = boxes.every((b) => Number.isFinite(b.top) && b.bar > 0)
       layoutRef.current?.(valid ? boxes : null)
 
       return pts
+    }
+
+    // A single blurred, very low-alpha pass of the glyphs, rendered once per
+    // resize and blitted behind the particles — far cheaper than filtering
+    // the live canvas every frame.
+    function renderShadow(size, cx, cy) {
+      shadow = null
+      const sc = document.createElement('canvas')
+      sc.width = Math.floor(W * DPR)
+      sc.height = Math.floor(H * DPR)
+      const sctx = sc.getContext('2d')
+      if (!('filter' in sctx)) return // no blur support: skip it entirely
+      sctx.setTransform(DPR, 0, 0, DPR, 0, 0)
+      sctx.filter = `blur(${Math.max(10, Math.round(size * 0.09))}px)`
+      sctx.globalAlpha = 0.09
+      sctx.fillStyle = BLUE
+      sctx.font = fontAt(size)
+      sctx.textAlign = 'center'
+      sctx.textBaseline = 'middle'
+      sctx.fillText(text, cx, cy)
+      shadow = sc
     }
 
     function build() {
@@ -167,6 +225,8 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
     // ---- draw ----------------------------------------------------------
     function draw(t) {
       ctx.clearRect(0, 0, W, H)
+
+      if (shadow) ctx.drawImage(shadow, 0, 0, W, H)
 
       ctx.globalAlpha = 1
       byColor.forEach((idxs, color) => {

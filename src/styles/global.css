@@ -46,12 +46,13 @@ body {
 
 /* The name lives in its own flex band, so the particle field can never
    collide with the copy below however short the viewport gets. */
+/* The name is a full-bleed backdrop; the copy overlays it and stays legible
+   thanks to the soft blur rendered behind the glyphs. */
 .namefield {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 0;
-  flex: 1 1 auto;
-  min-height: 190px;
-  margin: clamp(8px, 2vh, 26px) 0 clamp(14px, 3vh, 34px);
+  pointer-events: none;
 }
 
 #sparkles {
@@ -71,11 +72,13 @@ body {
 
 .latin-label {
   position: absolute;
-  transform: translateY(-125%);
+  /* `top` is the shirorekha row; sit the label just above that stroke */
+  transform: translateY(calc(-100% - 0.45em));
   font-family: var(--deva); /* Mukta's Latin — drawn to pair with its Devanagari */
-  font-weight: 600;
-  font-size: clamp(11px, 0.92vw, 15px);
-  letter-spacing: 0.34em;
+  font-weight: 800;
+  font-size: clamp(15px, 1.35vw, 27px);
+  line-height: 1;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--blue);
   white-space: nowrap;
@@ -144,6 +147,7 @@ body {
 .copy {
   position: relative;
   z-index: 2;
+  margin-top: auto;
   max-width: min(980px, 76vw);
   pointer-events: none;
 }
@@ -357,12 +361,6 @@ ul.strip {
   }
   .nav-links a {
     letter-spacing: 0.1em;
-  }
-  .namefield {
-    min-height: 130px;
-  }
-  .latin-label {
-    letter-spacing: 0.24em;
   }
   .copy {
     max-width: none;
