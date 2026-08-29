@@ -551,13 +551,13 @@ The router `basename` needs no change — it follows `BASE_URL`.
 | `logo` | `string` | Wordmark, currently `UV` |
 | `nav` | `{label, href}[]` | Hrefs absolute (`/#work`) |
 | `eyebrow` | `string[]` | Joined with a dimmed `·` |
-| `headline` | `{text, it?}[]` | **Exactly 3.** `it: true` marks the italic line |
+| `headline` | `{text, it?}[]` | **Exactly 3**, each ≤ ~20 chars so it cannot wrap — see [§9.8](#98-headline-lines-silently-wrap-and-the-usual-wrap-check-is-a-lie). `it: true` marks the italic line |
 | `sub` | `string[]` | **Exactly 2** |
-| `phNote` | `string \| null` | Set `null` to hide the placeholder note |
+| `phNote` | `string \| null` | Placeholder marker. Currently `null` — real copy is in |
 | `strip` | `string[]` | Credential fragments |
 | `ctas` | `{label, href}[]` | |
 
-Everything marked `PLACEHOLDER` is filler awaiting real copy.
+Hero copy is now real, not placeholder. `phNote` is `null`.
 
 ### 8.2 `src/projects.js`
 
@@ -613,6 +613,28 @@ Size specs and width fractions fight; let the measured space win.
 
 Always await `document.fonts.load(...)` (with a timeout) before sampling glyphs.
 
+### 9.8 Headline lines silently wrap, and the usual wrap check is a lie
+
+`headline` in `content.js` is three *authored* lines, but each is a block that
+will wrap if it exceeds the column. The three-line composition then quietly
+becomes five and nobody notices in a thumbnail.
+
+**Width budget:** each line must fit the copy column unbroken. At the largest
+step that is **660px at 68px type — roughly 20 characters.** Measure new
+wording before committing it.
+
+`getClientRects().length` **does not detect this.** `.line` spans are
+`display: block`, so they always return exactly one rect no matter how many
+text rows they contain. Check either of these instead:
+
+```js
+// rendered rows
+Math.round(span.getBoundingClientRect().height / lineHeight) === 1
+// or true text width, via a Range — the block's own rect is full-column
+const r = document.createRange(); r.selectNodeContents(span)
+r.getBoundingClientRect().width <= columnWidth
+```
+
 ---
 
 ## 10. Verification protocol
@@ -642,6 +664,7 @@ const inkTop = pct(0.01) / dpr, inkBottom = pct(0.99) / dpr
 - [ ] Nothing overlaps the strip
 - [ ] Space above the band ≈ space below it
 - [ ] Checked at wide (2000×1263), mid (1440×820) and mobile (375×812)
+- [ ] Each headline line still renders as **one** row (see §9.8 — not `getClientRects`)
 - [ ] `prefers-reduced-motion` still renders the name
 
 ### 10.3 Checklist for a routing or deploy change
@@ -660,6 +683,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Real hero copy in (Currently / Previously / MS HCI). Headline reworded to fit the column width budget; §9.8 added |
+| `54fbd1f` | Added DESIGN.md, CLAUDE.md, AGENTS.md |
 | `0cc76da` | Configured for the `designportfolio` project repo: base path, router basename, 404 shim, FontFace loading |
 | `0be7cce` | Self Modern set up self-hosted with Newsreader stand-in; name pinned to the copy column's top so everything shares one band; composition lifted above true centre |
 | `c25c3c1` | Hero centred rather than bottom-pinned; name sized to a 210px cap / 70px gap spec; serif broadened |

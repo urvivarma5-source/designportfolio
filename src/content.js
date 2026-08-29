@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------
-// ALL COPY LIVES HERE. Everything marked PLACEHOLDER is temporary filler —
-// swap in real words and the layout will reflow on its own.
+// ALL COPY LIVES HERE. Edit the words; the layout reflows on its own.
+// Constraints: headline is exactly 3 lines, sub is exactly 2.
 // ---------------------------------------------------------------------------
 
 export const content = {
@@ -17,29 +17,33 @@ export const content = {
   ],
 
   // Small tracked label above the headline. Parts joined by a dimmed middot.
-  eyebrow: ['Product Design', 'Research', 'Systems'],
+  eyebrow: ['Product Design', 'Research', 'Photography'],
 
-  // Exactly three lines. Big Instrument Serif, deep blue. `it` = italic line.
+  // Exactly three lines. Display serif, deep blue. `it` = italic line.
+  // WIDTH BUDGET: each line must fit the copy column unbroken. At the largest
+  // step that is 660px at 68px type — roughly 20 characters. A longer line
+  // silently wraps and the three-line composition breaks. Measure before
+  // committing new wording; see DESIGN.md §9.8.
   headline: [
-    { text: 'Three lines of big' }, // PLACEHOLDER
-    { text: 'headline copy go' }, // PLACEHOLDER
-    { text: 'right here.', it: true }, // PLACEHOLDER
+    { text: 'Turning complex' },
+    { text: 'challenges into' },
+    { text: 'intuitive experiences.', it: true },
   ],
 
   // Exactly two lines. Smaller supporting copy.
   sub: [
-    'Two lines of smaller supporting copy sit underneath —', // PLACEHOLDER
-    'enough room for a sentence and a half about the work.', // PLACEHOLDER
+    'Product Researcher and Designer, working through evidence-driven research and empathetic design thinking.',
+    'Creating digital solutions that bridge technology and human needs — through collaboration and empathy.',
   ],
 
-  // Set to null once the real copy is in.
-  phNote: "Placeholder — paste your copy and I'll drop it in",
+  // Real copy is in, so the placeholder note is hidden.
+  phNote: null,
 
   // Bottom credential strip.
   strip: [
-    'Product Designer',
-    'Currently at University of Utah Health',
-    'Research → Shipped',
+    'Currently — University of Utah Health',
+    'Previously — Intuit',
+    'MS HCI, University of Maryland',
     'San Francisco, CA',
   ],
 
