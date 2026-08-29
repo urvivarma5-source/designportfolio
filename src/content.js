@@ -4,11 +4,9 @@
 // ---------------------------------------------------------------------------
 
 export const content = {
-  // The name rendered as the multi-colour sparkle field (Devanagari).
-  name: 'उर्वी वर्मा',
+  // The name rendered as the multi-colour sparkle field, one entry per line.
+  nameLines: ['URVI', 'VARMA'],
   nameRoman: 'Urvi Varma',
-  // Latin labels pinned above each Devanagari word, in order.
-  nameLatin: ['Urvi', 'Varma'],
   logo: 'UV',
 
   nav: [

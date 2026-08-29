@@ -63,27 +63,6 @@ body {
   display: block;
 }
 
-/* Latin labels pinned above each Devanagari word */
-.namefield__labels {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.latin-label {
-  position: absolute;
-  /* `top` is the shirorekha row; sit the label just above that stroke */
-  transform: translateY(calc(-100% - 0.45em));
-  font-family: var(--deva); /* Mukta's Latin — drawn to pair with its Devanagari */
-  font-weight: 800;
-  font-size: clamp(15px, 1.35vw, 27px);
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--blue);
-  white-space: nowrap;
-  animation: fade 0.9s ease 0.5s both;
-}
 
 /* ---------- nav ---------- */
 .nav {
@@ -149,7 +128,7 @@ body {
   z-index: 2;
   margin-top: auto;
   /* stays inside the left column so the name never sits behind it */
-  max-width: min(760px, 52vw);
+  max-width: min(660px, 46vw);
   pointer-events: none;
 }
 

@@ -3,8 +3,9 @@ import { useEffect, useRef } from 'react'
 /**
  * ParticleName
  * ------------
- * Renders `text` (Devanagari, Mukta 800) as a field of jewel-tone particles
- * sampled from the glyph outlines onto a <canvas> that fills its parent.
+ * Renders `lines` (Mukta 800) as a field of jewel-tone particles sampled from
+ * the glyph outlines onto a <canvas> that fills its parent. Multiple lines are
+ * stacked and right-aligned on wide screens, centred when narrow.
  *
  * Each particle springs toward its home pixel with a soft stiffness, so the
  * field settles slowly and stays alive. The pointer repels anything within
@@ -16,11 +17,6 @@ import { useEffect, useRef } from 'react'
  * left stays on clean white — legibility comes from the layout, not from
  * dimming the sparkles.
  *
- * `onLayout` receives the measured box of each whitespace-separated word in
- * CSS pixels, so the Latin labels can be pinned above them. `bar` is the
- * shirorekha (the horizontal headstroke) — the labels hang off that, not off
- * the tallest matra:
- *   [{ left, width, top, bar }, ...]
  */
 
 // Jewel tones on white: magenta, ruby, gold, amber, emerald, green,
@@ -42,10 +38,9 @@ const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 const REPEL_R = 108
 const REPEL_R2 = REPEL_R * REPEL_R
 
-export default function ParticleName({ text, id = 'sparkles', onLayout }) {
+export default function ParticleName({ lines, id = 'sparkles' }) {
   const canvasRef = useRef(null)
-  const layoutRef = useRef(onLayout)
-  layoutRef.current = onLayout
+  const key = lines.join('\n')
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -64,7 +59,7 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
 
     const fontAt = (px) => '800 ' + px + 'px Mukta, system-ui, sans-serif'
 
-    // ---- sample the glyphs into home coordinates + per-word boxes ---------
+    // ---- sample the glyphs into home coordinates -------------------------
     function sampleText() {
       const off = document.createElement('canvas')
       const octx = off.getContext('2d', { willReadFrequently: true })
@@ -74,48 +69,40 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
       const narrow = off.width < 900
 
       octx.fillStyle = '#000'
-      octx.textAlign = 'center'
-      octx.textBaseline = 'middle'
+      octx.textAlign = narrow ? 'center' : 'right'
+      octx.textBaseline = 'alphabetic'
 
-      // Wide: the name takes the right-hand field, clear of the copy column.
+      // Wide: the block takes the right-hand field, clear of the copy column.
       // Narrow: it centres and the copy simply sits below it.
-      const targetW = off.width * (narrow ? 0.92 : 0.58)
-      let size = 400
-      octx.font = fontAt(size)
-      size = Math.max(40, Math.floor(size * (targetW / octx.measureText(text).width)))
-      size = Math.min(size, Math.floor(off.height * (narrow ? 0.4 : 0.62)))
+      const targetW = off.width * (narrow ? 0.92 : 0.44)
+      const widest = (px) => {
+        octx.font = fontAt(px)
+        return Math.max(...lines.map((l) => octx.measureText(l).width))
+      }
+      let size = Math.max(40, Math.floor(400 * (targetW / widest(400))))
 
-      // Anchor off the real ink box rather than a guessed fraction: reserve a
-      // strip at the top for the nav and the Latin labels, and keep the
-      // descenders clear of the copy below. Shrink until both hold.
-      const topInset = Math.max(off.height * 0.19, 92)
-      const bottomLimit = off.height * (narrow ? 0.72 : 0.8)
-      let cy = topInset
-      for (let attempt = 0; attempt < 12; attempt++) {
+      // Reserve a strip at the top for the nav, and keep the block clear of
+      // the copy below. Shrink until the stack fits between the two.
+      // Narrow stacks the copy under the block, so it gets a tighter ceiling.
+      const topInset = narrow ? 76 : Math.max(off.height * 0.16, 78)
+      const bottomLimit = off.height * (narrow ? 0.34 : 0.86)
+      let asc = 0
+      let lh = 0
+      for (let attempt = 0; attempt < 14; attempt++) {
         octx.font = fontAt(size)
-        const m = octx.measureText(text)
-        cy = topInset + m.actualBoundingBoxAscent
-        if (cy + m.actualBoundingBoxDescent <= bottomLimit || size <= 40) break
+        const ms = lines.map((l) => octx.measureText(l))
+        asc = Math.max(...ms.map((m) => m.actualBoundingBoxAscent))
+        const desc = Math.max(...ms.map((m) => m.actualBoundingBoxDescent))
+        lh = asc * 2.05 // baseline-to-baseline, matching the reference leading
+        const blockH = asc + lh * (lines.length - 1) + desc
+        if (topInset + blockH <= bottomLimit || size <= 40) break
         size = Math.floor(size * 0.92)
       }
 
       octx.font = fontAt(size)
-      // right-align the block to a 96% gutter on wide screens
-      const cx = narrow
-        ? off.width / 2
-        : off.width * 0.96 - octx.measureText(text).width / 2
-      octx.fillText(text, cx, cy)
-
-      // measure where each word starts, so labels can be pinned above them
-      const full = octx.measureText(text).width
-      const spaceW = octx.measureText(' ').width
-      const words = text.split(' ')
-      let run = cx - full / 2
-      const boxes = words.map((w) => {
-        const width = octx.measureText(w).width
-        const box = { left: run, width, top: Infinity, bar: 0, rows: new Map() }
-        run += width + spaceW
-        return box
+      const x = narrow ? off.width / 2 : off.width * 0.96
+      lines.forEach((line, i) => {
+        octx.fillText(line, x, topInset + asc + i * lh)
       })
 
       const data = octx.getImageData(0, 0, off.width, off.height).data
@@ -123,37 +110,10 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
 
       const pts = []
       for (let y = 0; y < off.height; y += step) {
-        for (let x = 0; x < off.width; x += step) {
-          if (data[(y * off.width + x) * 4 + 3] > 140) {
-            pts.push(x, y)
-            // per word: highest ink, and an ink-per-row tally so the
-            // shirorekha (the densest row) can be found
-            for (let b = 0; b < boxes.length; b++) {
-              const bx = boxes[b]
-              if (x >= bx.left && x <= bx.left + bx.width) {
-                if (y < bx.top) bx.top = y
-                bx.rows.set(y, (bx.rows.get(y) || 0) + 1)
-              }
-            }
-          }
+        for (let x2 = 0; x2 < off.width; x2 += step) {
+          if (data[(y * off.width + x2) * 4 + 3] > 140) pts.push(x2, y)
         }
       }
-
-      // the headstroke is the row carrying the most ink
-      boxes.forEach((b) => {
-        let best = 0
-        b.rows.forEach((count, y) => {
-          if (count > best) {
-            best = count
-            b.bar = y
-          }
-        })
-        delete b.rows
-      })
-
-      const valid = boxes.every((b) => Number.isFinite(b.top) && b.bar > 0)
-      layoutRef.current?.(valid ? boxes : null)
-
       return pts
     }
 
@@ -310,7 +270,7 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
     // wait for the Devanagari face so the sampled shapes are correct
     if (document.fonts && document.fonts.load) {
       Promise.race([
-        document.fonts.load('800 100px Mukta', text).then(() => document.fonts.ready),
+        document.fonts.load('800 100px Mukta', key).then(() => document.fonts.ready),
         new Promise((res) => setTimeout(res, 2500)),
       ]).then(start)
     } else {
@@ -327,7 +287,7 @@ export default function ParticleName({ text, id = 'sparkles', onLayout }) {
       document.removeEventListener('mouseleave', onOut)
       window.removeEventListener('resize', onResize)
     }
-  }, [text])
+  }, [key])
 
   return <canvas ref={canvasRef} id={id} aria-hidden="true" />
 }

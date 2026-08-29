@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { Link } from 'react-router-dom'
 import Nav from './Nav'
@@ -7,10 +7,6 @@ import { content } from '../content'
 
 export default function Hero() {
   const copyRef = useRef(null)
-  // measured boxes of each Devanagari word, so the Latin labels sit above them
-  const [wordBoxes, setWordBoxes] = useState(null)
-
-  const onLayout = useCallback((boxes) => setWordBoxes(boxes), [])
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -27,26 +23,10 @@ export default function Hero() {
     <section className="hero" id="top">
       <Nav />
 
-      {/* The name gets its own band, so the sparkles can never collide with
-          the copy below no matter how short the viewport is. */}
+      {/* Full-bleed backdrop; on wide screens it occupies the right-hand
+          field so the copy column below stays on clean white. */}
       <div className="namefield">
-        <ParticleName text={content.name} onLayout={onLayout} />
-
-        {wordBoxes && (
-          <div className="namefield__labels" aria-hidden="true">
-            {content.nameLatin.map((label, i) =>
-              wordBoxes[i] ? (
-                <span
-                  key={label}
-                  className="latin-label"
-                  style={{ left: wordBoxes[i].left, top: wordBoxes[i].top }}
-                >
-                  {label}
-                </span>
-              ) : null,
-            )}
-          </div>
-        )}
+        <ParticleName lines={content.nameLines} />
       </div>
 
       <div className="copy" ref={copyRef}>
