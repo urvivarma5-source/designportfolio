@@ -269,8 +269,8 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 | | max-width | `none` — fills the column, so each sentence is one row rather than two |
 | `.pills` | layout | flex, wrap, gap `8px`, margin-top `clamp(20px, 2.6vh, 32px)` |
 | `.pills` | gap | `6px`, margin-top `clamp(14px, 1.9vh, 24px)`. Three pills; a fourth pushes them to two rows |
-| `.pills li` | frame | `<DashFrame />` — identical stroke to the cards |
-| | padding | `7px 12px`, `position: relative` |
+| `.pills li` | border | `1px dashed var(--accent)`, radius `3.5px` — **not** the card frame |
+| | padding | `6px 10px` |
 | | type | `11px` / `500`, `0.01em`, sentence case, `nowrap` |
 | | colour | `--blue` |
 | | hover | `box-shadow: 0 2px 10px rgba(0, 29, 87, 0.13)`, border `--blue`, `translateY(-1px)` |
@@ -278,8 +278,10 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 Pills are **sentence case, not uppercase**, and sized to sit on a single row —
 wrapping to two rows makes the copy column taller than the name can reach.
 
-Pills use the same `DashFrame` as the cards. The original SVG's drop shadow was
-**explicitly dropped**; only the hover state carries one.
+Pills follow the earlier SVG reference: `1px dashed #B3197A`, `rx 3.5`. Its drop
+shadow was **explicitly dropped**; only the hover state carries one. The pills
+are deliberately a lighter treatment than the card frame — see
+[§9.10](#910-pill-geometry-feeds-the-hero-layout).
 
 `.copy h1` and `.sub` are multiplied by **`var(--copy-scale, 1)`**, set from JS
 — see [§6.2](#62-fitting-the-two-columns-to-one-band).
@@ -339,8 +341,12 @@ and border stay.
 
 ### 4.6b Dashed frame — `.dash-frame` / `DashFrame.jsx`
 
-One component draws every dashed edge — project cards and credential pills —
-so they cannot drift apart. Matches the supplied SVG reference exactly:
+**Project cards only.** The credential pills keep their own `1px dashed
+var(--accent)` at `3.5px` radius — applying this frame to them changed their
+padding, which widened the copy column and moved the particle name. Do not
+extend `DashFrame` to the pills.
+
+Matches the supplied SVG reference exactly:
 
 | Property | Value |
 | --- | --- |
@@ -779,6 +785,17 @@ guard that is an infinite loop. A `selfDispatched` flag brackets the dispatch;
 
 If you add another listener-plus-dispatch pair, guard it the same way.
 
+### 9.10 Pill geometry feeds the hero layout
+
+The credential pills sit inside `.copy`, so **their padding and font size feed
+`nameLeftBound()` and the copy column's height** — which is what the particle
+name is sized and positioned against. Changing pill padding by 1–2px silently
+moves URVI/VARMA.
+
+This bit once: restyling the pills to use the card's `DashFrame` changed their
+padding from `6px 10px` to `7px 12px` and shifted the name. If you touch the
+pills, re-measure the hero afterwards ([§10.2](#102-checklist-for-a-hero-change)).
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -827,7 +844,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Dashed edges unified into `DashFrame.jsx`, matching the supplied SVG exactly (2px, 10/10, rx 9, `#D6576B`); replaces both the CSS border and the gradient approach |
+| _pending_ | Reverted pills to their own 1px dashed accent border — the card `DashFrame` is for cards only; this also restores the particle name's position |
+| `28fd08b` | Dashed edges unified into `DashFrame.jsx`, matching the supplied SVG exactly (2px, 10/10, rx 9, `#D6576B`); replaces both the CSS border and the gradient approach |
 | `afe616c` | Section titles accent + heading rule; category labels blue at 14px; card is one dashed frame (gradient dashes, wider spacing) containing media and text; scroll cue replaced with sparkle chevrons; palette extracted to lib |
 | `0eb3d8c` | Copy pulled back inside the 45% line; San Francisco pill dropped; scroll cue added; section rules removed; card titles/descriptions taken from the reference artwork; ElderEase restored; Guide App split into Part 1 and Part 2 |
 | `b6d6bb6` | Copy column widened to 880 so the sub is one line per sentence; eyebrow separators became rules; pills 11px with hover shadow; em dashes removed from copy; work grid to three columns; `nameLeftBound()` unified so align and fit agree |

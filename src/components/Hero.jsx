@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import Nav from './Nav'
 import ParticleName from './ParticleName'
 import ScrollCue from './ScrollCue'
-import DashFrame from './DashFrame'
 import { content } from '../content'
 import { nameRatios } from '../lib/nameMetrics'
 
@@ -219,10 +218,7 @@ export default function Hero() {
 
         <ul className="pills" data-animate="pills">
           {content.credentials.map((item) => (
-            <li key={item}>
-              <DashFrame />
-              <span>{item}</span>
-            </li>
+            <li key={item}>{item}</li>
           ))}
         </ul>
       </div>

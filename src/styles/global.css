@@ -130,9 +130,10 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
-   Dashed frame — see DashFrame.jsx. No viewBox, so SVG user units are CSS
-   pixels and the dashes never stretch with the box. Geometry is set here
-   because CSS allows calc(); SVG presentation attributes do not.
+   Dashed frame — see DashFrame.jsx. Used by PROJECT CARDS ONLY; the credential
+   pills keep their own 1px dashed accent border. No viewBox, so SVG user units
+   are CSS pixels and the dashes never stretch with the box. Geometry is set
+   here because CSS allows calc(); SVG presentation attributes do not.
 --------------------------------------------------------------------------- */
 .dash-frame {
   position: absolute;
@@ -234,20 +235,22 @@ body {
 }
 
 .pills li {
-  position: relative;
-  padding: 7px 12px;
+  /* 1px dashed accent, rx 3.5 — deliberately NOT the card frame */
+  border: 1px dashed var(--accent);
+  border-radius: 3.5px;
+  padding: 6px 10px;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--blue);
   white-space: nowrap;
-  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  transition: box-shadow 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
 }
 
 .pills li:hover {
   box-shadow: 0 2px 10px rgba(0, 29, 87, 0.13);
+  border-color: var(--blue);
   transform: translateY(-1px);
-  border-radius: 9px;
 }
 
 /* ---------------------------------------------------------------------------
