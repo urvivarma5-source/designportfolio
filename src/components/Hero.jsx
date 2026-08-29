@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { Link } from 'react-router-dom'
 import Nav from './Nav'
 import ParticleName from './ParticleName'
+import ScrollCue from './ScrollCue'
 import { content } from '../content'
 import { nameRatios } from '../lib/nameMetrics'
 
@@ -222,10 +223,7 @@ export default function Hero() {
         </ul>
       </div>
 
-      <div className="scroll-cue" aria-hidden="true">
-        <span className="scroll-cue__label">Scroll</span>
-        <span className="scroll-cue__line" />
-      </div>
+      <ScrollCue />
     </section>
   )
 }

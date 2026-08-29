@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { GAP_RATIO, nameRatios } from '../lib/nameMetrics'
+import { pickColour } from '../lib/palette'
 
 /**
  * ParticleName
@@ -20,21 +21,6 @@ import { GAP_RATIO, nameRatios } from '../lib/nameMetrics'
  *
  */
 
-// Jewel tones on white: magenta, ruby, gold, amber, emerald, green,
-// sapphire, indigo, violet, orchid.
-const PALETTE = [
-  '#B3197A',
-  '#D6246B',
-  '#E08A00',
-  '#C25E00',
-  '#0E7C6B',
-  '#1E8A4D',
-  '#0F6FA8',
-  '#2A3FA8',
-  '#5B2BA8',
-  '#8A1FA0',
-]
-const BLUE = '#001D57' // ~14% of particles, anchoring the name to the headline
 
 const REPEL_R = 108
 const REPEL_R2 = REPEL_R * REPEL_R
@@ -160,8 +146,7 @@ export default function ParticleName({ lines, id = 'sparkles', align }) {
         const hx = pts[i * 2]
         const hy = pts[i * 2 + 1]
         // colour: mostly jewel tones, a minority anchored in the deep blue
-        const color =
-          Math.random() < 0.14 ? BLUE : PALETTE[(Math.random() * PALETTE.length) | 0]
+        const color = pickColour()
         const ang = Math.random() * Math.PI * 2
         const rad = 60 + Math.random() * Math.max(W, H) * 0.5
         particles.push({

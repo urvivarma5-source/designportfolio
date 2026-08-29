@@ -81,6 +81,9 @@ src/
   content.js            ALL hero copy
   projects.js           Project names + slugs
   App.jsx               Routes + ScrollManager
+  lib/
+    nameMetrics.js      Shared name geometry (Hero + ParticleName)
+    palette.js          The sparkle palette (ParticleName + ScrollCue)
   styles/global.css     Every style in the project
   pages/
     Home.jsx            Hero + four sections
@@ -89,6 +92,8 @@ src/
     Hero.jsx            Hero composition, measurement, GSAP parallax
     Nav.jsx             UV mark + links
     ParticleName.jsx    The canvas particle system
+    ScrollCue.jsx       Sparkle chevrons at the foot of the hero
+    CursorFollower.jsx  Lagging dot / "View" badge
     Section.jsx         Generic section wrapper
     WorkGrid.jsx        Project card list
 ```
@@ -297,7 +302,8 @@ is fitted to.
 | padding | `clamp(80px, 14vh, 160px) clamp(20px, 3.4vw, 46px)` |
 | border-top | **none** — sections are separated by whitespace only |
 | layout | flex column, `justify-content: center` |
-| `.section__title` | `--serif` `400`, `clamp(34px, 5vw, 68px)`, lh `1`, tracking `-0.012em` |
+| `.section__title` | `--serif` `400`, `clamp(34px, 5vw, 68px)`, lh `1`, tracking `-0.012em`, **`--accent`** |
+| | a `::after` hairline (`flex: 1`, `--rule`) runs from the text to the container edge — that rule is what makes it read as a heading rather than loose display type |
 | `.section__note` | `clamp(15px, 1.25vw, 19px)`, lh `1.55`, `--muted`, `46ch`, margin-top `18px` |
 
 **Sections carry no index numbers.** `01 —`, `02 —` etc. were removed
@@ -311,12 +317,21 @@ card grid. Modelled on the strangepixels work page.
 | Element | Property | Value |
 | --- | --- | --- |
 | `.work` | layout | flex column, gap `clamp(48px, 8vh, 96px)` between categories |
-| `.work-cat__label` | type | `--sans` `11px` / `600`, `0.2em`, `uppercase`, `--accent` |
+| `.work-cat__label` | type | `--sans` `14px` / `600`, `0.2em`, `uppercase`, **`--blue`** |
 | `.work-grid` | layout | `repeat(3, 1fr)`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
-| `.work-card` | cursor | `none` — the follower stands in, see [§4.8](#48-cursor-follower--cursor) |
-| `.work-card__media` | aspect | `4 / 3` |
-| | border | `1px dashed var(--accent)`, radius `3.5px` — same line as the pills, **no shadow** |
+| `.work-card` | frame | **the dashed edge is on the card**, not the media — image and text sit inside one frame |
+| | padding / radius | `14px` / `4px` |
+| | hover | `translateY(-3px)` |
+| | cursor | `none` — the follower stands in, see [§4.8](#48-cursor-follower--cursor) |
+| `.work-card__media` | aspect | `4 / 3`, radius `2px`, no border |
 | | background | `rgba(0, 29, 87, 0.06)` placeholder |
+| `.work-card__meta` | padding | `16px 4px 6px`, `flex: 1` |
+
+**The dashed edge is drawn with gradients, not `border: dashed`.** CSS gives no
+control over dash length — it is derived from `border-width` — and the dashes
+needed to be more widely spaced. Four repeating linear-gradient tracks at
+`18px` (9px dash, 9px gap), one per edge. Changing the spacing means changing
+`background-size`, not a border property.
 | `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
 | `.work-card__title` | type | `--serif` `400`, `clamp(17px, 1.4vw, 23px)`, lh `1.15`; `--accent` on hover |
 | `.work-card__note` | type | `9px` / `600`, `0.16em`, `uppercase`, `--accent` (e.g. "Part 1") |
@@ -326,19 +341,22 @@ card grid. Modelled on the strangepixels work page.
 `image` field per project and swap the div for an `<img>` — the aspect ratio
 and border stay.
 
-### 4.7 Scroll cue — `.scroll-cue`
+### 4.7 Scroll cue — `.scroll-cue` / `ScrollCue.jsx`
 
-A quiet prompt at the foot of the hero: the word "Scroll" over a hairline that
-fills downward, then empties downward, on a `2.6s` loop.
+Two chevrons rendered in **the same sparkle material as the name** — same
+palette, same twinkle — as a quiet scroll prompt. An earlier label-plus-hairline
+version was rejected as too literal.
 
-| Element | Property | Value |
-| --- | --- | --- |
-| `.scroll-cue` | position | absolute, centred, `clamp(16px, 3vh, 34px)` off the hero's bottom |
-| `.scroll-cue__label` | type | `9px` / `500`, `0.24em`, `uppercase`, `--blue` at `0.4` |
-| `.scroll-cue__line` | track | `1px × 34px`, `--rule` |
-| `::after` | fill | `--accent`, `scaleY` origin flips top → bottom mid-keyframe so it drains rather than rewinds |
+| Property | Value |
+| --- | --- |
+| Canvas | `46 × 52` CSS, DPR-capped at 2 |
+| Mask | two chevrons stroked at `3.4px`, round caps, sampled at a 2px step, alpha > 120 |
+| Colour | `pickColour()` from `lib/palette` — identical to the name |
+| Twinkle | `0.35 + 0.6 × sin(t·sp − ph)`, `sp` 1.5–2.4 |
+| Drift | `sin(t·0.9 − ph) × 0.8px`; phase runs down the pair so the shimmer travels **downward** |
+| Position | absolute, centred, `clamp(14px, 2.6vh, 30px)` off the hero's bottom |
 
-Static (filled, half opacity) under `prefers-reduced-motion`.
+Static (no drift) under `prefers-reduced-motion`.
 
 ### 4.8 Cursor follower — `.cursor`
 
@@ -388,10 +406,14 @@ and twinkle continuously.
 
 ### 5.2 Colour
 
+Lives in **`src/lib/palette.js`** and is shared by every particle surface — the
+name and the scroll chevrons — so they read as one material.
+
 | Constant | Value |
 | --- | --- |
 | `PALETTE` | `#B3197A` `#D6246B` `#E08A00` `#C25E00` `#0E7C6B` `#1E8A4D` `#0F6FA8` `#2A3FA8` `#5B2BA8` `#8A1FA0` |
 | `BLUE` | `#001D57` — assigned to **14%** of particles, tying the field to the headline |
+| `pickColour()` | the 14/86 draw, used by both surfaces |
 | Glint layer | **3.5%** of particles (`bright: Math.random() < 0.035`) |
 
 Ten jewel tones: magenta, ruby, gold, amber, emerald, green, sapphire, indigo,
@@ -782,7 +804,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
-| _pending_ | Copy pulled back inside the 45% line; San Francisco pill dropped; scroll cue added; section rules removed; card titles/descriptions taken from the reference artwork; ElderEase restored; Guide App split into Part 1 and Part 2 |
+| _pending_ | Section titles accent + heading rule; category labels blue at 14px; card is one dashed frame (gradient dashes, wider spacing) containing media and text; scroll cue replaced with sparkle chevrons; palette extracted to lib |
+| `0eb3d8c` | Copy pulled back inside the 45% line; San Francisco pill dropped; scroll cue added; section rules removed; card titles/descriptions taken from the reference artwork; ElderEase restored; Guide App split into Part 1 and Part 2 |
 | `b6d6bb6` | Copy column widened to 880 so the sub is one line per sentence; eyebrow separators became rules; pills 11px with hover shadow; em dashes removed from copy; work grid to three columns; `nameLeftBound()` unified so align and fit agree |
 | `7443d04` | Work grouped into three categories with a two-column card grid; cursor follower with "View" badge and card wave; pill shadows and caps removed; headline no longer crushed (MIN_SCALE 0.92) |
 | `2675800` | Columns fitted to one band via `--copy-scale`; CTA row removed; pills restyled to the supplied SVG; backing 5% → 3%; shared `lib/nameMetrics` |
