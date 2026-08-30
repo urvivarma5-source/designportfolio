@@ -30,10 +30,9 @@ export const content = {
     { text: 'intuitive experiences.', it: true },
   ],
 
-  // Exactly two lines. Smaller supporting copy.
+  // Sub-headline. One sentence; it wraps naturally within the copy column.
   sub: [
-    'Product Researcher and Designer, working through evidence-driven research and empathetic design thinking.',
-    'Creating digital solutions that bridge technology and human needs, through collaboration and empathy.',
+    'I translate hard data and human behavior into interfaces that actually make sense to use.',
   ],
 
   // Real copy is in, so the placeholder note is hidden.

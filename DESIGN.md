@@ -616,7 +616,9 @@ rejected. Current: headline 63px, residual gap 18px.
 
 The other levers, used before touching scale: keep the pills on **one row**,
 keep each sub sentence to **one line**, `GUTTER = 40`, and the name's right
-edge at `0.985` of the hero width. Current: headline 63px, top +5, bottom −6.
+edge at `0.985` of the hero width. Current: headline **68px at `--copy-scale: 1`** — the one-sentence
+sub-headline made the copy column short enough that no shrink is needed at all.
+Top +5, bottom −7.
 
 ### 6.3 Legibility comes from layout
 
@@ -692,7 +694,7 @@ The router `basename` needs no change — it follows `BASE_URL`.
 | `nav` | `{label, href}[]` | Hrefs absolute (`/#work`) |
 | `eyebrow` | `string[]` | Joined with a dimmed `·`. Currently Product Design · Research · Strategy |
 | `headline` | `{text, it?}[]` | **Exactly 3**, each ≤ ~20 chars so it cannot wrap — see [§9.8](#98-headline-lines-silently-wrap-and-the-usual-wrap-check-is-a-lie). `it: true` marks the italic line |
-| `sub` | `string[]` | **Exactly 2** |
+| `sub` | `string[]` | The sub-headline. One sentence; wraps within the copy column |
 | `phNote` | `string \| null` | Placeholder marker. Currently `null` — real copy is in |
 | `credentials` | `string[]` | Rendered as dashed pills **inside the copy column**. There is no bottom strip |
 
@@ -859,6 +861,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Sub-headline replaced with one sentence; copy column is now short enough that the headline needs no shrink (68px, scale 1.0) |
 | _pending_ | Dash frame uses our accent, not the reference's rose; all cards forced to one size with reserved line-space; removed a placeholder note that was rendering as visible card copy |
 | _pending_ | Reverted pills to their own 1px dashed accent border — the card `DashFrame` is for cards only; this also restores the particle name's position |
 | `28fd08b` | Dashed edges unified into `DashFrame.jsx`, matching the supplied SVG exactly (2px, 10/10, rx 9, `#D6576B`); replaces both the CSS border and the gradient approach |
