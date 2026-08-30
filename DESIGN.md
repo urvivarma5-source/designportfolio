@@ -138,7 +138,8 @@ values live in [§4](#4-component-tokens).
 | Token | Stack | Used for |
 | --- | --- | --- |
 | `--serif` | `'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif` | All display type: h1, section titles, work-card titles, project titles |
-| `--sans` | `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif` | Body, all micro-type, UI |
+| `--sans` | `'Inter', -apple-system, …` | Nav, work cards, section notes |
+| `--sans-copy` | `'Source Sans 3', 'Source Sans Pro', var(--sans)` | Hero left column (eyebrow, sub, pills) and the case studies. Google Fonts renamed Source Sans Pro to **Source Sans 3**; the old name stays in the stack for local installs |
 | `--deva` | `'Mukta', system-ui, sans-serif` | The `UV` wordmark, and the particle glyph source |
 
 **Self Modern** (Velvetyne / Lucas Le Bihan, SIL OFL) is not on Google Fonts —
@@ -153,7 +154,7 @@ To activate Self Modern: drop `SelfModern-Regular.woff2` and
 
 **Google Fonts loaded** (`index.html`), keep this list minimal:
 `Newsreader` (ital, opsz 6–72, wght 400) · `Inter` (400/500/600) ·
-`Mukta` (400/600/800).
+`Source Sans 3` (ital 0/1, wght 400/500/600) · `Mukta` (400/600/800).
 
 ### 2.3 Spacing and rhythm
 
@@ -885,6 +886,27 @@ Newest first. One line per meaningful change, with the commit.
 | `4fc394c` | Initial landing page: particle name hero |
 
 ---
+
+## 11b. Case studies
+
+Source PDFs are Figma exports. They are **gitignored** — 18MB each, and nothing
+at build time reads them.
+
+`tools/extract_case_study.py` pulls the text out:
+
+```bash
+python3 tools/extract_case_study.py "TCTD CASE STUDY.pdf" out/
+```
+
+Figma exports text as **`/Type3` fonts** — glyph-drawing procedures with no
+`/BaseFont` — so every ordinary check reports "this PDF has no text". It does;
+it is recoverable through the `/ToUnicode` CMaps. Two traps, both documented in
+the script: strings are literal with **octal escapes** inside `TJ` arrays, and
+Figma **switches font subsets mid-block**, so the current font must be tracked
+sequentially or later runs decode into convincing-looking garbage.
+
+Fidelity rule for case-study pages: **keep the Figma colours**, swap only its
+serif for `--serif`. Source Sans stays as it is.
 
 ## 12. Open threads
 

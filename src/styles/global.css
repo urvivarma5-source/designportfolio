@@ -15,6 +15,10 @@
 
   --serif: 'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  /* Source Sans, for the hero's left column and the case studies. Google Fonts
+     renamed Source Sans Pro to Source Sans 3; the old name is kept in the stack
+     for anyone who has it installed locally. */
+  --sans-copy: 'Source Sans 3', 'Source Sans Pro', var(--sans);
   --deva: 'Mukta', system-ui, sans-serif;
 }
 
@@ -172,6 +176,7 @@ body {
 }
 
 .eyebrow {
+  font-family: var(--sans-copy);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -211,6 +216,7 @@ body {
 }
 
 .sub {
+  font-family: var(--sans-copy);
   font-size: calc(clamp(13px, 0.88vw, 15px) * var(--copy-scale, 1));
   line-height: 1.6;
   color: var(--muted);
@@ -235,6 +241,7 @@ body {
 }
 
 .pills li {
+  font-family: var(--sans-copy);
   /* 1px dashed accent, rx 3.5 — deliberately NOT the card frame */
   border: 1px dashed var(--accent);
   border-radius: 3.5px;

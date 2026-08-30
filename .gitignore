@@ -8,3 +8,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Source case-study exports (large, not needed at build time)
+*.pdf
