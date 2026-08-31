@@ -5,10 +5,12 @@
     <title>Urvi Varma</title>
     <script>
       // GitHub Pages has no server-side rewrite, so a deep link like
-      // /designportfolio/work/elderease lands here. Encode the path into a
-      // query string and bounce to the app, which decodes it in index.html.
-      // pathSegmentsToKeep = 1 keeps the /designportfolio/ repo segment.
-      var pathSegmentsToKeep = 1
+      // /work/elderease lands here. Encode the path into a query string and
+      // bounce to the app, which decodes it in index.html.
+      // pathSegmentsToKeep = 0 because the site is served from the root of
+      // www.urvivarma.com — there is no repo segment to keep. It was 1 under
+      // the /designportfolio/ project-repo path.
+      var pathSegmentsToKeep = 0
       var l = window.location
       l.replace(
         l.protocol +

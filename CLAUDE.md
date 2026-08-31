@@ -34,9 +34,10 @@ library, no state manager.
 
 ## Hard rules
 
-1. **Never hardcode the base path.** This deploys to a GitHub Pages *project*
-   repo at `/designportfolio/`. Derive paths from `import.meta.env.BASE_URL`.
-   Four files must agree — see `DESIGN.md` §7.2.
+1. **Never hardcode the base path.** It is `/` today, because the site is on
+   the custom domain `www.urvivarma.com`, but it was `/designportfolio/` and
+   could be again. Derive paths from `import.meta.env.BASE_URL`. Four files
+   must agree — see `DESIGN.md` §7.2.
 2. **Never reference a public asset by absolute path in CSS.** Vite does not
    rewrite `url(/fonts/x.woff2)`, so it 404s under the base path. See §9.4.
 3. **Never measure with `getBoundingClientRect()` anything the particle field

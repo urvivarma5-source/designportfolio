@@ -4,7 +4,7 @@ Landing page revamp. React + Vite + GSAP. The name is rendered as a field of
 multi-colour sparkle particles on a `<canvas>`; a lagging pointer scatters them
 and a spring pulls each one home (see `src/components/ParticleName.jsx`).
 
-Live: **https://urvivarma5-source.github.io/designportfolio/**
+Live: **https://www.urvivarma.com**
 
 ## Working on this project
 
@@ -60,30 +60,22 @@ GitHub Actions**.
 
 ### Why the base path matters
 
-This is a *project* repo, so Pages serves it from `/designportfolio/`, not the
-domain root. Three things depend on that and must stay in sync:
+The site is served from the root of its custom domain, so there is no path
+prefix. Three things depend on that and must stay in sync:
 
 | Where | Value |
 | --- | --- |
-| `vite.config.js` | `base: '/designportfolio/'` |
+| `vite.config.js` | `base: '/'` |
 | `src/main.jsx` | router `basename` (derived from `BASE_URL`) |
-| `public/404.html` | `pathSegmentsToKeep = 1` |
+| `public/404.html` | `pathSegmentsToKeep = 0` |
 
 `404.html` exists because Pages has no server-side rewrite: a deep link to
-`/designportfolio/work/elderease` would otherwise 404. It encodes the path into
-a query string and `index.html` decodes it back before React mounts.
+`/work/elderease` would otherwise 404. It encodes the path into a query string
+and `index.html` decodes it back before React mounts.
 
-### Moving to a custom domain later
+### The custom domain
 
-A custom domain serves from the root, so:
-
-1. `vite.config.js` → `base: '/'`
-2. `public/404.html` → `pathSegmentsToKeep = 0`
-3. Rename `public/CNAME.example` → `public/CNAME`, containing just the bare
-   domain (e.g. `urvivarma.com`), no protocol.
-4. DNS: apex → four `A` records to `185.199.108.153`, `185.199.109.153`,
-   `185.199.110.153`, `185.199.111.153`; or `www` → `CNAME` to
-   `urvivarma5-source.github.io`.
-5. Repo → Settings → Pages → set the custom domain and enable **Enforce HTTPS**.
-
-The router `basename` needs no change — it follows `BASE_URL`.
+`public/CNAME` holds `www.urvivarma.com` and is copied into `dist/` by the
+build — that file is what tells Pages to serve the domain, so **deleting it
+un-sets the custom domain on the next deploy**. The DNS records and the
+Settings → Pages steps are in [DESIGN.md §7.4](DESIGN.md#74-the-custom-domain).

@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Project repo (urvivarma5-source/designportfolio) → GitHub Pages serves it
-// from /designportfolio/, so every asset URL needs that prefix.
-// If this ever moves to a user site or a custom domain, set base back to '/'
-// and drop the basename in src/main.jsx.
+// Served from the custom domain www.urvivarma.com, at the domain root, so no
+// path prefix. This was '/designportfolio/' while the site was on the project
+// repo's Pages URL; if it ever goes back there, this and the three other
+// places in DESIGN.md §7.2 have to move together.
 export default defineConfig({
-  base: '/designportfolio/',
+  base: '/',
   plugins: [react()],
 })
