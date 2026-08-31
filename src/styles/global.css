@@ -95,6 +95,13 @@ body {
   text-decoration: none;
 }
 
+/* On the hero the padding comes from .hero. A page without a hero has to
+   supply it, or the nav lands flush in the corner — see DESIGN.md §9.9. The
+   values must stay in step with .hero's padding. */
+.nav--inset {
+  padding: 22px clamp(20px, 3.4vw, 46px) 0;
+}
+
 .nav-links {
   display: flex;
   gap: clamp(18px, 2.4vw, 34px);
@@ -375,11 +382,17 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
-   Project detail — intentionally blank for now
+   Project detail — a stub unless src/caseStudies has a page for the slug
 --------------------------------------------------------------------------- */
 .project {
   min-height: 100svh;
-  padding: clamp(96px, 18vh, 190px) clamp(20px, 3.4vw, 46px) 80px;
+  padding: clamp(26px, 4.5vh, 52px) clamp(20px, 3.4vw, 46px) 80px;
+  /* A case study's tint strips bleed past their row on purpose, and past the
+     page's side padding with it. `clip` at the viewport edge keeps that bleed
+     visible in the gutter without the page gaining a horizontal scrollbar —
+     which it did at ~900px, where the gutter is narrower than the bleed.
+     `clip`, not `hidden`: `hidden` would make this a scroll container. */
+  overflow-x: clip;
 }
 
 .project__back {
@@ -518,7 +531,8 @@ body {
   transform: translateY(-3px);
 }
 
-/* placeholder block — swap for an <img> when real images arrive */
+/* the media block: the project's artwork when it has one (see CardThumb),
+   otherwise the plain ground on its own */
 .work-card__media {
   display: block;
   position: relative;
@@ -554,6 +568,49 @@ body {
   to {
     transform: translateX(12%) translateY(2%);
   }
+}
+
+/* Card artwork. The composition is the case study's own hero art, so it keeps
+   the artwork's baked-in colours the same way the case study does — see
+   DESIGN.md §11b. The pieces are laid out on the same 2-column grid as
+   `.cs-hero__art`, sized as a share of the media block so they hold their
+   arrangement at every card width. */
+.card-art {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  padding: 9% 8%;
+}
+
+.card-art img {
+  display: block;
+}
+
+.card-art--tctd {
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  column-gap: 4%;
+}
+
+.card-art--tctd .card-art__cabinet {
+  grid-column: 1;
+  width: 72%;
+  margin-bottom: 10%;
+}
+
+.card-art--tctd .card-art__arrow {
+  grid-column: 1;
+  justify-self: end;
+  width: 46%;
+  margin-right: -8%;
+}
+
+.card-art--tctd .card-art__board {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  width: 88%;
 }
 
 .work-card__meta {
@@ -630,4 +687,2770 @@ body {
   pointer-events: none;
   opacity: 0.85;
   animation: fade 1s ease 1.2s both;
+}
+
+/* ---------------------------------------------------------------------------
+   Case study — "Filling Cabinets to Fingertips" (src/caseStudies/Tctd.jsx)
+
+   This block is deliberately walled off from the rest of the site. DESIGN.md
+   §11b's fidelity rule keeps the Figma artwork's own palette, so the tokens
+   below are local to `.cs` and are the ONLY place those colours appear. The
+   one substitution is the serif: the artwork's is replaced by --serif.
+
+   Sizes are the artwork's point sizes scaled by --cs-k (the case-study frame
+   is 1539pt of content; this page is 1180px), so the whole page can be
+   retuned from one number.
+--------------------------------------------------------------------------- */
+.cs {
+  /* artwork palette — local to this block, see §11b */
+  --cs-green: #2f6454;
+  --cs-dark: #1a3740;
+  --cs-coral: #d6576b;
+  --cs-teal: #5b9aad;
+  --cs-deep: #2d5a4a;
+  --cs-band: #eef4f6; /* opaque twin of teal at 10% — see §11b */
+  --cs-track: #d8dbd7;
+  --cs-line: #e8eae9;
+
+  /* The artwork's own two faces. The serif is Roboto Serif, not the site's
+     --serif: the Figma export names it, and it is on Google Fonts, so the case
+     study uses the real thing rather than a stand-in. Nothing here depends on
+     Self Modern. See DESIGN.md §11b. */
+  --cs-serif: 'Roboto Serif', Georgia, 'Times New Roman', serif;
+  --cs-slab: 'Roboto Slab', 'Roboto Serif', Georgia, serif;
+
+  /* The artwork's frame is 1500pt of content; this page is 1180px wide, so
+     1180/1500 converts one to the other. Every size below is the artwork's own
+     point value times this, which is what keeps the page in proportion. */
+  --cs-k: 0.787;
+  --cs-gap: 28px;
+  --cs-pad: 26px;
+
+  /* Dashed frame, from the export: rx 9-10, 2px stroke, 0-offset 6px shadow.
+     The export's is a `drop-shadow` filter, which follows the dashes' own
+     alpha and so reads far lighter than a box-shadow at the same 20% does — a
+     box-shadow paints the whole card. `filter` is not an option here (it would
+     shadow the card's text too), so the alpha is dropped until the weight
+     matches. */
+  --cs-dash: 2px dashed var(--cs-coral);
+  --cs-radius: 9px;
+  --cs-shadow: 0 0 6px rgba(0, 0, 0, 0.09);
+
+  max-width: 1180px;
+  margin: clamp(30px, 5vh, 64px) auto 0;
+  font-family: var(--sans-copy);
+  /* The artwork's body setting: Source Sans 24/30 with 0.05em tracking. The
+     line-height is a ratio so it scales with --cs-k; the tracking is relative
+     already. Both are the export's own values — the block read noticeably
+     looser and tighter-tracked than the artwork without them. */
+  font-size: calc(24px * var(--cs-k));
+  line-height: 1.25;
+  letter-spacing: 0.05em;
+  color: var(--cs-green);
+}
+
+.cs p {
+  text-wrap: pretty;
+}
+
+/* Opaque tint strip behind a row of text. Each cell paints one that runs far
+   past the viewport on both sides; they all overlap into a single unbroken
+   band, and the row clips it back to its own width plus one gutter of bleed.
+   `overflow: clip` rather than `hidden` so it cannot become a scroll
+   container, and `overflow-clip-margin` so the cards' shadows still escape.
+   The fill has to stay opaque or every overlap would darken. */
+.cs-band {
+  position: relative;
+}
+
+.cs-band::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: calc(-0.6 * var(--cs-gap));
+  bottom: calc(-0.6 * var(--cs-gap));
+  left: -100vw;
+  right: -100vw;
+  background: var(--cs-band);
+}
+
+/* The bleed the tint strip is allowed past its row. The export runs the band
+   28pt past the cards; this is twice that, because the strip reads as a
+   deliberate full-width band rather than a near-miss at the export's value. */
+.cs-stats,
+.cs-probs {
+  overflow: clip;
+  /* a literal, not calc(): Chrome computes overflow-clip-margin to 0 when it
+     is given a calc() over a custom property, which silently cuts the band off
+     at the row's edge and takes the cards' shadows with it */
+  overflow-clip-margin: 56px;
+}
+
+.cs-sec {
+  margin-top: clamp(64px, 9vw, 128px);
+}
+
+/* Every dashed frame on the page. Their sizes vary by row and are set on each
+   row; only the stroke, the radius and the shadow are shared. */
+.cs-hero__frame,
+.cs-stat,
+.cs-prob,
+.cs-method,
+.cs-step,
+.cs-timebox,
+.cs-translate,
+.cs-panel,
+.cs-compare__item,
+.cs-headline__item {
+  border: var(--cs-dash);
+  border-radius: var(--cs-radius);
+  box-shadow: var(--cs-shadow);
+}
+
+/* The 0.05em tracking on .cs is the artwork's Source Sans setting; its serif
+   is set solid. Every serif element in the block therefore resets it. */
+.cs-h1,
+.cs-h2,
+.cs-caps,
+.cs-card__title,
+.cs-stat__value,
+.cs-meta__title,
+.cs-prob__title,
+.cs-dept__title,
+.cs-quote,
+.cs-pull__lead,
+.cs-trans__title,
+.cs-compare__value,
+.cs-figure__value,
+.cs-headline__value {
+  letter-spacing: normal;
+}
+
+.cs-icon {
+  display: block;
+  width: auto;
+}
+
+/* ---------- shared type ---------- */
+.cs-h1 {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(48px * var(--cs-k));
+  line-height: 1.12;
+  letter-spacing: -0.005em;
+  color: var(--cs-green);
+}
+
+.cs-h2 {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-style: italic;
+  font-size: calc(28px * var(--cs-k));
+  line-height: 1.25;
+  color: var(--cs-dark);
+}
+
+.cs-num {
+  font-family: var(--cs-slab);
+  font-weight: 700;
+  font-size: calc(20px * var(--cs-k));
+  line-height: 1.4;
+  color: var(--cs-coral);
+  margin-bottom: 6px;
+}
+
+.cs-num--center {
+  text-align: center;
+}
+
+.cs-body {
+  /* The artwork's body measure, ~980pt against its 1492pt content column. The
+     `62ch` this replaced was far narrower, so every section's opening
+     paragraph ran three lines where the artwork runs two. `ch` tracks the
+     font's zero-width, not the artwork. */
+  max-width: calc(980px * var(--cs-k));
+  margin-top: 20px;
+}
+
+.cs-body--stack p + p {
+  margin-top: 1em;
+}
+
+.cs-lead {
+  margin-bottom: 34px;
+}
+
+.cs-caps {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(24px * var(--cs-k));
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--cs-dark);
+  margin: 26px 0 14px;
+}
+
+/* Numbered coral disc, top-right of a solid card. */
+/* The badge sits inside `.cs-card__title`, not on top of the card. Absolutely
+   positioned it could only ever be aligned to the card's corner, which left it
+   sitting below the title's centre and, on the §08 cards, overlapping the
+   sub-heading underneath. In flow it is centred on the title by the title's
+   own `align-items`, and its right edge lands on the card's padding, so the
+   two side insets match by construction. */
+.cs-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  /* sized to the title's line box, so the two read as one row */
+  width: calc(34px * var(--cs-k));
+  height: calc(34px * var(--cs-k));
+  border-radius: 50%;
+  background: var(--cs-coral);
+  color: #fff;
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: normal;
+}
+
+.cs-arrow {
+  flex: none;
+  width: 52px;
+  height: 14px;
+  fill: none;
+  stroke: var(--cs-dark);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cs-arrow--solid {
+  width: 26px;
+}
+
+/* ---------- solid card ---------- */
+.cs-card {
+  position: relative;
+  padding: var(--cs-pad);
+  background: #fff;
+  border: 1px solid var(--cs-line);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(26, 55, 64, 0.05);
+}
+
+.cs-card__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(24px * var(--cs-k));
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  /* 24pt, not the artwork's 28pt. These cards are narrower than the export's,
+     so at 28pt the title crowded the card and dwarfed the panels inside it. */
+  font-size: calc(24px * var(--cs-k));
+  line-height: 1.2;
+  color: var(--cs-dark);
+  margin-bottom: 16px;
+}
+
+.cs-card__text + .cs-card__text {
+  margin-top: 1em;
+}
+
+.cs-grid2 {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(67px * var(--cs-k));
+}
+
+/* ---------- hero ---------- */
+.cs-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 60px);
+}
+
+.cs-hero__art {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  column-gap: 4%;
+}
+
+.cs-hero__cabinet {
+  grid-column: 1;
+  width: 72%;
+  margin-bottom: 10%;
+}
+
+.cs-hero__arrow {
+  grid-column: 1;
+  justify-self: end;
+  width: 46%;
+  margin-right: -8%;
+}
+
+.cs-hero__board {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  width: 88%;
+}
+
+.cs-hero__frame {
+  /* the artwork's own 37pt inset; a larger one wrapped the title, which the
+     artwork sets on one line */
+  padding: calc(37px * var(--cs-k));
+}
+
+.cs-hero__sub {
+  margin-top: 22px;
+  font-size: calc(32px * var(--cs-k));
+  line-height: 1.42;
+  color: var(--cs-dark);
+}
+
+.cs-hero__sub::before {
+  /* The band runs 32pt past the frame on each side in the artwork, measured
+     off the export: frame edges at 678/1341 against a band at 655/1367. That
+     is the frame's own 37pt inset plus 32pt of overhang. */
+  left: calc(-69px * var(--cs-k));
+  right: calc(-69px * var(--cs-k));
+}
+
+/* ---------- overview ---------- */
+.cs-stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(27px * var(--cs-k));
+}
+
+.cs-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* The artwork's rhythm: 38pt from icon to value, and the same again from
+     value to label. At 14px the value and its label read as one crowded
+     block. */
+  gap: calc(38px * var(--cs-k));
+  padding: calc(51px * var(--cs-k)) calc(24px * var(--cs-k)) calc(34px * var(--cs-k));
+  text-align: center;
+}
+
+.cs-stat__icon {
+  height: calc(74px * var(--cs-k));
+}
+
+.cs-stat__value {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(42px * var(--cs-k));
+  line-height: 1;
+  color: var(--cs-dark);
+}
+
+.cs-stat__label {
+  /* stretch, or the tint band shrinks to the text and the four cards' bands
+     stop butting together into one strip */
+  align-self: stretch;
+  margin-top: auto;
+  color: var(--cs-dark);
+}
+
+.cs-stat__label span,
+.cs-meta__lines span,
+.cs-figure__label span {
+  display: block;
+}
+
+.cs-meta {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(27px * var(--cs-k));
+  margin-top: clamp(48px, 7vw, 96px);
+}
+
+.cs-meta__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.cs-meta__icon {
+  height: 54px;
+}
+
+.cs-meta__title {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(28px * var(--cs-k));
+  color: var(--cs-dark);
+}
+
+.cs-meta__lines {
+  color: var(--cs-dark);
+}
+
+/* ---------- 01 the challenge ---------- */
+.cs-probs {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(51px * var(--cs-k));
+  margin-top: clamp(40px, 5vw, 72px);
+}
+
+/* Spacing straight off the export: a 464pt card with the icon 37pt down, the
+   title block 30pt below it, its note 6pt under the title, the prose 30pt
+   below that and 34pt clear of the bottom. The horizontal insets are not
+   uniform — the title block runs nearly the full card at 3pt while the prose
+   is inset 24pt — and that is what keeps a title on one line. */
+.cs-prob {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  padding: calc(37px * var(--cs-k)) calc(3px * var(--cs-k)) calc(34px * var(--cs-k));
+}
+
+.cs-prob__icon {
+  height: calc(74px * var(--cs-k));
+  margin-bottom: calc(30px * var(--cs-k));
+}
+
+.cs-prob__title {
+  font-family: var(--cs-serif);
+  /* 28pt at 600, from the export. Its 25pt leading is a single-line setting —
+     the artwork's 464pt cards never wrap a title. Ours can at small widths, so
+     the leading is opened just enough that two lines cannot collide. */
+  font-weight: 600;
+  font-size: calc(28px * var(--cs-k));
+  line-height: 1.1;
+  color: var(--cs-dark);
+}
+
+.cs-prob__note {
+  margin-top: calc(6px * var(--cs-k));
+  /* the export's 30pt gap to the prose. It lives here rather than as padding
+     on `.cs-prob__text`, because that element's box is what the tint band is
+     drawn around — padding there pushed the band up over this note. */
+  margin-bottom: calc(30px * var(--cs-k));
+  color: var(--cs-coral);
+}
+
+.cs-prob__text {
+  align-self: stretch; /* see .cs-stat__label */
+  margin-top: auto;
+  padding: 0 calc(21px * var(--cs-k));
+  color: var(--cs-dark);
+}
+
+/* The band clears the prose by 7pt above and 11pt below, as the export has it
+   (band 232-370 against a text box of 239-359). The block default is far
+   deeper and reached up over the coral note. */
+.cs-prob__text::before {
+  top: calc(-7px * var(--cs-k));
+  bottom: calc(-11px * var(--cs-k));
+}
+
+.cs-prob__text strong {
+  font-weight: 700;
+}
+
+.cs-depts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(39px * var(--cs-k));
+  margin-top: clamp(48px, 6vw, 88px);
+}
+
+.cs-dept__title {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(28px * var(--cs-k));
+  color: var(--cs-dark);
+  text-align: center;
+}
+
+.cs-dept__note {
+  color: var(--cs-coral);
+  text-align: center;
+  margin-top: 4px;
+}
+
+.cs-flow {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.cs-flow li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cs-chip {
+  display: inline-block;
+  padding: 5px 12px;
+  border: 1px solid #cfd9dc;
+  border-radius: 5px;
+  font-size: calc(24px * var(--cs-k));
+  color: var(--cs-dark);
+  white-space: nowrap;
+}
+
+.cs-flow__sep {
+  color: var(--cs-teal);
+}
+
+.cs-issues {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.cs-issues li {
+  position: relative;
+  padding-left: 22px;
+  font-size: calc(22px * var(--cs-k));
+  color: var(--cs-dark);
+}
+
+.cs-issues li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: var(--cs-dark);
+}
+
+/* Centred pull quote, used three times. */
+.cs-pull {
+  margin: clamp(56px, 8vw, 120px) auto 0;
+  /* The artwork's pull measure. Its longest line — the §01 constraint quote,
+     which the artwork sets on one line — measures ~1214pt against a 1492pt
+     content column, and the next block breaks before 1270pt. A `ch` measure is
+     what this replaced; `ch` tracks the font's zero-width, not the artwork.
+     See DESIGN.md §4.9. */
+  max-width: calc(1270px * var(--cs-k));
+  text-align: center;
+}
+
+.cs-quote {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-style: italic;
+  font-size: calc(28px * var(--cs-k));
+  line-height: 1.35;
+  color: var(--cs-dark);
+}
+
+.cs-pull__lead {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(28px * var(--cs-k));
+  line-height: 1.35;
+  color: var(--cs-dark);
+  margin-top: 10px;
+}
+
+.cs-quote--light {
+  font-weight: 400;
+  margin-top: 18px;
+}
+
+/* ---------- 02 research approach ---------- */
+.cs-weeks {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.cs-week {
+  text-align: center;
+}
+
+.cs-week__band {
+  padding: 16px 10px;
+  /* four steps of the same teal, 10/25/40/55% over white */
+  background: var(--cs-band);
+}
+
+.cs-week[data-step='2'] .cs-week__band {
+  background: #d6e6ea;
+}
+
+.cs-week[data-step='3'] .cs-week__band {
+  background: #bdd7de;
+}
+
+.cs-week[data-step='4'] .cs-week__band {
+  background: #a5c8d2;
+}
+
+.cs-week__label {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--cs-dark);
+}
+
+.cs-week__title {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 600;
+  color: var(--cs-dark);
+  margin-top: 4px;
+}
+
+.cs-week__count {
+  font-size: calc(48px * var(--cs-k));
+  font-weight: 700;
+  line-height: 1;
+  color: var(--cs-dark);
+  margin-top: 26px;
+}
+
+.cs-week__unit {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 600;
+  color: var(--cs-dark);
+  margin-top: 6px;
+}
+
+.cs-methods {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(71px * var(--cs-k));
+  /* the artwork insets this row inside the content column */
+  margin: 28px calc(37px * var(--cs-k)) 0;
+}
+
+.cs-method {
+  padding: 20px 18px;
+  text-align: center;
+}
+
+.cs-method__title {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 700;
+  color: var(--cs-dark);
+}
+
+.cs-method__text {
+  font-size: calc(20px * var(--cs-k));
+  color: var(--cs-dark);
+  margin-top: 1.4em;
+}
+
+/* ---------- 03 the existing system ---------- */
+.cs-journey {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: calc(35px * var(--cs-k));
+}
+
+.cs-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 18px;
+}
+
+.cs-step__n {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--cs-teal);
+  color: #fff;
+  font-size: calc(28px * var(--cs-k));
+  font-weight: 600;
+  line-height: 1;
+}
+
+.cs-step__stage {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--cs-dark);
+  margin-top: 16px;
+}
+
+.cs-step__icon {
+  height: 34px;
+  margin: 16px 0;
+}
+
+.cs-step__artifact {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 700;
+  color: var(--cs-coral);
+}
+
+.cs-step__text {
+  font-size: calc(20px * var(--cs-k));
+  color: var(--cs-dark);
+  margin-top: 1.2em;
+}
+
+/* ---------- 05 time study ---------- */
+.cs-timebox {
+  padding: clamp(22px, 3vw, 40px);
+}
+
+.cs-times {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.cs-time {
+  display: grid;
+  grid-template-columns: minmax(0, 0.26fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+.cs-time__label {
+  font-size: calc(24px * var(--cs-k));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--cs-green);
+  text-align: left;
+}
+
+.cs-time__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 34px;
+  padding: 0 14px 0 40px;
+  border-radius: 4px;
+  background: var(--cs-track);
+}
+
+.cs-time__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  min-width: 18px;
+  border-radius: 4px;
+  background: var(--cs-teal);
+}
+
+.cs-time__value {
+  position: relative;
+  font-size: calc(24px * var(--cs-k));
+  font-weight: 700;
+  color: var(--cs-dark);
+  /* "2-3 min" is one token to the reader; the narrow single-column layout
+     below 760px will break it after the range otherwise. */
+  white-space: nowrap;
+}
+
+.cs-time__note {
+  position: relative;
+  font-size: calc(20px * var(--cs-k));
+  color: var(--cs-dark);
+}
+
+.cs-time__fill--peak ~ .cs-time__value,
+.cs-time__fill--peak ~ .cs-time__note {
+  color: #fff;
+}
+
+/* ---------- 06 design strategy ---------- */
+.cs-translate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 42px);
+  padding: clamp(28px, 4vw, 56px);
+}
+
+.cs-translate__box {
+  flex: 0 1 300px;
+  padding: 26px 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: #fff;
+}
+
+.cs-translate__box--paper {
+  background: var(--cs-teal);
+}
+
+.cs-translate__box--digital {
+  background: var(--cs-deep);
+}
+
+.cs-translate__title {
+  font-size: calc(24px * var(--cs-k));
+  font-weight: 700;
+}
+
+.cs-translate__box .cs-translate__note {
+  font-size: calc(24px * var(--cs-k));
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.cs-translate__link {
+  text-align: center;
+  color: var(--cs-dark);
+}
+
+.cs-translate__link .cs-arrow {
+  width: 74px;
+  margin: 0 auto 10px;
+}
+
+.cs-translate__linkTitle {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.cs-translate__note {
+  font-size: calc(20px * var(--cs-k));
+}
+
+/* ---------- 07 core design principles ---------- */
+.cs-principle__pair {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.cs-panel {
+  flex: 1;
+  padding: 16px;
+}
+
+.cs-panel--principle {
+  border-color: var(--cs-teal);
+}
+
+.cs-panel__label {
+  font-size: calc(20px * var(--cs-k));
+  font-weight: 700;
+  color: var(--cs-dark);
+  margin-bottom: 0.9em;
+}
+
+.cs-panel__text {
+  font-size: calc(20px * var(--cs-k));
+  color: var(--cs-dark);
+}
+
+/* ---------- 08 key design translations ---------- */
+.cs-trans__pair {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.cs-trans__side {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.cs-trans__title {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(18px * var(--cs-k));
+  color: var(--cs-dark);
+}
+
+.cs-trans__note {
+  font-size: calc(16px * var(--cs-k));
+  color: var(--cs-dark);
+  margin-top: 2px;
+}
+
+.cs-mock {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  min-height: 118px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: calc(16px * var(--cs-k));
+}
+
+.cs-mock--paper {
+  background: #fff;
+  border: 1px solid var(--cs-line);
+}
+
+.cs-mock--digital {
+  background: var(--cs-deep);
+  border: 1px solid var(--cs-deep);
+}
+
+.cs-mock__icon {
+  height: 34px;
+  margin: 0 auto 8px;
+}
+
+.cs-mock__big {
+  font-size: calc(24px * var(--cs-k));
+  font-weight: 700;
+  color: var(--cs-dark);
+}
+
+.cs-mock__big--sm {
+  font-size: calc(20px * var(--cs-k));
+}
+
+.cs-mock__warn {
+  color: var(--cs-coral);
+  margin-top: 2px;
+}
+
+.cs-mock__warn--strong {
+  font-weight: 700;
+  font-size: calc(20px * var(--cs-k));
+}
+
+/* status tracking */
+.cs-xls {
+  display: grid;
+  gap: 6px;
+}
+
+.cs-xls__head {
+  height: 16px;
+  border-radius: 3px;
+  background: #e3e3e3;
+}
+
+.cs-xls__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cs-xls__row i {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+}
+
+.cs-xls__row b {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: #e3e3e3;
+}
+
+.cs-xls__row:nth-child(3) b {
+  flex: 0 1 78%;
+}
+
+.cs-xls__row:nth-child(4) b {
+  flex: 0 1 58%;
+}
+
+[data-tone='red'] {
+  background: #ef4444;
+}
+
+[data-tone='green'] {
+  background: #22c55e;
+}
+
+[data-tone='amber'] {
+  background: #eab308;
+}
+
+.cs-legend {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.cs-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--cs-dark);
+}
+
+.cs-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.cs-legend span {
+  flex: 1;
+  text-align: left;
+}
+
+.cs-legend b[data-tone='green'] {
+  color: #16a34a;
+}
+
+.cs-legend b[data-tone='red'] {
+  color: #dc2626;
+}
+
+.cs-legend b[data-tone='amber'] {
+  color: #ca8a04;
+}
+
+.cs-legend b {
+  background: none;
+  font-size: calc(20px * var(--cs-k));
+}
+
+/* appointment scheduling */
+.cs-slots {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+  color: #fff;
+}
+
+.cs-slots th {
+  font-size: calc(16px * var(--cs-k));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding-bottom: 4px;
+}
+
+.cs-slots td {
+  background: #d1fae5;
+  color: #166534;
+  font-size: calc(12px * var(--cs-k));
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.cs-slots td:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.cs-slots td:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.cs-dots {
+  letter-spacing: 0.18em;
+}
+
+/* patient records */
+.cs-record {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+
+.cs-record__uid {
+  align-self: start;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #d1fae5;
+  color: #166534;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cs-record__line {
+  width: 100%;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.cs-record__line--short {
+  width: 62%;
+}
+
+.cs-record__synced {
+  font-size: calc(14px * var(--cs-k));
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: #d1fae5;
+  color: #166534;
+}
+
+/* appointment reminders */
+.cs-sms {
+  display: grid;
+  gap: 8px;
+}
+
+.cs-sms__bubble {
+  padding: 7px 9px;
+  border-radius: 5px;
+  background: #d1fae5;
+  color: #14532d;
+  text-align: left;
+}
+
+.cs-sms__reply {
+  color: #fff;
+}
+
+/* cross-department visibility */
+.cs-silo p:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cs-silo em {
+  color: var(--cs-coral);
+  font-style: normal;
+}
+
+.cs-tag {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: calc(24px * var(--cs-k));
+}
+
+.cs-tag[data-tone='blue'],
+.cs-unified__cols [data-tone='blue'] {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.cs-tag[data-tone='violet'],
+.cs-unified__cols [data-tone='violet'] {
+  background: #f3e8ff;
+  color: #6d28d9;
+}
+
+.cs-unified {
+  display: grid;
+  gap: 6px;
+}
+
+.cs-unified__head {
+  font-size: calc(18px * var(--cs-k));
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: #d1fae5;
+  color: #166534;
+  font-weight: 700;
+}
+
+.cs-unified__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.cs-unified__cols > div {
+  padding: 6px;
+  border-radius: 4px;
+  font-size: calc(14px * var(--cs-k));
+}
+
+.cs-unified__name {
+  font-weight: 700;
+  font-size: calc(18px * var(--cs-k));
+}
+
+/* queue management */
+.cs-queue {
+  display: grid;
+  gap: 4px;
+}
+
+.cs-queue__now {
+  display: flex;
+  align-items: center;
+  font-size: calc(14px * var(--cs-k));
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #d1fae5;
+  color: #166534;
+  font-weight: 600;
+}
+
+.cs-queue__now i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.cs-queue__row {
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: #f4f6f5;
+  color: var(--cs-dark);
+  font-size: calc(10px * var(--cs-k));
+  text-align: left;
+}
+
+/* ---------- 09 outcomes & impact ---------- */
+.cs-compare {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--cs-gap);
+}
+
+.cs-compare__item {
+  padding: 22px;
+  text-align: center;
+}
+
+.cs-compare__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cs-compare__head {
+  font-size: calc(24px * var(--cs-k));
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8b9a9e;
+}
+
+.cs-compare__head--under {
+  margin-top: 4px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 700;
+  color: var(--cs-dark);
+}
+
+.cs-compare__value {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(36px * var(--cs-k));
+  line-height: 1.2;
+  color: var(--cs-dark);
+}
+
+.cs-compare__value--after {
+  color: var(--cs-deep);
+}
+
+.cs-compare__label {
+  margin-top: 12px;
+  color: var(--cs-dark);
+}
+
+.cs-figures {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: clamp(24px, 3vw, 40px) 20px;
+  margin-top: var(--cs-gap);
+  text-align: center;
+}
+
+.cs-figures--trio {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cs-figures li + li {
+  border-left: 1px solid var(--cs-coral);
+}
+
+.cs-figure__value {
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(40px * var(--cs-k));
+  line-height: 1.1;
+  color: var(--cs-deep);
+}
+
+.cs-figure__label {
+  margin-top: 8px;
+  color: var(--cs-dark);
+}
+
+.cs-headline {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cs-gap);
+  margin-top: var(--cs-gap);
+}
+
+.cs-headline__item {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 26px;
+}
+
+.cs-headline__value {
+  flex: none;
+  font-family: var(--cs-serif);
+  font-weight: 700;
+  font-size: calc(60px * var(--cs-k));
+  line-height: 1;
+  color: var(--cs-deep);
+}
+
+.cs-headline__title {
+  font-size: calc(32px * var(--cs-k));
+  font-weight: 700;
+  color: var(--cs-dark);
+}
+
+.cs-headline__note {
+  color: var(--cs-dark);
+  margin-top: 2px;
+}
+
+.cs-headline__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cs-headline__bar span {
+  height: 9px;
+  border-radius: 5px;
+  background: var(--cs-deep);
+  box-shadow: 0 0 0 0 transparent;
+}
+
+.cs-headline__bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 62%;
+  height: 9px;
+  border-radius: 5px;
+  background: #e4e6e5;
+  z-index: -1;
+}
+
+.cs-headline__bar em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: calc(16px * var(--cs-k));
+  color: var(--cs-dark);
+}
+
+/* ---------- 10 reflections ---------- */
+.cs-reflect__takeaway {
+  margin-top: 1.2em;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--cs-deep);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1000px) {
+  .cs {
+    --cs-k: 0.7;
+    --cs-gap: 20px;
+  }
+
+  .cs-stats,
+  .cs-meta,
+  .cs-methods {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cs-journey {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cs-weeks {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .cs {
+    --cs-k: 0.656;
+  }
+
+  .cs-hero,
+  .cs-probs,
+  .cs-depts,
+  .cs-grid2,
+  .cs-compare,
+  .cs-headline,
+  .cs-journey,
+  .cs-figures,
+  .cs-figures--trio {
+    grid-template-columns: 1fr;
+  }
+
+  .cs-figures li + li {
+    border-left: 0;
+    border-top: 1px solid var(--cs-coral);
+    padding-top: 18px;
+    margin-top: 18px;
+  }
+
+  .cs-time {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .cs-translate,
+  .cs-principle__pair,
+  .cs-trans__pair {
+    flex-direction: column;
+  }
+
+  .cs-arrow {
+    transform: rotate(90deg);
+  }
+}
+
+/* ===========================================================================
+   GUIDE CASE STUDIES — `.g`
+   ---------------------------------------------------------------------------
+   Shared by both Guide pages (`Guide1Page.jsx`, `Guide2Page.jsx`). They are
+   one Figma document in two parts and one design language, so they share one
+   block; `.cs` above stays TCTD's alone.
+
+   §11b's fidelity rule again: the artwork's palette is kept and lives here as
+   block-scoped tokens, and the faces are the export's own — Roboto Slab Bold
+   for every heading, Source Sans for everything else. Nothing here uses
+   --serif or the site palette.
+
+   Sizes are the artwork's point sizes times --g-k. The Guide frame carries
+   1498pt of content against this page's 1180px, which is where 0.7877 comes
+   from; change the max-width and this must change with it.
+--------------------------------------------------------------------------- */
+.g {
+  /* artwork palette — local to this block, see §11c */
+  --g-navy: #1b235b; /* every heading, and prose set inside a card */
+  --g-slate: #364156; /* the hero title, and nothing else */
+  --g-coral: #cc614d; /* running prose, quotes, the icon line art */
+  --g-plum: #260030; /* prose inside the four meta cards */
+  --g-green: #2d6a4f; /* every dashed frame, and the connector arrows */
+  --g-band: #f5f8ff; /* the tint strip behind a row of text */
+
+  --g-slab: 'Roboto Slab', Georgia, 'Times New Roman', serif;
+
+  --g-k: 0.7877; /* 1180 / 1498 — see the note above */
+  --g-bleed: calc(26px * var(--g-k)); /* how far a band runs past its row */
+  --g-dash: 2px dashed var(--g-green);
+  --g-radius: calc(14px * var(--g-k));
+  --g-pad: calc(20px * var(--g-k));
+
+  max-width: 1180px;
+  margin: clamp(30px, 5vh, 64px) auto 0;
+  font-family: var(--sans-copy);
+  /* The artwork's body setting: Source Sans 24/32. */
+  font-size: calc(24px * var(--g-k));
+  line-height: 1.34;
+  color: var(--g-coral);
+}
+
+.g p {
+  text-wrap: pretty;
+}
+
+.g b,
+.g strong {
+  font-weight: 700;
+}
+
+/* The artwork's emphasis run: bold italic in running prose, and bold inside a
+   card, where the surrounding text is already set in navy. See rich.jsx. */
+.g em {
+  font-style: italic;
+  font-weight: 700;
+}
+
+.g-ink em,
+.g-card .g-band em {
+  font-style: normal;
+}
+
+/* ---------- the tint band ------------------------------------------------ */
+/* The tint strip is a rectangle *behind* the dashed frame, not inside it: in
+   the artwork it runs about 26pt past the card on both sides and the dashed
+   border is drawn over it. So the band bleeds by --g-bleed rather than being
+   clipped to its card, and its corners stay square while the card's are not.
+   The fill must stay opaque — two bands whose bleeds overlap (the four meta
+   cards, whose 26pt bleeds meet across a 39pt gutter and become one
+   unbroken strip, exactly as the artwork draws them) would otherwise darken
+   where they meet. Rows that would push the bleed past the page edge set
+   `overflow: clip` — `clip`, not `hidden`, so they cannot become scroll
+   containers. */
+.g-band {
+  position: relative;
+}
+
+.g-band::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(-1 * var(--g-bleed));
+  background: var(--g-band);
+}
+
+/* Rows where the artwork gives each band exactly its own box. */
+.g-questions .g-band,
+.g-sprintqs li,
+.g-panel__caprow .g-band {
+  --g-bleed: 0px;
+}
+
+.g-metas,
+.g-insights,
+.g-quotes,
+.g-questions,
+.g-findings,
+.g-tests,
+.g-who,
+.g-hero,
+.g-pair,
+.g-mapping {
+  overflow: clip;
+  overflow-clip-margin: var(--g-bleed);
+}
+
+/* ---------- frames, cards, headings -------------------------------------- */
+.g-frame,
+.g-card,
+.g-panel__art--framed,
+.g-table {
+  border: var(--g-dash);
+  border-radius: var(--g-radius);
+}
+
+.g-frame,
+.g-card {
+  padding: var(--g-pad) 0 calc(18px * var(--g-k));
+}
+
+.g-frame > *,
+.g-card > :not(.g-band) {
+  padding: 0 var(--g-pad);
+}
+
+.g-card > .g-band {
+  padding: calc(12px * var(--g-k)) var(--g-pad);
+  margin-top: calc(14px * var(--g-k));
+}
+
+.g-frame {
+  padding: var(--g-pad);
+}
+
+.g-frame--tight {
+  padding: calc(16px * var(--g-k)) var(--g-pad);
+}
+
+.g-h1,
+.g-display,
+.g-kicker,
+.g-card__title,
+.g-phase__title,
+.g-meta__title,
+.g-finding__head,
+.g-outro {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  line-height: 1.16;
+  margin: 0;
+}
+
+.g-h1 {
+  color: var(--g-slate);
+  font-size: calc(40px * var(--g-k));
+  font-weight: 400;
+}
+
+.g-h1 b {
+  font-weight: 700;
+}
+
+.g-display {
+  font-size: calc(48px * var(--g-k));
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.g-kicker {
+  font-size: calc(26px * var(--g-k));
+}
+
+.g-kicker--lg {
+  font-size: calc(28px * var(--g-k));
+}
+
+.g-kicker--xl {
+  font-size: calc(32px * var(--g-k));
+}
+
+.g-card__title {
+  font-size: calc(24px * var(--g-k));
+}
+
+.g-small {
+  font-size: calc(18px * var(--g-k));
+  line-height: 1.28;
+}
+
+.g-quote {
+  font-size: calc(22px * var(--g-k));
+  line-height: 1.3;
+}
+
+.g-ink {
+  color: var(--g-navy);
+}
+
+.g-prose p + p {
+  margin-top: calc(14px * var(--g-k));
+}
+
+.g-prose--lead {
+  margin-top: calc(46px * var(--g-k));
+}
+
+.g-icon {
+  display: block;
+  height: calc(62px * var(--g-k));
+  width: auto;
+}
+
+.g-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.g-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(6px * var(--g-k));
+}
+
+.g-sec {
+  margin-top: clamp(56px, 8vw, 116px);
+}
+
+.g-sec--tight {
+  margin-top: clamp(28px, 4vw, 56px);
+}
+
+/* ---------- hero --------------------------------------------------------- */
+/* The artwork puts the drawing at 213–660pt and the frame at 814–1625pt
+   inside a 154–1651pt column, so the columns and the 154pt gutter between
+   them are written out rather than fitted. */
+.g-hero {
+  display: grid;
+  grid-template-columns: calc(447px * var(--g-k)) 1fr;
+  gap: calc(154px * var(--g-k));
+  align-items: center;
+  padding: 0 calc(27px * var(--g-k)) 0 calc(59px * var(--g-k));
+}
+
+.g-hero__art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.g-hero__frame {
+  border: var(--g-dash);
+  border-radius: var(--g-radius);
+  padding: calc(34px * var(--g-k)) calc(35px * var(--g-k)) 0;
+  overflow: hidden;
+}
+
+.g-hero__sub {
+  font-size: calc(32px * var(--g-k));
+  line-height: 1.36;
+  margin: calc(26px * var(--g-k)) calc(-35px * var(--g-k)) 0;
+  padding: calc(14px * var(--g-k)) calc(35px * var(--g-k)) calc(30px * var(--g-k));
+}
+
+/* ---------- the four meta cards ------------------------------------------ */
+.g-metas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(39px * var(--g-k));
+}
+
+.g-meta {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  color: var(--g-plum);
+}
+
+.g-meta > .g-band {
+  flex: 1;
+}
+
+.g-meta__icon {
+  display: block;
+  height: calc(78px * var(--g-k));
+  width: auto;
+  margin: 0 auto calc(10px * var(--g-k));
+}
+
+.g-meta__title {
+  font-size: calc(28px * var(--g-k));
+}
+
+.g-meta__note {
+  margin-top: calc(10px * var(--g-k));
+}
+
+/* ---------- the alternating wide/narrow split ---------------------------- */
+/* Nearly every section in the artwork is a wide text column beside a narrow
+   one holding a slab title and a drawing; which side is which alternates. */
+.g-split {
+  display: grid;
+  grid-template-columns: calc(908px * var(--g-k)) 1fr;
+  gap: calc(120px * var(--g-k));
+  align-items: center;
+}
+
+.g-split--flip {
+  grid-template-columns: 1fr calc(908px * var(--g-k));
+}
+
+.g-split--flip .g-split__narrow {
+  order: -1;
+}
+
+.g-split__narrow {
+  display: grid;
+  gap: calc(24px * var(--g-k));
+  justify-items: center;
+}
+
+.g-split__narrow--wide {
+  justify-items: start;
+}
+
+.g-split__narrow .g-art,
+.g-split__narrow .g-shot {
+  max-width: calc(400px * var(--g-k));
+}
+
+.g-split__wide > * + * {
+  margin-top: calc(26px * var(--g-k));
+}
+
+/* ---------- overview ----------------------------------------------------- */
+.g-pair {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(32px * var(--g-k));
+}
+
+.g-pair__item > .g-frame {
+  margin-top: calc(12px * var(--g-k));
+}
+
+/* ---------- competitor table --------------------------------------------- */
+.g-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: calc(22px * var(--g-k));
+  text-align: center;
+}
+
+.g-table th,
+.g-table td {
+  padding: calc(9px * var(--g-k)) calc(4px * var(--g-k));
+  border-bottom: var(--g-dash);
+  border-right: var(--g-dash);
+}
+
+.g-table tr > :last-child {
+  border-right: 0;
+}
+
+.g-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.g-table thead th {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  font-size: calc(24px * var(--g-k));
+  vertical-align: bottom;
+}
+
+.g-table tbody th {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-coral);
+  text-align: left;
+  padding-left: calc(8px * var(--g-k));
+}
+
+/* `table-layout: fixed` takes every column width from the first row, so the
+   artwork's 205pt label column has to be declared on the header cell. */
+.g-table tr > :first-child {
+  width: 23%;
+}
+
+.g-mark {
+  display: block;
+  margin: 0 auto;
+  width: calc(31px * var(--g-k));
+  height: auto;
+}
+
+/* ---------- key insights + the 2×2 map ----------------------------------- */
+.g-split--insights {
+  grid-template-columns: calc(613px * var(--g-k)) 1fr;
+  gap: calc(59px * var(--g-k));
+  align-items: start;
+}
+
+.g-insights,
+.g-quotes,
+.g-findings,
+.g-tests {
+  list-style: none;
+  margin: calc(14px * var(--g-k)) 0 0;
+  padding: 0;
+  display: grid;
+  gap: calc(23px * var(--g-k));
+}
+
+.g-tests {
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(30px * var(--g-k));
+}
+
+/* The map is one dashed box with the axes drawn as its own centre lines; the
+   marks sit at the percentages the artwork puts them at. */
+.g-map {
+  position: relative;
+  border: var(--g-dash);
+  border-radius: var(--g-radius);
+  aspect-ratio: 840 / 658;
+  padding: calc(58px * var(--g-k)) calc(20px * var(--g-k));
+  font-size: calc(18px * var(--g-k));
+  color: var(--g-navy);
+}
+
+.g-map__plot {
+  position: relative;
+  height: 100%;
+  background:
+    repeating-linear-gradient(var(--g-green) 0 8px, transparent 8px 16px) 50% 0 / 2px 100%
+      no-repeat,
+    repeating-linear-gradient(90deg, var(--g-green) 0 8px, transparent 8px 16px) 0 50% / 100% 2px
+      no-repeat;
+}
+
+/* The four arrowheads the artwork puts on the ends of the axes. */
+.g-map__plot::before,
+.g-map__plot::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: calc(6px * var(--g-k)) solid transparent;
+}
+
+.g-map__plot::before {
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -100%);
+  border-bottom-color: var(--g-green);
+  border-top-width: 0;
+}
+
+.g-map__plot::after {
+  right: 0;
+  top: 50%;
+  transform: translate(100%, -50%);
+  border-left-color: var(--g-green);
+  border-right-width: 0;
+}
+
+.g-map__mark {
+  position: absolute;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: max-content;
+  max-width: calc(120px * var(--g-k));
+  font-size: calc(14px * var(--g-k));
+  line-height: 1.15;
+}
+
+.g-map__mark img {
+  display: block;
+  margin: 0 auto calc(4px * var(--g-k));
+  width: calc(62px * var(--g-k));
+  height: auto;
+}
+
+.g-map__axis {
+  display: block;
+  font-family: var(--g-slab);
+  font-weight: 700;
+  font-size: calc(24px * var(--g-k));
+}
+
+.g-map p {
+  position: absolute;
+  margin: 0;
+}
+
+.g-map__y--high {
+  left: 50%;
+  top: calc(10px * var(--g-k));
+  padding-left: calc(10px * var(--g-k));
+}
+
+.g-map__y--low {
+  left: 50%;
+  bottom: calc(10px * var(--g-k));
+  padding-left: calc(10px * var(--g-k));
+}
+
+.g-map__x--low {
+  left: calc(20px * var(--g-k));
+  bottom: 50%;
+  margin-bottom: calc(6px * var(--g-k));
+}
+
+.g-map__x--high {
+  right: calc(20px * var(--g-k));
+  bottom: 50%;
+  margin-bottom: calc(6px * var(--g-k));
+}
+
+/* ---------- users -------------------------------------------------------- */
+.g-who {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: calc(30px * var(--g-k));
+  align-items: center;
+}
+
+.g-who__icon {
+  display: block;
+  height: calc(64px * var(--g-k));
+  width: auto;
+  margin: 0 auto calc(8px * var(--g-k));
+}
+
+.g-who .g-card {
+  text-align: center;
+}
+
+.g-who__link {
+  display: grid;
+  gap: calc(8px * var(--g-k));
+  justify-items: center;
+  width: calc(180px * var(--g-k));
+  font-size: calc(24px * var(--g-k));
+}
+
+.g-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.g-bullets li::before {
+  content: '•';
+  margin-right: 0.4em;
+}
+
+.g-questions {
+  list-style: none;
+  margin: calc(14px * var(--g-k)) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(22px * var(--g-k));
+}
+
+.g-questions__icon {
+  display: block;
+  height: calc(60px * var(--g-k));
+  width: auto;
+  margin: 0 auto calc(8px * var(--g-k));
+}
+
+.g-questions h3 {
+  text-align: center;
+  margin-bottom: calc(10px * var(--g-k));
+}
+
+.g-questions .g-band {
+  padding: calc(14px * var(--g-k)) calc(13px * var(--g-k));
+}
+
+/* ---------- findings ----------------------------------------------------- */
+.g-split--findings {
+  grid-template-columns: calc(917px * var(--g-k)) 1fr;
+  gap: calc(54px * var(--g-k));
+  align-items: center;
+}
+
+.g-finding__head {
+  display: flex;
+  align-items: center;
+  gap: calc(18px * var(--g-k));
+  font-size: calc(28px * var(--g-k));
+  margin-bottom: calc(12px * var(--g-k));
+}
+
+.g-finding__icon {
+  height: calc(60px * var(--g-k));
+  width: auto;
+  flex: none;
+}
+
+/* ---------- journey maps + the sprint strip ------------------------------ */
+.g-journeymaps {
+  display: grid;
+  gap: calc(20px * var(--g-k));
+}
+
+.g-shot--full {
+  width: 100%;
+}
+
+.g-split--sprint {
+  grid-template-columns: calc(884px * var(--g-k)) 1fr;
+  gap: calc(120px * var(--g-k));
+}
+
+.g-sprintstrip {
+  margin-top: calc(40px * var(--g-k));
+  width: calc(800px * var(--g-k));
+  max-width: 100%;
+}
+
+/* ---------- the five sprint phases --------------------------------------- */
+.g-phase__title {
+  font-size: calc(48px * var(--g-k));
+  margin-bottom: calc(22px * var(--g-k));
+}
+
+.g-phase__lead {
+  max-width: calc(727px * var(--g-k));
+}
+
+.g-mapping {
+  display: grid;
+  grid-template-columns: calc(501px * var(--g-k)) 1fr;
+  gap: calc(59px * var(--g-k));
+  align-items: start;
+}
+
+.g-sprintqs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(53px * var(--g-k)) calc(53px * var(--g-k));
+}
+
+.g-sprintqs li {
+  padding: calc(22px * var(--g-k)) calc(18px * var(--g-k));
+  border-radius: calc(8px * var(--g-k));
+}
+
+.g-sprintqs li::before {
+  inset: 0;
+}
+
+.g-sprintqs h3 {
+  margin-bottom: calc(12px * var(--g-k));
+}
+
+/* Numbered image panels. Two per row, unless the artwork runs one full width. */
+.g-panels {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(52px * var(--g-k)) calc(36px * var(--g-k));
+  margin-top: calc(56px * var(--g-k));
+}
+
+.g-panel {
+  margin: 0;
+  min-width: 0;
+}
+
+.g-panel--wide {
+  grid-column: 1 / -1;
+}
+
+.g-panel__caprow {
+  display: flex;
+  align-items: center;
+  margin-bottom: calc(14px * var(--g-k));
+}
+
+/* A framed panel's caption bar hugs its text; the arrow takes the rest of the
+   row and overhangs into the gutter, which is where the artwork draws it. */
+.g-panel__caprow > .g-band {
+  padding: calc(9px * var(--g-k)) calc(12px * var(--g-k));
+  background: var(--g-band);
+}
+
+.g-panel__cap {
+  display: flex;
+  align-items: baseline;
+  gap: calc(8px * var(--g-k));
+  font-size: calc(20px * var(--g-k));
+  color: var(--g-navy);
+  margin: 0;
+}
+
+.g-panel__n {
+  font-weight: 700;
+}
+
+.g-panel__art {
+  background: var(--g-band);
+  border-radius: calc(8px * var(--g-k));
+  padding: calc(10px * var(--g-k));
+}
+
+.g-panel__art > .g-panel__caprow {
+  padding: 0 calc(4px * var(--g-k));
+}
+
+.g-panel__art--framed {
+  background: none;
+  padding: calc(2px * var(--g-k));
+}
+
+.g-arrow {
+  flex: none;
+  width: calc(150px * var(--g-k));
+  height: calc(12px * var(--g-k));
+  margin: 0 calc(-30px * var(--g-k)) 0 auto;
+  color: var(--g-coral);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* ---------- prototype screens -------------------------------------------- */
+.g-screens {
+  display: grid;
+  grid-template-columns: calc(465px * var(--g-k)) calc(570px * var(--g-k)) 1fr;
+  gap: calc(12px * var(--g-k));
+  align-items: start;
+  margin-top: calc(48px * var(--g-k));
+}
+
+.g-screens__col {
+  display: grid;
+  gap: calc(17px * var(--g-k));
+}
+
+/* ---------- outro -------------------------------------------------------- */
+.g-outro {
+  margin: clamp(56px, 8vw, 116px) 0 0;
+  text-align: center;
+  font-size: calc(30px * var(--g-k));
+}
+
+/* ---------- responsive --------------------------------------------------- */
+@media (max-width: 1240px) {
+  .g {
+    --g-k: 0.66;
+    max-width: 94vw;
+  }
+}
+
+@media (max-width: 900px) {
+  .g {
+    --g-k: 0.62;
+  }
+
+  .g-hero,
+  .g-split,
+  .g-split--flip,
+  .g-split--insights,
+  .g-split--findings,
+  .g-split--sprint,
+  .g-mapping,
+  .g-who,
+  .g-questions,
+  .g-metas,
+  .g-tests,
+  .g-panels,
+  .g-screens,
+  .g-sprintqs,
+  .g-pair {
+    grid-template-columns: 1fr;
+    gap: calc(34px * var(--g-k));
+  }
+
+  .g-hero {
+    padding: 0;
+  }
+
+  .g-split--flip .g-split__narrow,
+  .g-split__narrow {
+    order: 0;
+  }
+
+  .g-split__narrow .g-art,
+  .g-split__narrow .g-shot {
+    max-width: calc(320px * var(--g-k));
+  }
+
+  .g-panel--wide {
+    grid-column: auto;
+  }
+
+  .g-arrow {
+    display: none;
+  }
+
+  .g-who__link {
+    width: auto;
+  }
+
+  .g-table {
+    font-size: calc(18px * var(--g-k));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   GUIDE PART 2 — `.g--p2`
+   Part 2 is the same design language, drawn a few months later, and it differs
+   from Part 1 in three ways that are the artwork's own and not slips: its
+   running prose is a shade darker, a second warm tint appears behind the
+   Feature Analysis cards, and every user quote sits on a card tinted by who
+   said it. See DESIGN.md §11c.
+--------------------------------------------------------------------------- */
+.g--p2 {
+  --g-coral: #b55644; /* the export's darker prose coral */
+  --g-warm: #fbf6f5; /* the second tint, behind the Feature Analysis cards */
+
+  /* The quote-card code, which the artwork prints a legend for on every
+     screen it uses: therapist pink, patient green, client blue. */
+  --q-t: #f7e7e4;
+  --q-p: #e5f4e7;
+  --q-c: #f5f8ff;
+}
+
+.g-rally {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  font-size: calc(36px * var(--g-k));
+  line-height: 1.16;
+  margin: 0 0 calc(20px * var(--g-k));
+}
+
+.g-display--center {
+  justify-items: center;
+  margin-bottom: calc(40px * var(--g-k));
+}
+
+/* ---------- target audience --------------------------------------------- */
+.g-audience {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: calc(28px * var(--g-k));
+  align-items: center;
+  padding: calc(22px * var(--g-k)) calc(24px * var(--g-k));
+}
+
+.g-audience__icon {
+  width: calc(110px * var(--g-k));
+  height: auto;
+}
+
+.g-audience ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: calc(8px * var(--g-k));
+}
+
+.g-audience li::before {
+  content: '•';
+  margin-right: 0.5em;
+}
+
+/* ---------- project timeline --------------------------------------------- */
+/* Three panels side by side, the first as wide as its four steps and the last
+   as narrow as its one, which is why the columns are weighted by step count. */
+.g-timeline {
+  display: grid;
+  grid-template-columns: 813fr 430fr 238fr;
+  gap: calc(11px * var(--g-k));
+  align-items: start;
+}
+
+.g-tl__label {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  font-size: calc(26px * var(--g-k));
+  text-align: center;
+  margin: 0 0 calc(14px * var(--g-k));
+}
+
+.g-tl__panel {
+  display: grid;
+  grid-template-columns: repeat(var(--tl-cols), 1fr);
+  gap: calc(12px * var(--g-k));
+  padding: calc(18px * var(--g-k)) calc(14px * var(--g-k));
+  border-radius: calc(10px * var(--g-k));
+  background: #f2f2f2;
+  position: relative;
+}
+
+.g-tl--band .g-tl__panel {
+  background: var(--g-band);
+  border: var(--g-dash);
+}
+
+.g-tl__step {
+  min-width: 0;
+  font-size: calc(15px * var(--g-k));
+  line-height: 1.3;
+}
+
+.g-tl__head {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  font-size: calc(24px * var(--g-k));
+  margin: 0 0 calc(14px * var(--g-k));
+  min-height: 1.2em;
+}
+
+/* The row of ticks the artwork threads one coral rule through — the rule runs
+   on from the last tick of a panel into the next panel, which is why it is a
+   flexed sibling with a negative margin rather than a background. */
+.g-tl__tickrow {
+  display: flex;
+  align-items: center;
+  margin-bottom: calc(16px * var(--g-k));
+}
+
+.g-tl__tickrow::after {
+  content: '';
+  flex: 1;
+  height: calc(4px * var(--g-k));
+  background: var(--g-coral);
+  margin-right: calc(-40px * var(--g-k));
+}
+
+.g-timeline > .g-tl:last-child .g-tl__step:last-child .g-tl__tickrow::after {
+  display: none;
+}
+
+.g-tl__tick {
+  flex: none;
+  width: calc(34px * var(--g-k));
+  height: calc(34px * var(--g-k));
+  fill: none;
+  stroke: var(--g-coral);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.g-tl__panel {
+  overflow: clip;
+  overflow-clip-margin: calc(14px * var(--g-k));
+}
+
+.g-tl__sprint {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  font-size: calc(22px * var(--g-k));
+  margin: 0 0 calc(10px * var(--g-k));
+}
+
+.g-tl__step ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.g-tl__step li::before {
+  content: '•';
+  margin-right: 0.4em;
+}
+
+/* ---------- user rows (Part 2's two banded interview cards) -------------- */
+.g-userrow {
+  display: grid;
+  grid-template-columns: calc(190px * var(--g-k)) 1fr;
+  gap: calc(20px * var(--g-k));
+  align-items: center;
+  padding: calc(16px * var(--g-k)) 0;
+}
+
+.g-userrow__side {
+  text-align: center;
+}
+
+.g-userrow > .g-bullets {
+  padding: calc(16px * var(--g-k)) var(--g-pad);
+  position: relative;
+}
+
+.g-userrow > .g-bullets::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: calc(-16px * var(--g-k)) calc(-1 * var(--g-bleed));
+  background: var(--g-band);
+}
+
+/* ---------- feature analysis --------------------------------------------- */
+.g-card--warm > .g-band::before {
+  background: var(--g-warm);
+}
+
+.g-fa {
+  display: grid;
+  grid-template-columns: calc(560px * var(--g-k)) 1fr;
+  gap: calc(50px * var(--g-k));
+  align-items: start;
+}
+
+.g-fa__side {
+  display: grid;
+  gap: calc(26px * var(--g-k));
+}
+
+.g-fa__products {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.g-fa__products ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.g-fa__shots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(24px * var(--g-k));
+  align-items: start;
+}
+
+.g-fa__shots figure {
+  margin: 0;
+}
+
+.g-fa__shots figcaption {
+  margin-top: calc(10px * var(--g-k));
+  text-align: center;
+  color: #6e6c83;
+}
+
+/* ---------- feature walkthroughs ----------------------------------------- */
+.g-feat__desc {
+  display: inline-block;
+  margin-bottom: calc(30px * var(--g-k));
+}
+
+.g-feat__top {
+  display: grid;
+  grid-template-columns: calc(780px * var(--g-k)) 1fr;
+  gap: calc(40px * var(--g-k));
+  align-items: start;
+}
+
+.g-feat__hero {
+  border-radius: calc(10px * var(--g-k));
+}
+
+.g-feat__quotes {
+  display: grid;
+  gap: calc(20px * var(--g-k));
+  align-content: start;
+}
+
+.g-feat__aside {
+  color: var(--g-coral);
+}
+
+/* A quote card. The tint is the whole code — the artwork prints no label on
+   the card itself, only the legend underneath. */
+.g-quotecard {
+  margin: 0;
+  padding: calc(22px * var(--g-k)) calc(24px * var(--g-k));
+  font-style: italic;
+  color: #000;
+  line-height: 1.34;
+}
+
+.g-quotecard em {
+  font-style: italic;
+  font-weight: 700;
+}
+
+.g-quotecard--t {
+  background: var(--q-t);
+}
+
+.g-quotecard--p {
+  background: var(--q-p);
+}
+
+.g-quotecard--c {
+  background: var(--q-c);
+}
+
+.g-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: calc(18px * var(--g-k));
+  font-style: italic;
+  color: #000;
+  justify-self: end;
+}
+
+.g-legend li {
+  display: flex;
+  align-items: center;
+  gap: calc(10px * var(--g-k));
+}
+
+.g-legend__swatch {
+  width: calc(30px * var(--g-k));
+  height: calc(18px * var(--g-k));
+  flex: none;
+}
+
+.g-legend__swatch--t {
+  background: var(--q-t);
+}
+
+.g-legend__swatch--p {
+  background: var(--q-p);
+}
+
+.g-legend__swatch--c {
+  background: var(--q-c);
+}
+
+/* "Updated <feature>" — the first word is coral and underlined in the export. */
+.g-updated {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  font-size: calc(32px * var(--g-k));
+  margin: calc(54px * var(--g-k)) 0 calc(30px * var(--g-k));
+}
+
+.g-updated span {
+  color: var(--g-coral);
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.g-changes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(48px * var(--g-k)) calc(38px * var(--g-k));
+  margin-top: calc(30px * var(--g-k));
+  align-items: start;
+}
+
+.g-change {
+  margin: 0;
+}
+
+.g-change--wide {
+  grid-column: 1 / -1;
+}
+
+.g-change__cap {
+  display: flex;
+  align-items: baseline;
+  gap: calc(14px * var(--g-k));
+  color: var(--g-navy);
+  margin-bottom: calc(18px * var(--g-k));
+}
+
+.g-change__n {
+  flex: none;
+  font-weight: 700;
+  background: var(--g-band);
+  border-radius: calc(6px * var(--g-k));
+  padding: calc(6px * var(--g-k)) calc(12px * var(--g-k));
+}
+
+.g-change__note {
+  margin-top: calc(14px * var(--g-k));
+}
+
+.g-feat__sub {
+  margin-top: calc(70px * var(--g-k));
+  display: grid;
+  gap: calc(18px * var(--g-k));
+}
+
+.g-feat__tail {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: calc(40px * var(--g-k));
+  align-items: start;
+  margin-top: calc(50px * var(--g-k));
+}
+
+.g-feat__mark {
+  font-size: calc(100px * var(--g-k));
+  line-height: 1;
+  margin: 0;
+}
+
+/* ---------- view index and prototype links -------------------------------- */
+.g-viewindex {
+  display: grid;
+  gap: calc(30px * var(--g-k));
+  color: var(--g-coral);
+}
+
+.g-viewindex .g-kicker {
+  color: var(--g-coral);
+  margin-bottom: calc(10px * var(--g-k));
+}
+
+.g-viewindex ul {
+  padding-left: calc(40px * var(--g-k));
+}
+
+/* The export draws these as flat artwork with no URL behind them, so they are
+   deliberately not links. See guide2.js and DESIGN.md §12. */
+.g-proto {
+  margin: clamp(40px, 6vw, 84px) 0 0;
+  text-align: center;
+  display: grid;
+  gap: calc(8px * var(--g-k));
+}
+
+.g-proto__title {
+  font-family: var(--g-slab);
+  font-weight: 700;
+  color: var(--g-navy);
+  font-size: calc(28px * var(--g-k));
+}
+
+.g-proto__cta {
+  color: var(--g-coral);
+}
+
+.g-proto__todo {
+  font-size: calc(18px * var(--g-k));
+  color: var(--g-green);
+  border: var(--g-dash);
+  border-radius: 999px;
+  padding: calc(4px * var(--g-k)) calc(16px * var(--g-k));
+  justify-self: center;
+}
+
+/* ---------- future implementation ---------------------------------------- */
+.g-future {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: calc(40px * var(--g-k));
+}
+
+.g-future .g-band {
+  padding: calc(14px * var(--g-k)) calc(18px * var(--g-k));
+  margin-top: calc(12px * var(--g-k));
+}
+
+.g-todo {
+  margin-top: calc(12px * var(--g-k));
+  padding: calc(14px * var(--g-k)) calc(18px * var(--g-k));
+  border: var(--g-dash);
+  border-radius: var(--g-radius);
+  color: var(--g-green);
+  font-size: calc(20px * var(--g-k));
+}
+
+.g-numbered {
+  margin: 0;
+  padding-left: calc(34px * var(--g-k));
+}
+
+@media (max-width: 900px) {
+  .g-timeline,
+  .g-tl__panel,
+  .g-fa,
+  .g-fa__shots,
+  .g-feat__top,
+  .g-changes,
+  .g-userrow,
+  .g-audience,
+  .g-feat__tail {
+    grid-template-columns: 1fr;
+    gap: calc(28px * var(--g-k));
+  }
+
+  .g-tl__tick::before {
+    display: none;
+  }
+
+  .g-change--wide {
+    grid-column: auto;
+  }
+
+  .g-legend {
+    justify-self: start;
+  }
 }

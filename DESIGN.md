@@ -36,6 +36,7 @@ Update this file **in the same commit**. Specifically:
 | how hero pieces measure each other | [§6 Hero layout coupling](#6-hero-layout-coupling) |
 | routes, base path, deploy | [§7 Routing and deployment invariants](#7-routing-and-deployment-invariants) |
 | the shape of `content.js` / `projects.js` | [§8 Content model](#8-content-model) |
+| a case-study page, its copy, or its artwork | [§4.9](#49-case-study--cs) / [§4.10](#410-guide-case-studies--g), and [§11b](#11b-case-studies) / [§11c](#11c-the-guide-case-studies) |
 | anything that cost you >20 min to debug | [§9 Traps](#9-traps-that-have-already-bitten-us) |
 | anything at all | [§11 Changelog](#11-changelog) — one line |
 
@@ -44,7 +45,10 @@ Update this file **in the same commit**. Specifically:
 - **Never hardcode the base path.** Derive it from `import.meta.env.BASE_URL`.
   See [§7.2](#72-the-base-path-contract).
 - **Never add a colour outside the palette** in [§2.1](#21-colour). If a new one
-  is genuinely needed, add it as a token here first, with a stated role.
+  is genuinely needed, add it as a token here first, with a stated role. The one
+  standing exception is a case study, which keeps its own artwork's palette in a
+  block-scoped token set — see [§4.9](#49-case-study--cs) and
+  [§11b](#11b-case-studies). Those tokens are never promoted to `:root`.
 - **Never use `getBoundingClientRect()` to measure anything the particle field
   aligns to.** Use the `offsetTop` chain. See [§9.3](#93-parallax-poisons-getboundingclientrect).
 - **Verify by measurement, not by screenshot.** The preview pane throttles
@@ -70,10 +74,10 @@ library, no state manager. One stylesheet.
 
 ```
 index.html              Google Fonts link, SPA-redirect decoder
-vite.config.js          base: '/designportfolio/'
+vite.config.js          base: '/'
 public/
-  404.html              Pages SPA shim (pathSegmentsToKeep = 1)
-  CNAME.example          rename to CNAME for a custom domain
+  404.html              Pages SPA shim (pathSegmentsToKeep = 0)
+  CNAME                  www.urvivarma.com — the custom domain
   fonts/                 Self Modern woff2 files go here (absent by default)
 src/
   main.jsx              Router basename from BASE_URL, loadSelfModern()
@@ -97,7 +101,22 @@ src/
     CursorFollower.jsx  Lagging dot / "View" badge
     Section.jsx         Generic section wrapper
     WorkGrid.jsx        Project card list
+    CardThumb.jsx       Slug → work-card artwork
+  caseStudies/          One data file + one page per study — see §8.3
+  assets/
+    tctd/               "Filling Cabinets to Fingertips" line art (SVG)
+    guide1/ guide2/     Guide line art (SVG) and screenshots (WebP)
+tools/                  Figma-export extractors — see §11b, §11c
+  extract_case_study.py         copy, out of /Type3 fonts
+  extract_case_study_art.py     line art, as vector SVG
+  extract_case_study_images.py  bitmaps, composited onto white as WebP
+  render_case_study_regions.py  whole compositions, rendered via pdftoppm
+  dump_pdf_boxes.py             the layout: every fill, every image placement
+  *-regions.json                the region lists those three read
 ```
+
+The `tools/` scripts are **development-time only** — nothing at build time
+reads them or the PDFs, which are gitignored.
 
 **All styles live in `src/styles/global.css`.** Do not add CSS modules,
 styled-components, or `<style>` blocks. One file, sectioned by comment banners.
@@ -121,6 +140,10 @@ values live in [§4](#4-component-tokens).
 | `--rule-dash` | `#b3197a` | The dashed frame stroke. The reference SVG used `#D6576B`; **our accent is used instead**. |
 | `--accent` | `#b3197a` | Magenta. Eyebrow text, nav hover underline, CTA underline, hover states. |
 
+Case studies do **not** use this palette. `.cs` declares its own tokens, local
+to that block, because §11b's fidelity rule keeps the source artwork's colours.
+They live in [§4.9](#49-case-study--cs) and must not leak onto `:root`.
+
 **Opacity is a token too.** Hierarchy below `--blue` is expressed as opacity on
 `--blue`, not as new colours:
 
@@ -142,6 +165,11 @@ values live in [§4](#4-component-tokens).
 | `--sans-copy` | `'Source Sans 3', 'Source Sans Pro', var(--sans)` | Hero left column (eyebrow, sub, pills) and the case studies. Google Fonts renamed Source Sans Pro to **Source Sans 3**; the old name stays in the stack for local installs |
 | `--deva` | `'Mukta', system-ui, sans-serif` | The `UV` wordmark, and the particle glyph source |
 
+`--cs-serif` (`'Roboto Serif'`) and `--cs-slab` (`'Roboto Slab'`) are declared
+on `.cs`, not here. The case study uses **the artwork's own faces**, which are
+not the site's — see [§4.9](#49-case-study--cs) and [§11b](#11b-case-studies).
+`--serif` is not used anywhere inside `.cs`.
+
 **Self Modern** (Velvetyne / Lucas Le Bihan, SIL OFL) is not on Google Fonts —
 verified, the API returns HTTP 400. It is self-hosted and **currently absent**;
 Newsreader stands in. Newsreader was chosen by rendering eight candidates against
@@ -153,8 +181,13 @@ To activate Self Modern: drop `SelfModern-Regular.woff2` and
 `SelfModern-Italic.woff2` into `public/fonts/`. Nothing else changes.
 
 **Google Fonts loaded** (`index.html`), keep this list minimal:
-`Newsreader` (ital, opsz 6–72, wght 400) · `Inter` (400/500/600) ·
+`Newsreader` (ital 0/1, opsz 6–72, wght 400) · `Inter` (400/500/600) ·
+`Roboto Serif` (ital 0/1, wght 400/500/600/700) · `Roboto Slab` (400/500/600/700) ·
 `Source Sans 3` (ital 0/1, wght 400/500/600) · `Mukta` (400/600/800).
+
+Roboto Serif is the case study's serif and the only reason its bold weights are
+loaded. Newsreader is 400-only: nothing on the site sets it bold, and the
+case study no longer borrows it.
 
 ### 2.3 Spacing and rhythm
 
@@ -243,6 +276,13 @@ Flex row, `z-index: 3`, `justify-content: space-between`, gap `16px`.
 | | padding-bottom | `3px` |
 | `.nav-links a::after` | underline | `1px` `--accent`, `width 0→100%` over `0.28s` standard ease |
 
+`.nav--inset` adds `22px clamp(20px, 3.4vw, 46px) 0` of padding. The hero
+supplies that inset through `.hero`'s own padding; a page without a hero has to
+supply it itself, so `<Nav inset />` is what every non-hero page renders. **The
+two values must stay in step with `.hero`'s padding** or the wordmark moves
+between the landing page and a detail page. See
+[§9.12](#912-the-navs-inset-was-the-heros-padding).
+
 Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 
 ### 4.2 Hero copy column — `.copy`
@@ -328,7 +368,8 @@ card grid. Modelled on the strangepixels work page.
 | | hover | `translateY(-3px)` |
 | | cursor | `none` — the follower stands in, see [§4.8](#48-cursor-follower--cursor) |
 | `.work-card__media` | aspect | `4 / 3`, radius `2px`, no border |
-| | background | `rgba(0, 29, 87, 0.06)` placeholder |
+| | background | `rgba(0, 29, 87, 0.06)` — the ground the artwork sits on, and the whole media block on a card that has none |
+| `.card-art` | fill | absolute `inset: 0`, `place-content: center`, padding `9% 8%` |
 | `.work-card__meta` | padding | `16px 4px 6px`, `flex: 1` |
 
 
@@ -344,9 +385,23 @@ categories and leave whitespace rather than shrinking. `grid-auto-rows: 1fr`
 alone is not enough: each category is its own grid, so it only equalises within
 one. Measured: all 11 cards 516 × 551.
 
-`.work-card__media` is a **placeholder**. When real images exist, add an
-`image` field per project and swap the div for an `<img>` — the aspect ratio
-and border stay.
+**Card artwork lives in `CardThumb.jsx`, not in `projects.js`.** It is a
+slug → component map with a `getThumb(slug)` lookup, the same shape as
+[§8.3](#83-srccasestudies)'s case-study registry, for the same reason: a card's
+art is markup and CSS, not copy, and `projects.js` stays copy-only. A slug with
+no entry renders the plain ground — that is still every project but one.
+
+"Filling Cabinets to Fingertips" reuses **its own case-study hero art**,
+imported from `caseStudies/icons` rather than re-exported so each SVG is
+imported once in the bundle. Its three pieces are laid out on the same
+two-column grid as `.cs-hero__art`, sized as a share of the media block, so the
+arrangement holds at every card width. The hero's **title panel is deliberately
+not in the thumbnail** — the card prints the title and description directly
+underneath it, and text baked into an image is neither selectable nor legible
+at card size.
+
+The hover `.work-card__wave` still paints over the artwork; it is the grid's
+hover language and is not per-card.
 
 ### 4.6b Dashed frame — `.dash-frame` / `DashFrame.jsx`
 
@@ -416,11 +471,13 @@ native cursor is left alone.
 
 ### 4.6 Project detail — `.project`
 
-Intentionally near-empty: title and a back link only.
+The frame every detail page sits in: `<Nav inset />`, a back link, then either a
+case study from `src/caseStudies` or — for a slug with no case study yet — the
+title alone.
 
 | Element | Property | Value |
 | --- | --- | --- |
-| `.project` | padding | `clamp(96px, 18vh, 190px) clamp(20px, 3.4vw, 46px) 80px` |
+| `.project` | padding | `clamp(26px, 4.5vh, 52px) clamp(20px, 3.4vw, 46px) 80px` |
 | `.project__back` | size / weight | `11px` / `600`, `0.16em`, `uppercase` |
 | | opacity | `0.6` → `1` on hover, colour → `--accent` |
 | | margin-bottom | `clamp(22px, 4vh, 44px)` |
@@ -428,6 +485,253 @@ Intentionally near-empty: title and a back link only.
 | `.project__note` | `--muted`, margin-top `18px` |
 
 An unknown slug renders `Not found` plus the slug — it must never render blank.
+
+The top padding used to be `clamp(96px, 18vh, 190px)`, propping the page down
+because the nav was pinned to the very corner. `.nav--inset` fixed the cause, so
+the padding is now an ordinary one. See [§9.12](#912-the-navs-inset-was-the-heros-padding).
+
+---
+
+### 4.9 Case study — `.cs`
+
+One self-contained block per case study, currently only "Filling Cabinets to
+Fingertips" (`src/caseStudies/TctdPage.jsx`). It is walled off from the rest of
+the site on purpose: [§11b](#11b-case-studies)'s fidelity rule keeps the source
+artwork's own colours, so `.cs` declares them locally and they appear nowhere
+else.
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--cs-green` | `#2f6454` | Body prose, the icon line art, the title |
+| `--cs-dark` | `#1a3740` | Headings, card titles, figures, in-card prose |
+| `--cs-coral` | `#d6576b` | Every dashed frame, the section numbers, numbered badges |
+| `--cs-teal` | `#5b9aad` | Time-study bars, journey step discs, the "paper" panel |
+| `--cs-deep` | `#2d5a4a` | The "digital" panel, mockup chrome, outcome figures |
+| `--cs-band` | `#eef4f6` | The tint strip behind a row of text |
+| `--cs-track` | `#d8dbd7` | Time-study bar track |
+| `--cs-line` | `#e8eae9` | Solid card border |
+
+| Element | Property | Value |
+| --- | --- | --- |
+| `.cs` | max-width | `1180px`, centred |
+| | `--cs-k` | `0.787` — **the whole page's type scale** |
+| | `--cs-serif` | `'Roboto Serif'` — **the artwork's own serif**, not the site's `--serif` |
+| | `--cs-slab` | `'Roboto Slab'`, for `.cs-num` only |
+| | `--cs-dash` | `2px dashed var(--cs-coral)` |
+| | `--cs-radius` | `9px` |
+| | `--cs-shadow` | `0 0 6px rgba(0, 0, 0, 0.09)` — the export's blur, **not** its alpha; see below |
+| | `--cs-pad` | `26px` solid-card padding |
+| solid card | | `1px` `--cs-line`, radius `12px`, `0 2px 12px rgba(26,55,64,0.05)` |
+| `.cs-badge` | disc | `34pt`, `--cs-coral`, white numeral at `20pt` |
+| `.cs-step__n` | disc | `38px`, `--cs-teal`, white numeral |
+
+**`--cs-k` is the one number that resizes the page.** Every font-size in the
+block is `calc(<the artwork's point size> * var(--cs-k))`, so the sizes in the
+CSS read as the Figma frame's own values and the whole page retunes from one
+place. The frame carries **1500pt of content** against this page's 1180px,
+which is where `0.787` comes from — change the max-width and this must change
+with it or the type stops being in proportion to the layout. The responsive
+steps hold the same ratio at `0.7` and `0.656`.
+
+**The artwork's type, from its own CSS export.** The Figma export names the
+faces and their metrics, so these are transcribed rather than matched by eye:
+
+| | Face | Weight | Size / line-height | Tracking | Colour |
+| --- | --- | --- | --- | --- | --- |
+| body, notes, labels | Source Sans | 400 (700 when emphasised) | `24 / 30` | `0.05em` | `--cs-dark`, `--cs-coral` for a note |
+| card title | Roboto Serif | 600 | `28 / 25` | none | `--cs-dark` |
+
+Two of those are set on `.cs` itself and inherit: **line-height `1.25`** and
+**letter-spacing `0.05em`**. Without them the block read looser and tighter-
+tracked than the artwork at every size — it was the single biggest reason the
+page looked wrong. The serif is set solid, so every serif element resets the
+tracking back to `normal` in one grouped rule.
+
+**Gutters are per row, not global.** The artwork does not use one gutter: the
+stat and meta rows sit on 27pt, the journey on 35pt, the department pair on
+39pt, the problem cards on 51pt, the two-up card grid on 67pt, and the method
+row on 71pt *inset* 37pt inside the content column. Each is written as
+`calc(<pt> * var(--cs-k))` for the same reason as the type.
+
+**Dashed frames.** One rule lists every dashed box and gives it `--cs-dash`,
+`--cs-radius` and `--cs-shadow`; the sizes stay per row. The stroke and radius
+are the export's (`2px dashed #D6576B`, `border-radius: 10px`, written here as
+9px from the frame SVG — they disagree by a pixel and it does not show).
+
+**The shadow's alpha is deliberately not the export's.** The export shadows
+these cards with `drop-shadow(0 0 6px rgba(0,0,0,0.2))`, a filter that follows
+the element's own alpha — for a dashed border that is *the dashes*, a broken
+line of soft dots. A CSS `box-shadow` at the same alpha paints the whole card
+instead, which reads several times heavier and looked wrong on the page.
+`filter` cannot be substituted: it would shadow each card's text as well. So
+the blur is the export's and the alpha is dropped to `0.09` to match the
+weight. **If a card's shadow ever looks heavy, this is the number**; do not
+raise it back to 20% on the grounds that the export says so.
+
+The SVG's `stroke-dasharray="10 10"` has **no CSS equivalent**: `border-style:
+dashed` lets the browser pick the dash length. If the dash rhythm ever has to
+be exact, that means an SVG border in the style of `DashFrame` ([§4.6b](#46b-dashed-frame--dash-frame--dashframejsx)),
+not a CSS border.
+
+**The tint band.** `.cs-band` paints an **opaque** `--cs-band` strip that runs
+`100vw` past its own box on both sides. Every cell in the row paints one, they
+all overlap into a single unbroken strip, and the row (`.cs-stats`,
+`.cs-probs`) clips it back with `overflow: clip` plus an
+`overflow-clip-margin` of one gutter, which is the bleed the artwork has.
+
+Three things about that are load-bearing:
+
+- **The fill must stay opaque.** Every band overlaps every other one; a
+  translucent fill would darken across the whole row.
+- **`clip`, not `hidden`.** `hidden` would make the row a scroll container.
+- **The clip margin is what lets the cards' shadows out.** Without it
+  `overflow: clip` would cut `--cs-shadow` off at the row's edge.
+- **It is `56px`, a literal.** Twice the export's 28pt bleed, so the strip
+  reads as a deliberate full-width band. It cannot be written as a `calc()` —
+  see [§9.15](#915-overflow-clip-margin-computes-to-0-from-a-calc).
+- **The band's own depth is set per row.** The block default reaches further
+  than the export does, and on `.cs-prob__text` it reached up over the coral
+  note above the prose, so that row restates it: 7pt above the text and 11pt
+  below, which is the export's `232-370` against a `239-359` text box. The
+  30pt gap between note and prose is a margin on the **note**; as padding on
+  the prose it would have been inside the band's box and pushed it back up
+  over the note.
+
+`.project` carries `overflow-x: clip` so that bleed can run into the page's
+side padding without the page gaining a horizontal scrollbar — at ~900px the
+gutter is narrower than the bleed. `clip`, not `hidden`, for the same reason as
+the rows.
+
+An earlier version bled each band by only half a gutter, which left it stranded
+inside its own card's padding: three separate rectangles with white between
+them instead of one band.
+
+**Measures are set in the artwork's points, never in `ch`.** `ch` tracks the
+font's zero-width, so a `ch` measure drifts the moment the face changes — and
+it did: `.cs-body` at `62ch` was so much narrower than the artwork that every
+section's opening paragraph ran three lines where the export runs two, and
+`.cs-pull` at `62ch` broke the §01 constraint quote in half where the export
+sets it on one line. Both now read from the export:
+
+| | Artwork | Ours |
+| --- | --- | --- |
+| `.cs-body` | ~980pt of a 1492pt content column | `calc(980px * var(--cs-k))` |
+| `.cs-pull` | longest line ~1214pt; the next block breaks before 1270pt | `calc(1270px * var(--cs-k))` |
+| `.cs-hero__frame` inset | 37pt | `calc(37px * var(--cs-k))` |
+| `.cs-hero__sub` band | clears the frame by 8pt each side | `calc(-45px * var(--cs-k))` |
+
+The hero inset is load-bearing: a larger one wrapped the h1, which the artwork
+sets on one line. So is the hero band's overhang — it runs 32pt past the frame
+on each side in the artwork, so `.cs-hero__sub::before` is `-69pt` (37pt of
+frame inset plus the 32pt).
+
+**The numbered badge lives inside `.cs-card__title`, not on top of the card.**
+The title is a flex row — title, then badge, `space-between` and centred — so
+the badge is aligned to the title's own middle and its right edge falls on the
+card's padding, making the two side insets equal by construction. Absolutely
+positioned it could only be aligned to the card's corner, which put it below
+the title's centre and, on the §08 cards, on top of the sub-heading beneath it.
+Being in flow is also what stops it overlapping anything: it takes its own
+space in the row.
+
+`.cs-card__title` is **24pt, not the artwork's 28pt**. These cards are narrower
+than the export's, so at 28pt the title crowded the card and dwarfed the panels
+inside it.
+
+**Card spacing is the export's, and its horizontal insets are not uniform.**
+`.cs-prob` is a 464pt card with the icon 37pt down, the title block 30pt below
+it, the note 6pt under the title, the prose 30pt below that and 34pt clear of
+the bottom. The title block runs nearly the full card (3pt inset) while the
+prose is inset 24pt — **that asymmetry is what keeps a card title on one
+line**, and a uniform padding is what had them wrapping into their own notes.
+`.cs-stat` uses the same 74pt icon and a 38pt gap on both sides of the value;
+at 14px the value and its label read as one block.
+
+**`.cs-time__label` is left-aligned at every width.** The artwork sets all six
+time-study labels flush left on a common line; a right-aligned column reads as
+a different layout, and the mobile step used to have to undo it.
+
+---
+
+### 4.10 Guide case studies — `.g`
+
+**One block, two pages.** `Guide1Page.jsx` and `Guide2Page.jsx` are two halves
+of one Figma document and one design language, so they share `.g`; `.cs`
+([§4.9](#49-case-study--cs)) stays TCTD's alone. Part 2 adds `g--p2` for the
+three things it genuinely does differently.
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--g-navy` | `#1b235b` | Every heading, and prose set inside a card |
+| `--g-slate` | `#364156` | The hero title, and nothing else |
+| `--g-coral` | `#cc614d` | Running prose, quotes, the icon line art |
+| `--g-plum` | `#260030` | Prose inside the four meta cards |
+| `--g-green` | `#2d6a4f` | Every dashed frame, and the connector arrows |
+| `--g-band` | `#f5f8ff` | The tint strip behind a row of text |
+| `--g-coral` on `.g--p2` | `#b55644` | Part 2's darker prose coral |
+| `--g-warm` on `.g--p2` | `#fbf6f5` | Part 2's second tint, behind the Feature Analysis cards |
+| `--q-t` / `--q-p` / `--q-c` | `#f7e7e4` / `#e5f4e7` / `#f5f8ff` | Part 2's quote cards: therapist / patient / client |
+
+| Element | Property | Value |
+| --- | --- | --- |
+| `.g` | max-width | `1180px`, centred |
+| | `--g-k` | `0.7877` — **the whole page's type scale** |
+| | `--g-bleed` | `calc(26px * var(--g-k))` — how far a band runs past its row |
+| | `--g-dash` | `2px dashed var(--g-green)` |
+| | `--g-radius` | `calc(14px * var(--g-k))` |
+| | body | Source Sans `24/1.34` |
+| `--g-slab` | | `'Roboto Slab'`, **every** heading on both pages |
+
+**`--g-k` is the one number that resizes the page**, exactly as `--cs-k` does
+for TCTD. The Guide frame carries **1498pt of content** against this page's
+1180px, which is where `0.7877` comes from; change the max-width and this must
+change with it. The responsive steps hold `0.66` and `0.62`.
+
+**The faces are the export's own, identified from the render, not guessed.**
+Every heading is **Roboto Slab Bold** — the blunt slab serifs, the spurred `G`
+and the flat-terminal `a` are unmistakable at 300dpi — and everything else is
+Source Sans, the face `--sans-copy` already loads. Neither page touches
+`--serif`, so neither depends on Self Modern.
+
+**The band is behind the frame, not inside it.** This is where `.g` differs
+from `.cs`. In the Guide artwork the tint strip is a rectangle *under* the
+dashed border, overhanging its card by about 26pt on each side, with the dashes
+drawn over it — so `.g-band::before` bleeds by `--g-bleed` and keeps square
+corners, and `.g-card` has no `overflow: hidden`. Two consequences are
+load-bearing:
+
+- **The four meta cards become one strip.** Their 26pt bleeds meet across a
+  39pt gutter and overlap, which is exactly what the artwork draws. The fill
+  must therefore stay **opaque** — a translucent one would darken where the
+  bleeds overlap.
+- **Rows whose bleed would reach the page edge set `overflow: clip`** (never
+  `hidden`, which would make them scroll containers) with an
+  `overflow-clip-margin` of one bleed.
+
+Three rows set `--g-bleed: 0` because the artwork gives each of their bands
+exactly its own box: the three Key Questions columns, the Sprint Q cards, and a
+framed panel's caption bar.
+
+**Gutters are per row, not global**, same as `.cs`: the meta row is 39pt, the
+overview pair 32pt, the insight cards 23pt, the panel grid 36pt. Each is
+written `calc(<pt> * var(--g-k))`.
+
+**Numbered image panels come in two kinds and they are not interchangeable.**
+A *framed* panel (`framed: true` in the data) is a dashed box with its caption
+on a short tint bar above it; a plain one is a tint panel with the caption
+inside it, over the picture. Both put the coral connector arrow in the white
+between one caption and the next, which is why the arrow is a flex sibling with
+a negative right margin rather than something inside the bar.
+
+**The 2×2 competitor map is placed off the artwork's own coordinates.** Marks
+carry `x`/`y` percentages measured out of the export; the axes are two
+`repeating-linear-gradient` rules crossing at 50/50 because that is where the
+export puts them, and the four arrowheads are CSS triangles.
+
+**Part 2's project timeline threads one coral rule through the ticks.** The
+rule is a flexed `::after` on `.g-tl__tickrow` with a negative right margin, so
+it runs on out of one panel and into the next; only the very last tick's rule
+is suppressed.
 
 ---
 
@@ -638,7 +942,7 @@ Measured at 1440×820: copy text ends `x=513`, sparkle ink starts `x=783`.
 | Path | Renders |
 | --- | --- |
 | `/` | `Home` — hero + Work, About, Photography, Contact |
-| `/work/:slug` | `Project` — blank detail page |
+| `/work/:slug` | `Project` — the case study registered for that slug, else the title alone |
 | `*` | `Project`, which renders `Not found` |
 
 `ScrollManager` in `App.jsx` scrolls to `hash` if present, else to top.
@@ -646,36 +950,60 @@ Nav and CTA hrefs are **absolute** (`/#work`), so they work from a detail page.
 
 ### 7.2 The base path contract
 
-Deployed to a **project** repo, so Pages serves from `/designportfolio/`.
+Served from the **custom domain root**, so there is no path prefix.
 **Four places must agree** — change them together or the site breaks:
 
 | Where | Value |
 | --- | --- |
-| `vite.config.js` | `base: '/designportfolio/'` |
+| `vite.config.js` | `base: '/'` |
 | `src/main.jsx` | router `basename`, derived from `import.meta.env.BASE_URL` |
-| `public/404.html` | `pathSegmentsToKeep = 1` |
+| `public/404.html` | `pathSegmentsToKeep = 0` |
 | `src/fonts.js` | font URL built from `BASE_URL` |
 
-Live at **https://urvivarma5-source.github.io/designportfolio/**
+Live at **https://www.urvivarma.com**
+
+`public/CNAME` holds the domain and is what tells Pages to serve it. It is
+copied verbatim into `dist/` by the build. **Deleting it un-sets the custom
+domain in the repo's Pages settings on the next deploy**, which is the usual
+way a working custom domain silently reverts.
+
+This was `/designportfolio/` while the site lived on the project repo's Pages
+URL. To go back, reverse the four rows above and remove `public/CNAME`.
 
 ### 7.3 The SPA shim
 
-Pages has no server-side rewrite, so `/designportfolio/work/elderease` would
-404. `public/404.html` encodes the path into a query string and redirects;
+Pages has no server-side rewrite, so `/work/elderease` would 404. `public/404.html` encodes the path into a query string and redirects;
 `index.html` decodes it before React mounts.
 
 **Known and accepted:** deep links return an **HTTP 404 status** even though
 they render correctly, because the redirect is client-side. Users never notice;
 crawlers may. Fixing it would require pre-rendering.
 
-### 7.4 Moving to a custom domain
+### 7.4 The custom domain
 
-1. `vite.config.js` → `base: '/'`
-2. `public/404.html` → `pathSegmentsToKeep = 0`
-3. Rename `public/CNAME.example` → `public/CNAME`, bare domain only
-4. DNS: apex → `185.199.108.153` `.109.153` `.110.153` `.111.153`; or `www` →
-   CNAME to `urvivarma5-source.github.io`
-5. Settings → Pages → set domain, enable Enforce HTTPS
+`www.urvivarma.com` is the primary domain; the apex redirects to it. DNS is at
+GoDaddy (`ns13`/`ns14.domaincontrol.com`).
+
+| Type | Name | Value |
+| --- | --- | --- |
+| `CNAME` | `www` | `urvivarma5-source.github.io.` |
+| `A` | `@` | `185.199.108.153` |
+| `A` | `@` | `185.199.109.153` |
+| `A` | `@` | `185.199.110.153` |
+| `A` | `@` | `185.199.111.153` |
+
+The four apex `A` records are what let `urvivarma.com` redirect to the `www`
+host; GitHub issues that redirect itself once both resolve. GoDaddy's parked
+`A @` record must be **replaced**, and the stock `CNAME www → urvivarma.com`
+**repointed** — left as it was, `www` resolves back to the parked page and the
+site never appears.
+
+Leave the `NS`, `SOA`, `_domainconnect` and `_dmarc` records alone; none of
+them affect where the site is served from.
+
+Then, in the repo: **Settings → Pages → Custom domain →** `www.urvivarma.com`,
+wait for the DNS check to pass, then tick **Enforce HTTPS**. The certificate is
+issued by Let's Encrypt and can take up to an hour after the check passes.
 
 The router `basename` needs no change — it follows `BASE_URL`.
 
@@ -715,8 +1043,40 @@ design. Slugs match the original Adobe Portfolio URLs where they existed; three
 projects are new and have no page content: `smarter-project`,
 `branding-for-sugar-rush`, `employee-tool-use-at-intuit`.
 
-When adding metadata (year, role, thumbnail), add the fields here, extend
-`WorkGrid`, and **document the new card tokens in [§4.5](#45-work-grid--work-grid--work-card)**.
+When adding metadata (year, role), add the fields here, extend `WorkGrid`, and
+**document the new card tokens in [§4.5](#45-work-grid--work-grid--work-card)**.
+Thumbnails are the exception — they are components in `CardThumb.jsx`, not a
+field here. See [§4.5](#45-work-grid--work-grid--work-card).
+
+### 8.3 `src/caseStudies/`
+
+One folder, the same kinds of file per case study, and the same
+copy-out-of-components rule as `content.js`:
+
+| File | Holds |
+| --- | --- |
+| `index.js` | `caseStudies`, a slug → component map, and `getCaseStudy(slug)`. A slug absent from it renders the stub in [§4.6](#46-project-detail--project) |
+| `tctd.js`, `guide1.js`, `guide2.js` | **Every word** of a case study, as structured data |
+| `TctdPage.jsx`, `Guide1Page.jsx`, `Guide2Page.jsx` | Layout only — each reads its data file and holds no copy |
+| `icons.js`, `guide1Art.js`, `guide2Art.js` | Import a page's artwork from `src/assets/<study>/` and re-export it as maps |
+| `rich.jsx` | Turns the Guide files' `{ em }` runs into markup — the one place that happens |
+
+**Emphasis lives in the data, not the layout.** In the Guide files a paragraph
+is a string, or an array whose members are strings and `{ em }` objects; `em`
+is the artwork's bold-italic run in running prose and its bold run inside a
+card. One level only, because the artwork only ever has one. A `\n` inside a
+string is a line break the artwork actually has, and `rich.jsx` renders it as
+one — do not collapse them.
+
+To add a case study: add `<slug>.js` (copy), `<Name>Page.jsx` (layout), its
+assets, and one line in `index.js`. **Give the component file a name that does
+not collide case-insensitively with the data file** — see
+[§9.13](#913-tctdjsx-and-tctdjs-are-the-same-file-on-macos).
+
+Artwork is imported, never referenced by path, so Vite hashes it and applies the
+base path. An absolute `/assets/...` URL breaks the moment the base path is
+not `/` — it has been, and could be again;
+the JSX twin of [§9.4](#94-vite-does-not-rewrite-absolute-public-asset-urls-in-css).
 
 ---
 
@@ -814,6 +1174,62 @@ reading "Placeholder name, rename freely" shipped to the page as a visible
 label. Annotations for a human reader belong in a `//` comment; `note` is only
 for real labels like "Part 1".
 
+### 9.12 The nav's inset was the hero's padding
+
+`.nav` carried no padding of its own. On the landing page it did not need any:
+it is the first child of `.hero`, and `.hero`'s `22px clamp(20px, 3.4vw, 46px)`
+positioned it. On a detail page the same component rendered as a bare child of
+`<main>` and landed flush in the top-left corner — a different-looking nav on
+every page that is not the hero, with a large empty gap under it because
+`.project` was compensating with `clamp(96px, 18vh, 190px)` of top padding.
+
+The fix is `<Nav inset />` and `.nav--inset`, which restates the hero's padding.
+**The two must be changed together.** If you retune `.hero`'s padding and not
+`.nav--inset`, the wordmark shifts when you navigate to a detail page — which is
+exactly the symptom that is easy to see and hard to attribute.
+
+Check both, don't assume: `document.querySelector('.mark').getBoundingClientRect()`
+must give the same `top` and `left` on `/` and on `/work/<slug>`.
+
+### 9.13 `Tctd.jsx` and `tctd.js` are the same file on macOS
+
+The case study's layout and its copy were first called `Tctd.jsx` and `tctd.js`.
+The default macOS filesystem is case-insensitive, so `import Tctd from './Tctd'`
+resolved to the **data** module and the app died with
+
+> The requested module '/src/caseStudies/tctd.js' does not provide an export
+> named 'default'
+
+which reads like a broken export, not a name collision. Worse, it would have
+worked on the case-sensitive filesystem a CI runner uses. Hence `TctdPage.jsx`.
+Never let two files in one folder differ only by case.
+
+### 9.14 Raster strategy: WebP, one format, no `<picture>`
+
+The Guide case studies are the first pages with photographs and screenshots on
+them, and they settle the open question §12 used to carry. The rules:
+
+- **One format: WebP**, quality 82, no JPEG fallback and no `<picture>`. Every
+  browser that can run this site can decode it, and a fallback would double the
+  asset count for nothing.
+- **Capped at 2200px wide**, rendered at 2× the artwork's points and clamped.
+  That is retina at the widest step and still a few dozen KB per panel.
+- **`loading="lazy"` on every one of them**, because both pages are long and
+  the visitor sees perhaps a fifth of the images.
+- **Imported, never referenced by path** — the JSX twin of
+  [§9.4](#94-vite-does-not-rewrite-absolute-public-asset-urls-in-css).
+
+The extraction and the trade-off between the two ways of getting a raster out
+of a Figma export are in [§11c](#11c-the-guide-case-studies).
+
+### 9.15 `overflow-clip-margin` computes to 0 from a `calc()`
+
+`overflow-clip-margin: var(--cs-gap)` works. `overflow-clip-margin: calc(2 *
+var(--cs-gap))` computes to **`0px`** in Chrome — no warning, no invalid-value
+message in devtools. The row then clips the tint band flush at its own edge
+and takes the cards' shadows with it, which looks like the band rule broke
+rather than like a unit problem. Write the value as a literal.
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -846,6 +1262,34 @@ const inkTop = pct(0.01) / dpr, inkBottom = pct(0.99) / dpr
       is the one that drifts (see §6.2)
 - [ ] `prefers-reduced-motion` still renders the name
 
+### 10.2b Checking a case study end to end
+
+A case-study page is 14–22k pixels tall, so scrolling and screenshotting it in
+a preview pane is slow and — when the pane is hidden — returns stale frames
+that look like missing content. Render the whole page in one shot instead:
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless=new --disable-gpu --hide-scrollbars \
+  --virtual-time-budget=12000 --window-size=1400,22000 \
+  --screenshot=out.png "http://localhost:<port>/work/<slug>"
+```
+
+Then slice `out.png` into readable strips and compare them against the same
+strips cut out of the source PDF with `pdftoppm -r 72 -x/-y/-W/-H`, which puts
+the two side by side at the artwork's own scale.
+
+For overflow, measure rather than look:
+
+```js
+const w = document.documentElement.clientWidth
+;[...document.querySelectorAll('.g *')].filter(e => e.getBoundingClientRect().right > w + 2)
+```
+
+Both Guide pages return zero at 430, 820 and 1120px. Run it after any change to
+a bleed, a gutter, or a grid — the tint band's overhang is the thing that
+escapes.
+
 ### 10.3 Checklist for a routing or deploy change
 
 - [ ] `npm run build` clean
@@ -862,6 +1306,16 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Both Guide case studies built from their Figma exports: shared `.g` block (§4.10), `dump_pdf_boxes.py` for the layout and `render_case_study_regions.py` for the annotated compositions, WebP raster strategy (§9.14), and §11c for the whole pipeline |
+| _pending_ | Site moves to the custom domain `www.urvivarma.com`: base path is now `/`, the 404 shim keeps no repo segment, and `public/CNAME` carries the domain (§7.2, §7.4) |
+| _pending_ | Case-study cards: the numbered badge moves into the title row (smaller, centred on the title, equal side insets), card titles drop to 24pt, the tint band no longer reaches over the coral note, and its bleed doubles without scrolling the page |
+| _pending_ | Case-study spacing and weight: card shadows lightened to match the export's `drop-shadow`, the hero band overhangs its frame as the artwork has it, and the stat and problem cards take the export's own gaps and insets |
+| _pending_ | Case-study type comes from the Figma CSS export: the serif is Roboto Serif (its real face, not `--serif`), body is 24/30 at 0.05em, and the body and pull measures are the artwork's points instead of `ch` |
+| _pending_ | Case study copy: three typos the Figma ships are corrected, and §08's reminders card gets labels that match its own artwork instead of the records card's |
+| _pending_ | Work cards can carry artwork: `CardThumb.jsx` maps slug → art, and "Filling Cabinets to Fingertips" shows its own hero line art |
+| _pending_ | Case study polish against the export: pull quotes take the artwork's measure so the §01 constraint quote is one line again, time-study labels are flush left at every width, and a time value no longer breaks after its range on mobile |
+| _pending_ | Case study: dashed frames take the supplied SVG's radius/stroke/shadow, the tint band is one continuous strip again, `.cs-num` is Roboto Slab, per-row gutters and `--cs-k` now derive from the artwork's 1500pt frame, and em dashes are out of the copy |
+| _pending_ | First real case study: "Filling Cabinets to Fingertips" built from the Figma PDF, artwork extracted to SVG; `.cs` block and §4.9 added; `Nav inset` fixes the detail-page nav |
 | _pending_ | Sub-headline replaced with one sentence; copy column is now short enough that the headline needs no shrink (68px, scale 1.0) |
 | _pending_ | Dash frame uses our accent, not the reference's rose; all cards forced to one size with reserved line-space; removed a placeholder note that was rendering as visible card copy |
 | _pending_ | Reverted pills to their own 1px dashed accent border — the card `DashFrame` is for cards only; this also restores the particle name's position |
@@ -905,16 +1359,238 @@ the script: strings are literal with **octal escapes** inside `TJ` arrays, and
 Figma **switches font subsets mid-block**, so the current font must be tracked
 sequentially or later runs decode into convincing-looking garbage.
 
-Fidelity rule for case-study pages: **keep the Figma colours**, swap only its
-serif for `--serif`. Source Sans stays as it is.
+### The artwork
+
+`tools/extract_case_study_art.py` pulls the line art out as **vector** SVGs,
+against a region list in PDF page coordinates:
+
+```bash
+python3 tools/extract_case_study_art.py "TCTD CASE STUDY.pdf" \
+    src/assets/tctd/ tools/tctd-art-regions.json
+```
+
+All 23 of this case study's icons came out that way — nothing was redrawn and
+nothing is a screenshot. Three things about the format cost real time and are
+worth knowing before touching the script:
+
+1. **Resource scope is per form, not per page.** The icons are not one XObject
+   each. `/X7 Do` on the page reaches a form whose own `/Resources` define
+   another `/X1`. Resolve names against the page's map and every icon comes out
+   as the same filing cabinet — which looks like a plausible result, so it is
+   easy to miss.
+2. **Nothing is stroked.** Figma outlines its strokes, so the page contains not
+   a single `S`; it is 160k curve ops of `f` fills. Do not go looking for
+   stroke ops to tell art from text.
+3. **Type3 text is in the same soup.** Skipping everything between `BT`/`ET`
+   is what keeps captions out of an icon that a region box overlaps.
+
+Regions are matched by **containment**, so a box may overlap its neighbours
+without pulling their art in; each SVG is then trimmed to its own art's real
+bounding box. To re-cut one, edit `tools/tctd-art-regions.json` and rerun.
+
+The fills are baked in, so the icons are drawn as `<img>` and cannot be
+recoloured from CSS. That is the point — see the fidelity rule below.
+
+### Fidelity rule
+
+**Keep the Figma's own colours and its own faces.** The artwork's palette lives
+in `.cs` as block-scoped tokens ([§4.9](#49-case-study--cs)) and is the one
+documented exception to the palette rule in
+[§0.3](#03-rules-that-are-not-negotiable).
+
+The serif was originally swapped for the site's `--serif`, on the assumption
+that the export's face was unavailable. It is not: a later CSS export from the
+same Figma file names it as **Roboto Serif**, which is on Google Fonts, so the
+case study now sets the real thing. That export also supplied the metrics in
+[§4.9](#49-case-study--cs) — 24/30 Source Sans at `0.05em`, 28/25 Roboto Serif
+at 600 — which are transcribed rather than guessed. **Nothing in the case study
+depends on Self Modern any more.**
+
+When a new case study arrives, ask for its CSS export before matching type by
+eye. Figma's "Copy as CSS" gives family, weight, size, line-height, tracking
+and colour per layer, and reading it took an afternoon of eyeballing off this
+page.
+
+One deliberate departure from the export, a substitution rather than a
+redesign:
+
+- **Dashed frames are CSS `border-style: dashed`**, not the site's `DashFrame`
+  and not the export's exact dash geometry. `DashFrame` paints the site accent
+  (`--rule-dash`), which is the wrong colour here.
+
+**Copy departures.** The fidelity rule covers design, not defects. Four
+corrections are made against the export, each marked `// FIXED` at its line in
+`tctd.js` with what the export said:
+
+| Where | Export | Page |
+| --- | --- | --- |
+| §01 body | "interdependant" | "interdependent" |
+| Journey step 1 | "arrive at 08:3," | "arrive at 08:30," |
+| Journey step 5 | "appointment dates. ." | "appointment dates." |
+| §08 card 4 labels | the Patient Records card's labels, copy-pasted | "No reminder system / Nothing sent between visits" → "Automated reminders / Confirm or reschedule by reply" |
+
+Em dashes are also out of the copy throughout, which is a house choice rather
+than a correction. **Nothing else may be silently "corrected"** while editing
+something near it — add a row here if it is.
+
+§08 card 3 (Patient Records) still carries "Unified status system /
+Auto-updated, shared legend" as its *after* label, which reads like the same
+copy-paste. It is left as the export has it, pending a decision.
+
+## 11c. The Guide case studies
+
+Two pages from one Figma document: `Guide Pt 1.pdf` (a 1805×21344pt frame) and
+`guide part 2.pdf` (1805×30981pt). Both are gitignored, like TCTD's.
+
+Their **content column is 1498pt** — the frame is 1805pt wide with 154pt
+margins — which is where `.g`'s `--g-k` of `0.7877` comes from
+([§4.10](#410-guide-case-studies--g)).
+
+### Getting the layout out, not just the copy
+
+`tools/extract_case_study.py` recovers the copy, exactly as it does for TCTD
+([§11b](#11b-case-studies)); it now also records each block's **x**, which is
+what makes it possible to tell a left column from a right one.
+
+The new piece is `tools/dump_pdf_boxes.py`, which answers "where is
+everything?" — the question you have to answer to rebuild a frame at full
+fidelity instead of eyeballing it:
+
+```bash
+python3 tools/dump_pdf_boxes.py "Guide Pt 1.pdf" out/boxes.json
+```
+
+It emits every filled path as `{colour, bbox}` and every image placement, all
+in PDF page coordinates. Two things it gets right that cost time to learn:
+
+1. **A dashed frame is one path, not many.** Figma outlines its strokes, so a
+   dashed border arrives as a single filled path with dozens of subpaths and
+   *one* `f`. Its bbox is the frame. That is why the whole page's geometry —
+   every card, band, gutter and column — falls out of one pass.
+2. **Figma masks with `W n`, and it masks constantly.** Half of Part 1's image
+   placements are clipped. The dumper therefore reports two rects per image:
+   `f`, the `cm` box the bitmap is laid into, and `b`, that box intersected
+   with the clipping path in force. Use `b` to decide where something *is*;
+   use `f` to place the bitmap and then crop to `b`. Ignore the clip and a
+   screenshot comes out with its neighbour's content baked into it — which
+   looks plausible, so it is easy to ship.
+
+Colours read straight off the render with `pdftoppm`, not out of the content
+stream: Figma writes fills through an ICC colourspace, and a naïve "last three
+numbers before `scn`" read reports pure blue for the tint band.
+
+### Getting the pictures out — two tools, and when each is right
+
+| Tool | Use for | Why |
+| --- | --- | --- |
+| `tools/extract_case_study_images.py` | a panel that really is one picture | Resamples the **original bitmap**, so it is sharper and much smaller |
+| `tools/render_case_study_regions.py` | a *composition* — screenshots with vector arrows and annotation boxes drawn over them | Pulling the bitmaps out would drop everything that explains them |
+
+```bash
+python3 tools/extract_case_study_images.py "Guide Pt 1.pdf" \
+    out/boxes.json src/assets/guide1/ tools/guide1-image-regions.json
+python3 tools/render_case_study_regions.py "guide part 2.pdf" \
+    src/assets/guide2/ tools/guide2-render-regions.json
+```
+
+Both take a `{name: [x0, y0, x1, y1]}` region file in PDF page coordinates, the
+same convention as the vector extractor's. Three things about the bitmap one:
+
+- Regions are matched by an image's **centre**, then clipped — not by
+  containment (which drops masked screenshots) and not by intersection (which
+  drags in the neighbours).
+- **Every image carries an `/SMask`**, a separate Flate `DeviceGray` alpha
+  plane. It is composited onto white, because the page's ground is white.
+- **A panel is often several placements** — a Miro board with photographs and
+  video-call thumbnails over it. Compositing them at extraction time is what
+  keeps the markup one `<img>` per panel.
+
+`render_case_study_regions.py` needs poppler's `pdftoppm` on PATH
+(`brew install poppler`). It renders at 150dpi and clamps to 2200px
+([§9.14](#914-raster-strategy-webp-one-format-no-picture)).
+
+The vector extractor is unchanged and did the rest: 24 SVGs for Part 1 and 13
+for Part 2, plus five drawings and seven icons Part 2 **shares with Part 1** and
+imports from `src/assets/guide1/` rather than duplicating.
+
+### Fidelity rule, and where it was bent
+
+Same rule as TCTD: **keep the Figma colours**, and here the Figma faces too —
+both are on Google Fonts, so nothing is standing in.
+
+Two deliberate departures, both documented rather than silent:
+
+- **Dashed frames are CSS `border-style: dashed`.** The browser picks the dash
+  length; the export's exact 10/10 geometry has no CSS equivalent. Same call as
+  [§11b](#11b-case-studies).
+- **Part 2's screen walkthroughs keep their explanatory text inside the
+  image.** Those blocks are compositions, and a few of the export's own
+  sentences sit *between* the screenshots being explained. Rather than crop
+  them out and re-set them — which would have meant guessing at reading order —
+  the composition is rendered whole and the sentence rides along inside it.
+  Every such figure carries descriptive `alt`. Headings, descriptions, quotes
+  and numbered captions are all live text. One quote — "No engagement analytics
+  right now" [C1 - 13] — sits *over* the screenshots it belongs to in §1.4's
+  fourth item, so it is inside that composition and deliberately not repeated
+  as a live card underneath.
+
+### Copy departures
+
+The fidelity rule covers design, not defects. Each correction is marked
+`// FIXED` at its line, with what the export said, and the file headers list
+them. **Nothing else may be silently "corrected"** — add a row here if it is.
+
+| Where | Export | Page |
+| --- | --- | --- |
+| Pt 1 competitor header | "LinkedIn Leaning" | "LinkedIn Learning" |
+| Pt 1 §2, Pt 2 process | "Lightening Demos" | "Lightning Demos" |
+| Pt 2 §1.1 description | "keyworsd" | "keywords" |
+| Pt 2 Key Questions | "Fo which content to share" | "For which content to share" |
+| Pt 2 §1.4 change 1 | "won't feel feel pressured" | "won't feel pressured" |
+| Pt 2 My Role | "Testing Facillitator" | "Testing Facilitator" |
+| Pt 2 patient §1.1 legend | "= Patient Quote (C)" | "= Patient Quote (P)" |
+
+Kept as the export has them, because they are voice rather than slips: **"The
+Overcome"** as the counterpart to "The Challenge", and **"Sprint Q 1"** spaced
+as three words.
+
+Two gaps in the source are surfaced on the page rather than filled in:
+
+- **Both prototype CTAs have no URL.** The export draws "Link to Therapist
+  Prototype" and "Link to Patient Prototype" as flat artwork, so the Figma
+  prototype links are simply not in the file. They render with the artwork's
+  styling and a marked "Link to come" placeholder, and are deliberately not
+  `<a>` elements.
+- **Two of the three Future Implementation cards have no copy.** All three ship
+  the *same* Calendar Integration paragraph, which is a copy-paste in the
+  source. The headings are real; the copy is not written yet, and the cards say
+  so rather than repeating the paragraph or inventing two more.
 
 ## 12. Open threads
 
-- **Hero copy is placeholder.** Real words go in `content.js`.
-- **Project detail pages are blank by design.** Awaiting case-study content and
-  a decision on metadata fields.
-- **Self Modern is not installed.** Newsreader is standing in.
+- **Seven of ten project pages are still stubs.** "Filling Cabinets to
+  Fingertips" and the two Guide parts are the only case studies; the rest
+  render a title until their content exists. See
+  [§8.3](#83-srccasestudies) for how to add one.
+- **The two Guide prototype links are missing.** Both CTAs render as marked
+  placeholders because the export carries no URL — see
+  [§11c](#11c-the-guide-case-studies). Drop the two Figma prototype URLs into
+  `guide2.js` `views[].prototype` and make them `<a>`s.
+- **Two Future Implementation cards have no copy** — the export repeats the
+  Calendar Integration paragraph under all three headings. See
+  [§11c](#11c-the-guide-case-studies).
+- **Part 1's Business Model Canvas image still reads "Waiting on client to send
+  info"** in its Channels cell. It is in the artwork, so it is on the page;
+  worth a look before this is shown to anyone.
+- **The work card still carries no metadata** (year, role). Nothing needs it
+  yet, but the decision is still open — see [§8.2](#82-srcprojectsjs).
+- **Ten of eleven cards have no artwork.** Only "Filling Cabinets to
+  Fingertips" has a thumbnail; the rest — the two Guide parts included — show
+  the plain ground. Add each as a
+  component in `CardThumb.jsx` — see [§4.5](#45-work-grid--work-grid--work-card).
+- **Self Modern is not installed.** Newsreader is standing in, for the site
+  only — the case study sets its own serif and is unaffected.
 - **No `about` / `photography` / `contact` content** — stub sections only.
-- **No images anywhere yet.** No image loading strategy has been chosen; decide
-  one (sizes, formats, lazy loading) before adding the first one, and document
-  it here.
+- ~~No photographic images anywhere yet.~~ Settled by the Guide case studies:
+  WebP, capped at 2200px, lazy, imported not referenced — see
+  [§9.14](#914-raster-strategy-webp-one-format-no-picture).

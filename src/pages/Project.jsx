@@ -1,23 +1,32 @@
 import { Link, useParams } from 'react-router-dom'
 import Nav from '../components/Nav'
+import { getCaseStudy } from '../caseStudies'
 import { getProject } from '../projects'
 
-// Deliberately blank for now — the title is here only so navigation is
-// testable. Case-study content comes later.
+// Projects with a case study in src/caseStudies render it; the rest still show
+// a title only, until their content exists.
 export default function Project() {
   const { slug } = useParams()
   const project = getProject(slug)
+  const CaseStudy = getCaseStudy(slug)
 
   return (
     <>
-      <Nav />
+      <Nav inset />
       <article className="project">
         <Link className="project__back" to="/#work">
           &larr; Work
         </Link>
-        <h1 className="project__title">{project ? project.title : 'Not found'}</h1>
-        {!project && (
-          <p className="project__note">No project matches &ldquo;{slug}&rdquo;.</p>
+
+        {CaseStudy ? (
+          <CaseStudy />
+        ) : (
+          <>
+            <h1 className="project__title">{project ? project.title : 'Not found'}</h1>
+            {!project && (
+              <p className="project__note">No project matches &ldquo;{slug}&rdquo;.</p>
+            )}
+          </>
         )}
       </article>
     </>
