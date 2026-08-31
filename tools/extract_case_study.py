@@ -121,7 +121,7 @@ def extract(pdf_path):
         content,
         re.S,
     ):
-        y, body = float(seg.group(6)), seg.group(7)
+        x, y, body = float(seg.group(5)), float(seg.group(6)), seg.group(7)
         tm = re.search(rb"([\d.\-]+)(?:\s+[\d.\-]+){5}\s+Tm", body)
         size = round(float(tm.group(1)), 1) if tm else 0
         font, text = None, ""
@@ -133,7 +133,7 @@ def extract(pdf_path):
             for lit in literal.finditer(m.group(2)):
                 text += "".join(table.get(b, "") for b in unescape(lit.group(1)))
         if text.strip():
-            blocks.append({"y": y, "size": size, "text": text.strip()})
+            blocks.append({"x": x, "y": y, "size": size, "text": text.strip()})
 
     blocks.sort(key=lambda b: -b["y"])  # PDF origin is bottom-left
     return blocks
@@ -147,6 +147,6 @@ if __name__ == "__main__":
     out.mkdir(parents=True, exist_ok=True)
     (out / "blocks.json").write_text(json.dumps(blocks, indent=1))
     (out / "text.txt").write_text(
-        "\n".join(f"[{b['size']:>5}] {b['text']}" for b in blocks)
+        "\n".join(f"[{b['size']:>5}] x={b['x']:>7.1f} {b['text']}" for b in blocks)
     )
     print(f"{len(blocks)} blocks, {sum(len(b['text']) for b in blocks)} chars -> {out}/")

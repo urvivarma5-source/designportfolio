@@ -1,0 +1,38 @@
+{
+ "art-puzzle":            [223, 17875, 597, 18233],
+ "art-question":          [295, 17101, 621, 17436],
+
+ "logo-skilljar":         [1019, 16713, 1074, 16768],
+ "logo-linkedin":         [1540, 16713, 1601, 16774],
+ "logo-absorb":           [1215, 16569, 1277, 16631],
+ "logo-zensai":           [1303, 16563, 1375, 16634],
+ "logo-cornerstone":      [1467, 16567, 1528, 16629],
+ "logo-talent":           [1098, 16389, 1153, 16444],
+
+ "business-model-canvas": [158, 14255, 1649, 15157],
+
+ "journey-owner":         [157, 10261, 1650, 11074],
+ "journey-employee":      [136, 9449, 1649, 10261],
+
+ "sprint-strip":          [235, 8606, 1035, 8902],
+
+ "map-hmw-notes":         [156, 7208, 879, 7703],
+ "map-dot-voting":        [927, 7208, 1650, 7703],
+ "map-hmw-wall":          [156, 6740, 1650, 7128],
+
+ "sketch-demos":          [156, 5653, 879, 6148],
+ "sketch-notes":          [927, 5653, 1650, 6148],
+ "sketch-crazy-eights":   [156, 5053, 879, 5548],
+ "sketch-solution":       [927, 5053, 1650, 5548],
+
+ "decide-target-hmw":     [156, 4192, 1649, 4473],
+ "decide-art-wall":       [159, 3610, 882, 4104],
+ "decide-straw-poll":     [926, 3609, 1649, 4098],
+ "decide-super-vote":     [156, 3235, 1647, 3515],
+
+ "proto-search":          [139, 2443, 604, 2724],
+ "proto-leadership":      [139, 2190, 604, 2426],
+ "proto-my-guide":        [616, 2190, 1186, 2724],
+ "proto-results":         [1197, 2443, 1667, 2724],
+ "proto-browse":          [1198, 2190, 1668, 2426]
+}
