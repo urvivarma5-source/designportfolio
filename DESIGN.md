@@ -454,10 +454,21 @@ Two chevrons rendered in **the same sparkle material as the name** — same
 palette, same twinkle — as a quiet scroll prompt. An earlier label-plus-hairline
 version was rejected as too literal.
 
+**It is a `<button>`, not decoration.** Clicking it scrolls to `#work`, and it
+is the only affordance in the hero, so it is keyboard reachable, carries an
+`aria-label`, and takes a focus ring and a 10/16px hit area. The canvas inside
+it is `aria-hidden`. It honours `prefers-reduced-motion` in how it *scrolls*
+as well as how it animates — `behavior: 'auto'` rather than `'smooth'`.
+
+**The chevrons are wide and shallow: a 44 × 9 V, not the 22 × 11 one this
+started as.** At the steeper angle a pair of them reads as an arrowhead
+pointing at something in particular; flattened out they read as "keep going",
+which is what they mean.
+
 | Property | Value |
 | --- | --- |
-| Canvas | `46 × 52` CSS, DPR-capped at 2 |
-| Mask | two chevrons stroked at `3.4px`, round caps, sampled at a 2px step, alpha > 120 |
+| Canvas | `64 × 44` CSS, DPR-capped at 2 |
+| Mask | two chevrons stroked at `3.4px`, round caps, `44` wide × `9` deep, tops at `9` and `24`, sampled at a 2px step, alpha > 120 |
 | Colour | `pickColour()` from `lib/palette` — identical to the name |
 | Twinkle | `0.35 + 0.6 × sin(t·sp − ph)`, `sp` 1.5–2.4 |
 | Drift | `sin(t·0.9 − ph) × 0.8px`; phase runs down the pair so the shimmer travels **downward** |

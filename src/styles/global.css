@@ -695,15 +695,41 @@ body {
 /* ---------------------------------------------------------------------------
    Scroll cue — two chevrons in the sparkle material (see ScrollCue.jsx)
 --------------------------------------------------------------------------- */
+/* The cue is a button, not decoration — it scrolls to the work section. It
+   keeps the quiet look (no border, no background) but takes a real hit area
+   and a focus ring, because it is the only affordance in the hero. */
 .scroll-cue {
   position: absolute;
   left: 50%;
   bottom: clamp(14px, 2.6vh, 30px);
   transform: translateX(-50%);
   z-index: 2;
-  pointer-events: none;
   opacity: 0.85;
   animation: fade 1s ease 1.2s both;
+
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.scroll-cue:hover {
+  opacity: 1;
+}
+
+.scroll-cue:focus-visible {
+  outline: 2px solid var(--accent, #c0356d);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue:hover {
+    transform: translate(-50%, 3px);
+  }
 }
 
 /* ---------------------------------------------------------------------------

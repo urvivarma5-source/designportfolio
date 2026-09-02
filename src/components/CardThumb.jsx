@@ -1,6 +1,6 @@
 import { icons } from '../caseStudies/icons'
 import scout from '../assets/guide1/art-scout.svg'
-import ship from '../assets/guide2/art-ship.svg'
+import ship from '../assets/guide2/art-ship-thumb.svg'
 
 // Artwork for a work card's media block, keyed by slug. A project without an
 // entry keeps the plain placeholder ground — see WorkGrid.
@@ -16,6 +16,11 @@ import ship from '../assets/guide2/art-ship.svg'
 // the grid would be worse than a slightly less literal one. The car from that
 // section reads better still, but its SVG is 4× the size and this is a
 // 4:3 thumbnail on the home page.
+//
+// It uses `art-ship-thumb`, a second cut of that drawing: on the page the
+// ship's pale blob runs 120pt further right than the ship and the dashed
+// outline both, which is fine at full size and reads as a badly-centred
+// thumbnail at card size. The thumb cut stops at the dashed outline.
 
 const TctdThumb = () => (
   <span className="card-art card-art--tctd">

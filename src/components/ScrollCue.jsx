@@ -3,12 +3,19 @@ import { pickColour } from '../lib/palette'
 
 /**
  * Two chevrons rendered in the same sparkle material as the name, as a quiet
- * scroll prompt. Same palette and twinkle; no pointer interaction, and a slow
- * vertical drift that runs down the pair so it reads as "keep going" without
- * waving at you.
+ * scroll prompt, and the button that acts on it: clicking scrolls to the work
+ * section. Same palette and twinkle as the name, and a slow vertical drift
+ * that runs down the pair so it reads as "keep going" without waving at you.
+ *
+ * The chevrons are wide and shallow — a 44 x 9 V, not the 22 x 11 one this
+ * started as. At the steeper angle a pair of them reads as an arrowhead
+ * pointing at something; flattened out they read as a hint to keep going,
+ * which is what they are.
  */
-const W = 46
-const H = 52
+const W = 64
+const H = 44
+const SPAN = 10 // x inset of each chevron's ends
+const DEPTH = 9 // how far the middle drops below the ends
 
 export default function ScrollCue() {
   const canvasRef = useRef(null)
@@ -32,11 +39,11 @@ export default function ScrollCue() {
     o.lineWidth = 3.4
     o.lineCap = 'round'
     o.lineJoin = 'round'
-    for (const top of [10, 27]) {
+    for (const top of [9, 24]) {
       o.beginPath()
-      o.moveTo(12, top)
-      o.lineTo(W / 2, top + 11)
-      o.lineTo(W - 12, top)
+      o.moveTo(SPAN, top)
+      o.lineTo(W / 2, top + DEPTH)
+      o.lineTo(W - SPAN, top)
       o.stroke()
     }
 
@@ -86,9 +93,25 @@ export default function ScrollCue() {
     return () => cancelAnimationFrame(raf)
   }, [])
 
+  // The cue is the only affordance at the foot of the hero, so it is a real
+  // button rather than decoration: keyboard reachable, labelled, and honouring
+  // reduced motion in how it scrolls as well as how it animates.
+  const toWork = () => {
+    const el = document.getElementById('work')
+    if (!el) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
+  }
+
   return (
-    <div className="scroll-cue" aria-hidden="true">
-      <canvas ref={canvasRef} width={W} height={H} style={{ width: W, height: H }} />
-    </div>
+    <button className="scroll-cue" type="button" onClick={toWork} aria-label="Scroll to selected work">
+      <canvas
+        ref={canvasRef}
+        width={W}
+        height={H}
+        style={{ width: W, height: H }}
+        aria-hidden="true"
+      />
+    </button>
   )
 }
