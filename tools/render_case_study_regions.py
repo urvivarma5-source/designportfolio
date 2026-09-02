@@ -25,9 +25,11 @@ import sys
 
 from PIL import Image
 
-DPI = 150      # about 2x the artwork's points, which is retina at final size
-MAXW = 2200
-QUALITY = 82
+# Overridable per run: a page of full-bleed mockups wants a lower cap than a
+# page of small panels, or one image ends up bigger than the rest of the site.
+DPI = int(os.environ.get('DPI', 150))       # ~2x the artwork's points
+MAXW = int(os.environ.get('MAXW', 2200))
+QUALITY = int(os.environ.get('QUALITY', 82))
 
 PDF, OUT, SPECFILE = sys.argv[1:4]
 SPEC = json.load(open(SPECFILE))

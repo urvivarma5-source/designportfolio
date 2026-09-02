@@ -763,6 +763,34 @@ is suppressed.
 
 ---
 
+### 4.11 NGMA case study — `.n`
+
+`NgmaPage.jsx`. Its own block, not `.cs` or `.g`: those encode the TCTD and
+Guide frames' grids and this artwork has neither. A visual-design case study
+is a different shape — short commentary alternating with full-bleed mockups —
+so the page is one column with the pictures running the full measure.
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--n-navy` | `#091133` | Every heading, and the body copy |
+| `--n-green` / `--n-blue` | `#43a363` / `#355592` | The gallery's own logo colours |
+| `--n-yellow` / `--n-teal` | `#f5bd33` / `#58c3c3` | Mumbai, and the calm of the gallery |
+| `--n-orange` / `--n-rose` | `#ff6a35` / `#f45b6a` | The accents |
+| `--n-display` | `'Prata'` | Standing in for Quiche Display — see [§11d](#11d-the-ngma-case-study) |
+| `--n-gap` | `clamp(56px, 8vw, 128px)` | The rhythm between sections |
+
+**There is no `--n-k`.** The other two case studies scale from one number
+because their artwork is a fixed-width frame of small components. This one is
+mockups at whatever size the viewport allows, so it sizes with `clamp()`
+against the viewport instead — which is also why it needed no legibility floor
+([§9.17](#917-a-proportional-scale-is-not-a-legibility-floor)): nothing in it
+is derived from a shrinking multiplier.
+
+**Mockups take a hairline border.** Several of the frames start on white, and
+without `1px solid rgba(9, 17, 51, 0.1)` they dissolve into the page.
+
+---
+
 ## 5. Particle system
 
 `src/components/ParticleName.jsx`. The single most intricate part of the site.
@@ -1084,9 +1112,9 @@ copy-out-of-components rule as `content.js`:
 | File | Holds |
 | --- | --- |
 | `index.js` | `caseStudies`, a slug → component map, and `getCaseStudy(slug)`. A slug absent from it renders the stub in [§4.6](#46-project-detail--project) |
-| `tctd.js`, `guide1.js`, `guide2.js` | **Every word** of a case study, as structured data |
-| `TctdPage.jsx`, `Guide1Page.jsx`, `Guide2Page.jsx` | Layout only — each reads its data file and holds no copy |
-| `icons.js`, `guide1Art.js`, `guide2Art.js` | Import a page's artwork from `src/assets/<study>/` and re-export it as maps |
+| `tctd.js`, `guide1.js`, `guide2.js`, `ngma.js` | **Every word** of a case study, as structured data |
+| `TctdPage.jsx`, `Guide1Page.jsx`, `Guide2Page.jsx`, `NgmaPage.jsx` | Layout only — each reads its data file and holds no copy |
+| `icons.js`, `guide1Art.js`, `guide2Art.js`, `ngmaArt.js` | Import a page's artwork from `src/assets/<study>/` and re-export it as maps |
 | `rich.jsx` | Turns the Guide files' `{ em }` runs into markup — the one place that happens |
 
 **Emphasis lives in the data, not the layout.** In the Guide files a paragraph
@@ -1279,6 +1307,47 @@ frame, and pane captures of this page come back blank. Measure instead — an
 both laid out and loaded — or render the thumbnails on their own in a harness
 page at the real card size.
 
+### 9.17 A proportional scale is not a legibility floor
+
+`--cs-k` and `--g-k` scale a whole case study from one number, which is what
+keeps it in proportion to its Figma frame. They are the right tool for the
+layout and the wrong one for the fine print: at the phone step `.cs`'s
+`calc(10px * 0.656)` is **6.6px**, and the Guide pages' smallest labels land at
+8.7px. Both pass every overflow check and neither can be read.
+
+So each block sets a floor at its phone breakpoint — `font-size: max(12px,
+calc(<pt> * var(--k)))` on every size that would otherwise fall under 12px.
+Two things about it:
+
+- **It is scoped to that breakpoint.** Applied at full size it would raise
+  sizes the artwork deliberately sets small, which is the fidelity rule's
+  whole point.
+- **It has to come after the declaration it floors.** Three `.g--p2` sizes are
+  declared *below* the shared block's media query, so a floor written there
+  lost the cascade and silently did nothing. They are floored in the Part 2
+  breakpoint instead.
+
+`.work-card__note` is the same problem outside a case study: a 9px tracked
+eyebrow, fine on a desktop card, floored to 11px under 700px.
+
+### 9.18 A headless screenshot at a phone width is a lie
+
+`--window-size=390,5200` does **not** give you a 390px layout. Chrome will not
+lay out below its minimum window width; it lays the page out wide and hands
+back a 390px-wide *crop*. The result looks exactly like a page that overflows
+horribly on mobile — clipped mid-word, columns running off the edge — and it is
+an artefact every time.
+
+This cost a real detour: a capture of the TCTD page at 390 showed catastrophic
+clipping while a DOM measurement of the same page at the same width showed
+`.cs` at 350px wide inside a 390px viewport with nothing out of bounds. The
+measurement was right.
+
+Check a narrow viewport by putting the page in a **same-origin iframe** of that
+width — media queries respond to the iframe's viewport, and the document inside
+is fully measurable. `tools/audit/` holds both harnesses; its README says how
+to run them.
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -1355,6 +1424,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Responsive pass over the whole site: `.cs` stacked at 760 so 768 still ran multi-column and *clipped* the overflow (§9.15's `overflow: clip`), and every block's fine print fell under 12px on a phone — both fixed, and §9.18 records why the screenshots that seemed to show mobile carnage were lying |
+| _pending_ | Fourth case study: the NGMA website redesign — a visual-design piece, so its five page mockups are rendered images and the commentary is live text (§4.11, §11d); Prata stands in for Quiche Display |
 | _pending_ | The Guide pages' `overflow-clip-margin` was a `calc()` and so computing to 0 — the tint band was being clipped flush at each row instead of overhanging it (§9.15) |
 | _pending_ | Work cards for both Guide parts: Part 1 takes its hero drawing, Part 2 the ship from its pivot section; `.card-art--single` gives an extracted SVG the definite box it needs (§9.15) |
 | _pending_ | Both Guide case studies built from their Figma exports: shared `.g` block (§4.10), `dump_pdf_boxes.py` for the layout and `render_case_study_regions.py` for the annotated compositions, WebP raster strategy (§9.14), and §11c for the whole pipeline |
@@ -1617,12 +1688,67 @@ Two gaps in the source are surfaced on the page rather than filled in:
   source. The headings are real; the copy is not written yet, and the cards say
   so rather than repeating the paragraph or inventing two more.
 
+## 11d. The NGMA case study
+
+`VD Case Study.pdf` — a 1512 x 26847pt frame, gitignored like the others.
+
+It is a **visual-design** case study and that changes what the page is. The
+other three are process write-ups with small components; this one is five
+full-page mockups of a redesigned website, with short commentary between them.
+So the mockups are **rendered images**, through
+`tools/render_case_study_regions.py`:
+
+```bash
+MAXW=1700 QUALITY=80 python3 tools/render_case_study_regions.py \
+    "VD Case Study.pdf" src/assets/ngma/ tools/ngma-render-regions.json
+```
+
+Two reasons they are images rather than markup. They are photographs under
+vector type, motifs and pattern bands — the bitmap extractor would pull out the
+photographs and drop everything drawn over them. And they are frames of *a
+different website*: rebuilding them as live markup would be reproducing the
+artefact instead of showing it. Every one carries descriptive `alt`.
+
+`MAXW` and `QUALITY` are overridable per run for exactly this page: the five
+mockups are up to 5000pt tall and the tallest was a 1.6MB image on its own at
+the default cap. They render at 1700px; the supporting artwork keeps 2200.
+
+**The greeked copy stays inside the images.** The mockups' body text is
+"Carrot cake jelly beans…" in the artwork — the author's own placeholder. None
+of it is repeated as live text.
+
+### Fidelity rule
+
+Same as the others: the artwork's palette is kept, and its colours are also its
+content — the Colour Scheme section's seven swatches are live, and each hex is
+both the swatch and its caption.
+
+One substitution, and it is the only one:
+
+- **Quiche Display → Prata.** The artwork's display face is commercial and not
+  installed. Prata is the closest thing on Google Fonts — the same high
+  contrast and geometric bowls — and it carries the headings. The body face is
+  **Inter**, which the artwork's own type page names and which the site already
+  loads, so that one is the real thing. This is the same kind of departure as
+  Self Modern → Newsreader in [§7](#7-routing-and-deployment-invariants)'s
+  neighbourhood, and it is recorded here so nobody "fixes" the headings later.
+
+### One thing the export would not give up
+
+The text stream contains a 64pt heading, **"Prototype"**, positioned through a
+nested form; the coordinates put it between the Events mockup and the Permanent
+Collection one, and a render of that region shows no such heading anywhere.
+Rather than place it by guess it is left out, and noted in `ngma.js` and in
+[§12](#12-open-threads).
+
 ## 12. Open threads
 
-- **Seven of ten project pages are still stubs.** "Filling Cabinets to
-  Fingertips" and the two Guide parts are the only case studies; the rest
-  render a title until their content exists. See
+- **Six of ten project pages are still stubs.** "Filling Cabinets to
+  Fingertips", the two Guide parts and the NGMA redesign are the case studies;
+  the rest render a title until their content exists. See
   [§8.3](#83-srccasestudies) for how to add one.
+- **The NGMA export's "Prototype" heading has no findable position** — see
+  [§11d](#11d-the-ngma-case-study). If it belongs somewhere, put it back.
 - **The two Guide prototype links are missing.** Both CTAs render as marked
   placeholders because the export carries no URL — see
   [§11c](#11c-the-guide-case-studies). Drop the two Figma prototype URLs into
@@ -1635,8 +1761,8 @@ Two gaps in the source are surfaced on the page rather than filled in:
   worth a look before this is shown to anyone.
 - **The work card still carries no metadata** (year, role). Nothing needs it
   yet, but the decision is still open — see [§8.2](#82-srcprojectsjs).
-- **Eight of eleven cards have no artwork.** The three case studies have
-  thumbnails; the other eight show the plain ground and will keep doing so
+- **Seven of eleven cards have no artwork.** The four case studies have
+  thumbnails; the other seven show the plain ground and will keep doing so
   until there is source artwork for them — there is none in the repo. Add each as a
   component in `CardThumb.jsx` — see [§4.5](#45-work-grid--work-grid--work-card).
 - **Self Modern is not installed.** Newsreader is standing in, for the site

@@ -1,6 +1,7 @@
 import { icons } from '../caseStudies/icons'
 import scout from '../assets/guide1/art-scout.svg'
 import ship from '../assets/guide2/art-ship-thumb.svg'
+import ngma from '../assets/ngma/thumb.webp'
 
 // Artwork for a work card's media block, keyed by slug. A project without an
 // entry keeps the plain placeholder ground — see WorkGrid.
@@ -36,10 +37,20 @@ const Single = ({ src }) => (
   </span>
 )
 
+/** A thumbnail that is a picture, not a drawing: it fills the media block. */
+const Cover = ({ src }) => (
+  <span className="card-art card-art--cover">
+    <img src={src} alt="" />
+  </span>
+)
+
 const thumbs = {
   'filling-cabinets-to-fingertips': TctdThumb,
   'search-experience-for-guide': () => <Single src={scout} />,
   'search-experience-for-guide-2': () => <Single src={ship} />,
+  // A visual-design case study, so its card shows the design rather than a
+  // drawing about it: the redesigned landing page's hero, cropped to 4:3.
+  'website-redesign-for-ngma-mumbai': () => <Cover src={ngma} />,
 }
 
 export const getThumb = (slug) => thumbs[slug]

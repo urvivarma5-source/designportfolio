@@ -6,11 +6,14 @@ import Guide1 from './Guide1Page'
 import { guide1 } from './guide1'
 import Guide2 from './Guide2Page'
 import { guide2 } from './guide2'
+import Ngma from './NgmaPage'
+import { ngma } from './ngma'
 
 export const caseStudies = {
   [tctd.slug]: Tctd,
   [guide1.slug]: Guide1,
   [guide2.slug]: Guide2,
+  [ngma.slug]: Ngma,
 }
 
 export const getCaseStudy = (slug) => caseStudies[slug]

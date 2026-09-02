@@ -1,0 +1,43 @@
+<!doctype html><meta charset="utf-8"><title>audit</title>
+<style>body{margin:0;font:12px monospace}iframe{border:0;height:1400px}</style>
+<div id="frames"></div>
+<script>
+window.ROUTES = ['/', '/work/filling-cabinets-to-fingertips', '/work/search-experience-for-guide',
+  '/work/search-experience-for-guide-2', '/work/website-redesign-for-ngma-mumbai']
+window.WIDTHS = [360, 390, 430, 600, 768, 1024, 1280, 1440]
+window.runAudit = async () => {
+  const host = document.getElementById('frames')
+  const results = []
+  for (const route of window.ROUTES) {
+    for (const w of window.WIDTHS) {
+      host.innerHTML = ''
+      const f = document.createElement('iframe')
+      f.style.width = w + 'px'
+      f.src = route
+      host.appendChild(f)
+      await new Promise(res => { f.onload = res; setTimeout(res, 6000) })
+      await new Promise(r => setTimeout(r, 900))
+      const d = f.contentDocument, win = f.contentWindow
+      const vw = d.documentElement.clientWidth
+      const bad = []
+      d.querySelectorAll('body *').forEach(e => {
+        const r = e.getBoundingClientRect()
+        if (r.width > 0 && r.height > 0 && (r.right > vw + 1 || r.left < -1)) {
+          let c = e.className; if (c && c.baseVal !== undefined) c = c.baseVal
+          bad.push(e.tagName.toLowerCase() + (c ? '.' + String(c).trim().split(/\s+/).join('.') : ''))
+        }
+      })
+      // smallest rendered font size in the main content
+      let minFont = 99
+      d.querySelectorAll('p,li,td,th,figcaption,span').forEach(e => {
+        if (!e.textContent.trim()) return
+        const fs = parseFloat(win.getComputedStyle(e).fontSize)
+        if (fs && fs < minFont) minFont = fs
+      })
+      results.push({ route, w, docW: d.documentElement.scrollWidth,
+        overflow: [...new Set(bad)].slice(0, 8), n: bad.length, minFont: Math.round(minFont * 10) / 10 })
+    }
+  }
+  return results
+}
+</script>
