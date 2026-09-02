@@ -389,7 +389,8 @@ one. Measured: all 11 cards 516 × 551.
 slug → component map with a `getThumb(slug)` lookup, the same shape as
 [§8.3](#83-srccasestudies)'s case-study registry, for the same reason: a card's
 art is markup and CSS, not copy, and `projects.js` stays copy-only. A slug with
-no entry renders the plain ground — that is still every project but one.
+no entry renders the plain ground — still eight of the eleven, because those
+projects have no source artwork in the repo at all.
 
 "Filling Cabinets to Fingertips" reuses **its own case-study hero art**,
 imported from `caseStudies/icons` rather than re-exported so each SVG is
@@ -399,6 +400,19 @@ arrangement holds at every card width. The hero's **title panel is deliberately
 not in the thumbnail** — the card prints the title and description directly
 underneath it, and text baked into an image is neither selectable nor legible
 at card size.
+
+The two Guide cards take **one drawing each**, through `.card-art--single`,
+which is `display: block` with `object-fit: contain` rather than the centred
+grid the multi-piece TCTD thumbnail uses. The reason is
+[§9.16](#916-an-extracted-svg-has-no-intrinsic-size): these SVGs carry a
+viewBox and no width/height, so a box has to be given or the card renders
+empty.
+
+Part 1 takes its own hero drawing. **Part 2 takes the ship from its pivot
+section, not its hero** — both Guide pages open with the same drawing, and two
+identical thumbnails side by side in the grid read as a mistake. The car from
+that same section is the stronger image, but its SVG is four times the size and
+this is a 4:3 thumbnail on the home page.
 
 The hover `.work-card__wave` still paints over the artwork; it is the grid's
 hover language and is not per-card.
@@ -677,6 +691,7 @@ three things it genuinely does differently.
 | `.g` | max-width | `1180px`, centred |
 | | `--g-k` | `0.7877` — **the whole page's type scale** |
 | | `--g-bleed` | `calc(26px * var(--g-k))` — how far a band runs past its row |
+| | `--g-clip` | the same 26pt as a **literal** (`20.5` / `17` / `16px`), because `overflow-clip-margin` computes a `calc()` to 0 — [§9.15](#915-overflow-clip-margin-computes-to-0-from-a-calc) |
 | | `--g-dash` | `2px dashed var(--g-green)` |
 | | `--g-radius` | `calc(14px * var(--g-k))` |
 | | body | Source Sans `24/1.34` |
@@ -706,7 +721,9 @@ load-bearing:
   bleeds overlap.
 - **Rows whose bleed would reach the page edge set `overflow: clip`** (never
   `hidden`, which would make them scroll containers) with an
-  `overflow-clip-margin` of one bleed.
+  `overflow-clip-margin` of one bleed — written as `--g-clip`, a literal, for
+  the reason [§9.15](#915-overflow-clip-margin-computes-to-0-from-a-calc)
+  gives. Keep the two in step at every breakpoint.
 
 Three rows set `--g-bleed: 0` because the artwork gives each of their bands
 exactly its own box: the three Key Questions columns, the Sprint Q cards, and a
@@ -1230,6 +1247,27 @@ message in devtools. The row then clips the tint band flush at its own edge
 and takes the cards' shadows with it, which looks like the band rule broke
 rather than like a unit problem. Write the value as a literal.
 
+### 9.16 An extracted SVG has no intrinsic size
+
+`extract_case_study_art.py` writes `<svg viewBox="0 0 W H">` with **no `width`
+or `height`**. An `<img>` of one therefore has no intrinsic size, and any CSS
+that leans on that — `width: auto`, `max-width: 100%` with nothing to be 100%
+*of* — collapses it to zero. The card renders as an empty grey block, which
+looks like a missing file rather than a sizing bug.
+
+The TCTD thumbnail never hit this because every piece of it is given an
+explicit `width` as a share of the media block. `.card-art--single` has to do
+the same thing: a definite box (`width`/`height` at 100% of a padded, absolutely
+positioned parent) plus `object-fit: contain` to letterbox inside it.
+
+Screenshots of the work grid are also not evidence here, for the reason
+[§10](#10-verification-protocol) gives about the hero: the home page's hero is
+`100vh`, so a tall headless capture inflates it and pushes the grid out of the
+frame, and pane captures of this page come back blank. Measure instead — an
+`<img>`'s `getBoundingClientRect()` and `naturalWidth` together say whether it
+both laid out and loaded — or render the thumbnails on their own in a harness
+page at the real card size.
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -1306,6 +1344,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | The Guide pages' `overflow-clip-margin` was a `calc()` and so computing to 0 — the tint band was being clipped flush at each row instead of overhanging it (§9.15) |
+| _pending_ | Work cards for both Guide parts: Part 1 takes its hero drawing, Part 2 the ship from its pivot section; `.card-art--single` gives an extracted SVG the definite box it needs (§9.15) |
 | _pending_ | Both Guide case studies built from their Figma exports: shared `.g` block (§4.10), `dump_pdf_boxes.py` for the layout and `render_case_study_regions.py` for the annotated compositions, WebP raster strategy (§9.14), and §11c for the whole pipeline |
 | _pending_ | Site moves to the custom domain `www.urvivarma.com`: base path is now `/`, the 404 shim keeps no repo segment, and `public/CNAME` carries the domain (§7.2, §7.4) |
 | _pending_ | Case-study cards: the numbered badge moves into the title row (smaller, centred on the title, equal side insets), card titles drop to 24pt, the tint band no longer reaches over the coral note, and its bleed doubles without scrolling the page |
@@ -1584,9 +1624,9 @@ Two gaps in the source are surfaced on the page rather than filled in:
   worth a look before this is shown to anyone.
 - **The work card still carries no metadata** (year, role). Nothing needs it
   yet, but the decision is still open — see [§8.2](#82-srcprojectsjs).
-- **Ten of eleven cards have no artwork.** Only "Filling Cabinets to
-  Fingertips" has a thumbnail; the rest — the two Guide parts included — show
-  the plain ground. Add each as a
+- **Eight of eleven cards have no artwork.** The three case studies have
+  thumbnails; the other eight show the plain ground and will keep doing so
+  until there is source artwork for them — there is none in the repo. Add each as a
   component in `CardThumb.jsx` — see [§4.5](#45-work-grid--work-grid--work-card).
 - **Self Modern is not installed.** Newsreader is standing in, for the site
   only — the case study sets its own serif and is unaffected.

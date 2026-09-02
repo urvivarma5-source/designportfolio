@@ -587,6 +587,23 @@ body {
   display: block;
 }
 
+/* A thumbnail that is one drawing, fitted inside the card's padding.
+   The extracted SVGs carry a viewBox and NO width/height (see §11b), so an
+   `<img>` of one has no intrinsic size: `width: auto` collapses it to nothing
+   and the card looks empty. The box has to be given, and `object-fit` does the
+   letterboxing — which is also why this variant is `block`, not the `grid`
+   with `place-content: center` that `.card-art` sets. */
+.card-art--single {
+  display: block;
+  padding: 11% 9%;
+}
+
+.card-art--single img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .card-art--tctd {
   grid-template-columns: 1fr 1fr;
   align-items: end;
@@ -2163,6 +2180,11 @@ body {
 
   --g-k: 0.7877; /* 1180 / 1498 — see the note above */
   --g-bleed: calc(26px * var(--g-k)); /* how far a band runs past its row */
+  /* The same 26pt, written as a literal: `overflow-clip-margin` silently
+     computes a calc() to 0px in Chrome, which clips the band flush at the row
+     edge and loses the overhang entirely. See §9.15. Keep this in step with
+     --g-bleed at every breakpoint. */
+  --g-clip: 20.5px;
   --g-dash: 2px dashed var(--g-green);
   --g-radius: calc(14px * var(--g-k));
   --g-pad: calc(20px * var(--g-k));
@@ -2238,7 +2260,7 @@ body {
 .g-pair,
 .g-mapping {
   overflow: clip;
-  overflow-clip-margin: var(--g-bleed);
+  overflow-clip-margin: var(--g-clip); /* a literal — see §9.15 */
 }
 
 /* ---------- frames, cards, headings -------------------------------------- */
@@ -2901,6 +2923,7 @@ body {
 @media (max-width: 1240px) {
   .g {
     --g-k: 0.66;
+    --g-clip: 17px;
     max-width: 94vw;
   }
 }
@@ -2908,6 +2931,7 @@ body {
 @media (max-width: 900px) {
   .g {
     --g-k: 0.62;
+    --g-clip: 16px;
   }
 
   .g-hero,
@@ -3103,7 +3127,7 @@ body {
 
 .g-tl__panel {
   overflow: clip;
-  overflow-clip-margin: calc(14px * var(--g-k));
+  overflow-clip-margin: 11px; /* a literal — see §9.15 */
 }
 
 .g-tl__sprint {
