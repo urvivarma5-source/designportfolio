@@ -791,6 +791,44 @@ without `1px solid rgba(9, 17, 51, 0.1)` they dissolve into the page.
 
 ---
 
+### 4.12 About — `.about`
+
+`pages/About.jsx`, from the `abt.pdf` export. Four sections, each a column of
+prose beside a photo collage, the collage alternating sides — that structure is
+the export's and is kept exactly.
+
+**The palette and the faces are the site's, not the export's.** This is the
+one page in `src/pages/` built from a Figma export, and it is deliberately
+*not* under [§11b](#11b-case-studies)'s fidelity rule: a case study is an
+artefact being shown, and this page is the site talking about itself. So the
+headings are `--accent` and `--serif`, and the prose is `--ink` in
+`--sans-copy`. The export sets its headings in its own crimson (`#ac003f`),
+which would have put a second near-magenta in the palette for one page —
+[§0.3](#03-rules-that-are-not-negotiable) forbids that without a stated reason,
+and "one page's export used it" is not one.
+
+| Element | Property | Value |
+| --- | --- | --- |
+| `.about` | max-width | `1180px` |
+| `.about__title` | | `--serif`, `clamp(34px, 5vw, 60px)` |
+| `.about__heading` | | `--serif`, `--accent`, `clamp(24px, 2.6vw, 36px)` |
+| `.about__row` | columns | `1fr` / `1.02fr`, gap `clamp(28px, 5vw, 84px)` |
+| | stacks at | `820px` |
+
+**The collages are single images.** Each is a loose arrangement of overlapping
+photographs, not a grid, so it is rendered whole out of the export by
+`render_case_study_regions.py` rather than rebuilt. Each carries descriptive
+`alt`.
+
+**The side swap is `order`, not a second grid.** The markup stays in reading
+order — heading and prose first, picture second — at every width, and stacked
+the picture lands under the words that introduce it.
+
+`Stub` (Photography, Contact) shares this block so the two routes that have no
+content yet still land somewhere styled.
+
+---
+
 ## 5. Particle system
 
 `src/components/ParticleName.jsx`. The single most intricate part of the site.
@@ -997,12 +1035,22 @@ Measured at 1440×820: copy text ends `x=513`, sparkle ink starts `x=783`.
 
 | Path | Renders |
 | --- | --- |
-| `/` | `Home` — hero + Work, About, Photography, Contact |
+| `/` | `Home` — the hero and Work, **and nothing else** |
+| `/about` | `About` — see [§4.12](#412-about--about) |
+| `/photography` | `Stub`, until there is film work to show |
+| `/contact` | `Stub`, until there are contact details |
 | `/work/:slug` | `Project` — the case study registered for that slug, else the title alone |
 | `*` | `Project`, which renders `Not found` |
 
+**The landing page is the hero and the work.** About, Photography and Contact
+used to be placeholder *sections* in the home scroll, so scrolling past the
+work ran into three empty headings. They are their own routes now, which is
+why only one nav item is still a hash link: Work is a section of the landing
+page and the other three are not.
+
 `ScrollManager` in `App.jsx` scrolls to `hash` if present, else to top.
-Nav and CTA hrefs are **absolute** (`/#work`), so they work from a detail page.
+Nav and CTA hrefs are **absolute** (`/#work`, `/about`), so they work from a
+detail page.
 
 ### 7.2 The base path contract
 
@@ -1424,6 +1472,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | About is a real page built from its own export (§4.12), and the landing page is the hero and the work alone — About, Photography and Contact are routes now, not empty sections in the home scroll (§7.1) |
+| _pending_ | NGMA matches the published case study: the title's green fan and yellow asterisk and the pink band under every page heading were missing, and both CTAs — "Full Website Here" and "Full Prototype Here", which is what the export's orphan "Prototype" heading belongs to — were not there at all |
 | _pending_ | Responsive pass over the whole site: `.cs` stacked at 760 so 768 still ran multi-column and *clipped* the overflow (§9.15's `overflow: clip`), and every block's fine print fell under 12px on a phone — both fixed, and §9.18 records why the screenshots that seemed to show mobile carnage were lying |
 | _pending_ | Fourth case study: the NGMA website redesign — a visual-design piece, so its five page mockups are rendered images and the commentary is live text (§4.11, §11d); Prata stands in for Quiche Display |
 | _pending_ | The Guide pages' `overflow-clip-margin` was a `calc()` and so computing to 0 — the tint band was being clipped flush at each row instead of overhanging it (§9.15) |
@@ -1767,7 +1817,8 @@ Rather than place it by guess it is left out, and noted in `ngma.js` and in
   component in `CardThumb.jsx` — see [§4.5](#45-work-grid--work-grid--work-card).
 - **Self Modern is not installed.** Newsreader is standing in, for the site
   only — the case study sets its own serif and is unaffected.
-- **No `about` / `photography` / `contact` content** — stub sections only.
+- **No `photography` or `contact` content.** Both are their own routes now and
+  render `Stub`. About is built — [§4.12](#412-about--about).
 - ~~No photographic images anywhere yet.~~ Settled by the Guide case studies:
   WebP, capped at 2200px, lazy, imported not referenced — see
   [§9.14](#914-raster-strategy-webp-one-format-no-picture).

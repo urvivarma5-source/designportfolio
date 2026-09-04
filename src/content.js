@@ -9,11 +9,13 @@ export const content = {
   nameRoman: 'Urvi Varma',
   logo: 'UV',
 
+  // Work is the only one that is a section of the landing page; the rest are
+  // their own routes. See DESIGN.md §7.1.
   nav: [
     { label: 'Work', href: '/#work' },
-    { label: 'About', href: '/#about' },
-    { label: 'Photography', href: '/#photography' },
-    { label: 'Contact', href: '/#contact' },
+    { label: 'About', href: '/about' },
+    { label: 'Photography', href: '/photography' },
+    { label: 'Contact', href: '/contact' },
   ],
 
   // Small tracked label above the headline. Parts joined by a dimmed middot.

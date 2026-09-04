@@ -8,32 +8,49 @@
 // frames' own grids, and this artwork has neither.
 
 import { ngma } from './ngma'
-import { shots } from './ngmaArt'
+import { art, shots } from './ngmaArt'
 
 const Shot = ({ name, alt = '', className = 'n-shot' }) => (
   <img className={className} src={shots[name]} alt={alt} loading="lazy" />
 )
 
-/** A mockup: the page's name, then the frame itself, full width. */
+/**
+ * A mockup: the page's name over the artwork's pink triangle band, then the
+ * frame itself, full width. The band is under every page heading in the
+ * export and is the thing that marks a mockup off from the commentary.
+ */
 const Mock = ({ page }) => (
   <figure className="n-mock">
-    <h2 className="n-h2">{page.title}</h2>
+    <h2 className="n-h2 n-h2--band">{page.title}</h2>
+    <img className="n-band" src={art.bandTriangles} alt="" aria-hidden="true" />
     <Shot name={page.img} alt={page.alt} className="n-shot n-shot--mock" />
   </figure>
 )
 
 export default function Ngma() {
-  const { hero, overview, inspiration, moodboard, architecture, cohesion, colour, type, pages } =
+  const { hero, outro, overview, inspiration, moodboard, architecture, cohesion, colour, type, pages } =
     ngma
   const [landing, about, exhibitions, events, collection] = pages
 
   return (
     <article className="n">
+      {/* The green fan and the yellow asterisk flank the title in the export;
+          the asterisk sits on the colon's line, which is why it is inside the
+          heading rather than beside it. */}
       <header className="n-hero">
-        <h1 className="n-h1">
-          {hero.title}
-          <span>{hero.sub}</span>
-        </h1>
+        <img className="n-fan" src={art.heroFan} alt="" aria-hidden="true" />
+        <div>
+          <h1 className="n-h1">
+            <span className="n-h1__main">
+              {hero.title}
+              <img className="n-asterisk" src={art.heroAsterisk} alt="" aria-hidden="true" />
+            </span>
+            <span className="n-h1__sub">{hero.sub}</span>
+          </h1>
+          <a className="n-cta" href={hero.cta.href} target="_blank" rel="noreferrer">
+            {hero.cta.label}
+          </a>
+        </div>
       </header>
 
       {/* The two opening notes, with the staircase motif between them. */}
@@ -121,6 +138,13 @@ export default function Ngma() {
 
       <Mock page={events} />
       <Mock page={collection} />
+
+      <footer className="n-outro">
+        <h2 className="n-h2">{outro.title}</h2>
+        <a className="n-cta" href={outro.cta.href} target="_blank" rel="noreferrer">
+          {outro.cta.label}
+        </a>
+      </footer>
     </article>
   )
 }

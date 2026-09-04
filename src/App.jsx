@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import CursorFollower from './components/CursorFollower'
 import Home from './pages/Home'
+import About from './pages/About'
+import Stub from './pages/Stub'
 import Project from './pages/Project'
 
 // Scroll to the hash target on navigation, otherwise to the top.
@@ -30,6 +32,15 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route
+            path="/photography"
+            element={<Stub title="Photography" note="Film work, coming soon." />}
+          />
+          <Route
+            path="/contact"
+            element={<Stub title="Get in touch" note="Contact details, coming soon." />}
+          />
           <Route path="/work/:slug" element={<Project />} />
           <Route path="*" element={<Project />} />
         </Routes>

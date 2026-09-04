@@ -7,7 +7,7 @@
 // look asymmetric here are asymmetric in the artwork: it alternates a wide
 // text column with a narrow one holding a slab-serif title and a drawing.
 
-import Rich from './rich'
+import Rich from '../lib/rich'
 import { guide1 } from './guide1'
 import { art, icons, logos, marks, shots } from './guide1Art'
 

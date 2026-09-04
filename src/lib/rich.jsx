@@ -1,8 +1,9 @@
 import { Fragment } from 'react'
 
-// The Guide case studies carry their emphasis in the data (see guide1.js), so
-// this is the one place that turns it into markup. A value is a string, or an
-// array whose members are strings and { em } objects.
+// The Guide case studies and the About page carry their emphasis in the data
+// (see guide1.js, about.js), so this is the one place that turns it into
+// markup. A value is a string, or an array whose members are strings and
+// { em } objects.
 //
 // A newline inside a string is a line break the artwork actually has — the
 // export sets those runs on separate lines and the copy files keep them — so

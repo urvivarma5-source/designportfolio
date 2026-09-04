@@ -10,11 +10,9 @@
 // frames of a website, not this site's own UI, and rebuilding them as live
 // markup would be reproducing the artefact rather than showing it.
 //
-// The export carries one heading, "Prototype", that is drawn through a nested
-// form and reports a position the render does not corroborate — there is no
-// such heading anywhere on the page between the Events mockup and the
-// Permanent Collection one, where its coordinates put it. It is left out
-// rather than guessed at. See DESIGN.md §12.
+// The export's orphan "Prototype" heading is resolved: the published version of
+// this case study ends with a "Full Prototype Here" call to action, which is
+// what that heading belongs to. It is `outro` below.
 //
 // The mockups' body copy is greeked ("Carrot cake jelly beans…") in the
 // artwork. That is the artwork's own placeholder and it stays inside the
@@ -27,7 +25,12 @@ export const ngma = {
   hero: {
     title: 'Redesigning the National Gallery of Modern Art Website:',
     sub: 'Exploring Chaos to Calm',
+    cta: { label: 'Full Website Here', href: 'https://tinyurl.com/mrxm99fh' },
   },
+
+  // The published case study closes on this, and it is what the export's
+  // orphan "Prototype" heading belongs to.
+  outro: { title: 'Full Prototype Here', cta: { label: 'Full Website', href: 'https://tinyurl.com/mrxm99fh' } },
 
   // The two opening notes sit side by side in the artwork, the second set
   // right-aligned against the drawing between them.

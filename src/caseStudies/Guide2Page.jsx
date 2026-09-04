@@ -4,7 +4,7 @@
 // `g--p2` modifier — Part 2 sets its running prose a shade darker and adds the
 // colour-coded quote cards. See DESIGN.md §11c.
 
-import Rich from './rich'
+import Rich from '../lib/rich'
 import { guide2 } from './guide2'
 import { art, icons, shots } from './guide2Art'
 

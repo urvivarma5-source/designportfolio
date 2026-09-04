@@ -11,6 +11,13 @@
 // because they are full-page frames up to 5000pt tall and the tallest was a
 // 1.6MB image on its own. The supporting artwork keeps the 2200 cap.
 
+// Three pieces of the artwork are vector and are pulled out as paths by
+// extract_case_study_art.py: the green fan and yellow asterisk that flank the
+// title, and the pink triangle band that sits under every page heading.
+import heroFan from '../assets/ngma/hero-fan.svg'
+import heroAsterisk from '../assets/ngma/hero-asterisk.svg'
+import bandTriangles from '../assets/ngma/band-triangles.svg'
+
 import artMotif from '../assets/ngma/art-motif.webp'
 import moodboard from '../assets/ngma/moodboard.webp'
 import archPhotos from '../assets/ngma/arch-photos.webp'
@@ -22,6 +29,8 @@ import mockAbout from '../assets/ngma/mock-about.webp'
 import mockExhibitions from '../assets/ngma/mock-exhibitions.webp'
 import mockEvents from '../assets/ngma/mock-events.webp'
 import mockCollection from '../assets/ngma/mock-collection.webp'
+
+export const art = { heroFan, heroAsterisk, bandTriangles }
 
 export const shots = {
   'art-motif': artMotif,
