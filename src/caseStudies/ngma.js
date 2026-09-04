@@ -61,7 +61,9 @@ export const ngma = {
       'Each design pattern, color choice, and graphic element employed in the redesign holds symbolic significance and deeper meaning. For example, the recurring geometric motifs pay homage to the modernist architectural style of the gallery, while the colors draw inspiration from the vibrant hues found in the artwork displayed within its walls.',
     ],
     photos: { img: 'arch-photos', alt: 'Two photographs of the gallery’s spiral staircase and semi-circular galleries.' },
-    motifs: { img: 'arch-motifs', alt: 'The motif set drawn from the staircase: rosettes, concentric rings, stepped blocks, bursts and asterisks.' },
+    // Vector, not a crop: an earlier raster cut of this area swallowed the
+    // aside text beside it and printed it twice on the page.
+    motifs: { alt: 'The motif set drawn from the staircase: rosettes, concentric rings, stepped blocks, bursts and asterisks.' },
   },
 
   cohesion: {

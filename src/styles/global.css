@@ -3633,17 +3633,22 @@ body {
   --n-orange: #ff6a35;
   --n-rose: #f45b6a;
 
-  /* Quiche Display is commercial and not installed; Prata stands in for it,
-     matched on the high contrast and the geometric bowls. Body copy is Inter,
-     which the artwork's own type page names, and which the site already
-     loads. See §11d. */
-  --n-display: 'Prata', 'Newsreader', Georgia, serif;
+  /* Both of the artwork's faces are commercial and not installed, so both are
+     stand-ins, picked by rendering the export beside the candidates rather
+     than by name (§11d):
+       Quiche Display -> Bodoni Moda. The export's hairlines are very thin and
+         its bowls perfectly circular; Prata, the first pick, was noticeably
+         heavier and more bracketed.
+       Articulat CF  -> Figtree. A wide geometric grotesque; Inter, the first
+         pick, is narrower and more neutral. */
+  --n-display: 'Bodoni Moda', 'Newsreader', Georgia, serif;
+  --n-body: 'Figtree', 'Inter', system-ui, sans-serif;
 
   --n-gap: clamp(56px, 8vw, 128px);
 
   max-width: 1180px;
   margin: clamp(30px, 5vh, 64px) auto 0;
-  font-family: var(--sans);
+  font-family: var(--n-body);
   font-size: clamp(15px, 1.15vw, 17px);
   line-height: 1.55;
   color: var(--n-navy);
@@ -3821,6 +3826,30 @@ body {
 
 .n-arch img {
   margin-top: clamp(20px, 3vw, 40px);
+}
+
+/* The green chevron and the motif row sit side by side under the aside, as
+   they do in the export. Both are vector — an earlier raster cut of this area
+   took the aside's text with it and printed it on the page twice. */
+.n-motifs {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 3vw, 40px);
+  margin-top: clamp(20px, 3vw, 40px);
+}
+
+.n-motifs img {
+  margin-top: 0;
+}
+
+.n-motifs img:first-child {
+  width: 22%;
+  flex: none;
+}
+
+.n-motifs img:last-child {
+  flex: 1;
+  min-width: 0;
 }
 
 .n-split--type {

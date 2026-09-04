@@ -87,7 +87,10 @@ export default function Ngma() {
             {architecture.aside.map((p) => (
               <p key={p}>{p}</p>
             ))}
-            <Shot {...{ name: architecture.motifs.img, alt: architecture.motifs.alt }} />
+            <span className="n-motifs">
+              <img src={art.archChevron} alt="" aria-hidden="true" />
+              <img src={art.archMotifs} alt={architecture.motifs.alt} />
+            </span>
           </div>
         </div>
       </section>

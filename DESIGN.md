@@ -776,7 +776,8 @@ so the page is one column with the pictures running the full measure.
 | `--n-green` / `--n-blue` | `#43a363` / `#355592` | The gallery's own logo colours |
 | `--n-yellow` / `--n-teal` | `#f5bd33` / `#58c3c3` | Mumbai, and the calm of the gallery |
 | `--n-orange` / `--n-rose` | `#ff6a35` / `#f45b6a` | The accents |
-| `--n-display` | `'Prata'` | Standing in for Quiche Display — see [§11d](#11d-the-ngma-case-study) |
+| `--n-display` | `'Bodoni Moda'` | Standing in for Quiche Display — see [§11d](#11d-the-ngma-case-study) |
+| `--n-body` | `'Figtree'` | Standing in for Articulat CF — same section |
 | `--n-gap` | `clamp(56px, 8vw, 128px)` | The rhythm between sections |
 
 **There is no `--n-k`.** The other two case studies scale from one number
@@ -1396,6 +1397,30 @@ width — media queries respond to the iframe's viewport, and the document insid
 is fully measurable. `tools/audit/` holds both harnesses; its README says how
 to run them.
 
+### 9.19 A render region that overlaps live text prints it twice
+
+`render_case_study_regions.py` rasterises a rectangle, and a rectangle drawn
+around some artwork will happily include any *text* that shares those
+coordinates. If that text is also rendered as live copy — which it is, because
+the copy file has it — the page shows it twice: once baked into the picture,
+once underneath in the real font.
+
+It happened on NGMA's "Drawing from Architectural Elements": the motif row's
+region reached left and down far enough to catch the aside paragraph beside it,
+so the paragraph appeared inside the image *and* as live text below it. It is
+easy to miss, because the image looks like a legitimate composition.
+
+Two defences:
+
+- **Check the text blocks before cutting a region.** `dump_pdf_boxes.py` gives
+  every fill's bbox; Type3 glyph runs show up among them, so a region with no
+  text in it has no fills where the copy is.
+- **Prefer the vector extractor when the artwork is vector.** Both the motif
+  row and the chevron are flat shapes: `extract_case_study_art.py` matches by
+  *containment*, so it cannot drag in a neighbouring paragraph the way a
+  rectangle crop can — and the result is sharp at any size and a tenth of the
+  bytes.
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -1472,6 +1497,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | NGMA: the aside paragraph was printing twice — a raster region had swallowed it (§9.19) — the mockups were soft at 1.44x and now render at a true 2x, and both stand-in faces are re-picked against the export (Bodoni Moda, Figtree) |
 | _pending_ | About is a real page built from its own export (§4.12), and the landing page is the hero and the work alone — About, Photography and Contact are routes now, not empty sections in the home scroll (§7.1) |
 | _pending_ | NGMA matches the published case study: the title's green fan and yellow asterisk and the pink band under every page heading were missing, and both CTAs — "Full Website Here" and "Full Prototype Here", which is what the export's orphan "Prototype" heading belongs to — were not there at all |
 | _pending_ | Responsive pass over the whole site: `.cs` stacked at 760 so 768 still ran multi-column and *clipped* the overflow (§9.15's `overflow: clip`), and every block's fine print fell under 12px on a phone — both fixed, and §9.18 records why the screenshots that seemed to show mobile carnage were lying |
@@ -1759,9 +1785,21 @@ photographs and drop everything drawn over them. And they are frames of *a
 different website*: rebuilding them as live markup would be reproducing the
 artefact instead of showing it. Every one carries descriptive `alt`.
 
-`MAXW` and `QUALITY` are overridable per run for exactly this page: the five
-mockups are up to 5000pt tall and the tallest was a 1.6MB image on its own at
-the default cap. They render at 1700px; the supporting artwork keeps 2200.
+`MAXW` and `QUALITY` are overridable per run for exactly this page. The five
+mockups render at **2360px** — the page's container is 1180px, so that is a
+true 2x and nothing else will do: an earlier pass capped them at 1700 to save
+bytes and every mockup was visibly soft on a retina screen at 1.44x. Check the
+ratio by measuring, not by looking:
+
+```js
+[...document.images].map(i => i.naturalWidth / i.getBoundingClientRect().width)
+```
+
+…and measure at the real container width, not in a narrow preview pane, or the
+ratio flatters itself. `QUALITY=76` keeps the tallest (7913px) under 1.5MB.
+
+**The motif row and the green chevron are vector, not a crop** — see
+[§9.19](#919-a-render-region-that-overlaps-live-text-prints-it-twice).
 
 **The greeked copy stays inside the images.** The mockups' body text is
 "Carrot cake jelly beans…" in the artwork — the author's own placeholder. None
@@ -1775,13 +1813,22 @@ both the swatch and its caption.
 
 One substitution, and it is the only one:
 
-- **Quiche Display → Prata.** The artwork's display face is commercial and not
-  installed. Prata is the closest thing on Google Fonts — the same high
-  contrast and geometric bowls — and it carries the headings. The body face is
-  **Inter**, which the artwork's own type page names and which the site already
-  loads, so that one is the real thing. This is the same kind of departure as
-  Self Modern → Newsreader in [§7](#7-routing-and-deployment-invariants)'s
-  neighbourhood, and it is recorded here so nobody "fixes" the headings later.
+**Both faces are stand-ins, and both were picked by rendering the export beside
+the candidates rather than by name.** The artwork's own type page names Quiche
+Display and Articulat CF; both are commercial and neither is installed.
+
+| Artwork | Ours | Why |
+| --- | --- | --- |
+| Quiche Display | **Bodoni Moda** | The export's hairlines are very thin and its bowls perfectly circular. Prata was the first pick and is visibly heavier with bracketed serifs; Playfair is closer but still more traditional. Bodoni Moda matches the contrast and the circular `o`/`d`/`b`. |
+| Articulat CF | **Figtree** | A wide geometric grotesque. Inter was the first pick and is narrower and more neutral. |
+
+The type page *also* names Inter, but that is the face used **inside the
+mockups**, not for the case study's commentary — a distinction worth keeping if
+these are ever revisited.
+
+**If the real fonts are available, self-host them and delete both stand-ins.**
+They are licensed faces the author designed with, so the files may well exist;
+`--n-display` and `--n-body` are the only two places to change.
 
 ### One thing the export would not give up
 

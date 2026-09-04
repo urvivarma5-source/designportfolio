@@ -15,13 +15,14 @@
 // extract_case_study_art.py: the green fan and yellow asterisk that flank the
 // title, and the pink triangle band that sits under every page heading.
 import heroFan from '../assets/ngma/hero-fan.svg'
+import archChevron from '../assets/ngma/art-chevron.svg'
+import archMotifsArt from '../assets/ngma/art-motifs.svg'
 import heroAsterisk from '../assets/ngma/hero-asterisk.svg'
 import bandTriangles from '../assets/ngma/band-triangles.svg'
 
 import artMotif from '../assets/ngma/art-motif.webp'
 import moodboard from '../assets/ngma/moodboard.webp'
 import archPhotos from '../assets/ngma/arch-photos.webp'
-import archMotifs from '../assets/ngma/arch-motifs.webp'
 import cohesion from '../assets/ngma/cohesion.webp'
 import typeSpecimen from '../assets/ngma/type-specimen.webp'
 import mockLanding from '../assets/ngma/mock-landing.webp'
@@ -30,13 +31,12 @@ import mockExhibitions from '../assets/ngma/mock-exhibitions.webp'
 import mockEvents from '../assets/ngma/mock-events.webp'
 import mockCollection from '../assets/ngma/mock-collection.webp'
 
-export const art = { heroFan, heroAsterisk, bandTriangles }
+export const art = { heroFan, heroAsterisk, bandTriangles, archChevron, archMotifs: archMotifsArt }
 
 export const shots = {
   'art-motif': artMotif,
   moodboard,
   'arch-photos': archPhotos,
-  'arch-motifs': archMotifs,
   cohesion,
   'type-specimen': typeSpecimen,
   'mock-landing': mockLanding,
