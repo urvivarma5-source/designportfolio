@@ -137,8 +137,8 @@ values live in [§4](#4-component-tokens).
 | `--ink` | `#001d57` | Alias of `--blue`, set as `body` colour. |
 | `--muted` | `#4a5875` | Secondary prose only (`.sub`, `.section__note`, `.project__note`). |
 | `--rule` | `rgba(0, 29, 87, 0.14)` | Every hairline divider. Always this, never a solid grey. |
-| `--rule-dash` | `#b3197a` | The dashed frame stroke. The reference SVG used `#D6576B`; **our accent is used instead**. |
-| `--accent` | `#b3197a` | Magenta. Eyebrow text, nav hover underline, CTA underline, hover states. |
+| `--accent` | `#48005e` | Deep aubergine. Eyebrow text, section titles, pills, card notes, nav hover underline, CTA underline, hover states. Chosen by Urvi (2026-09-11) over the old magenta `#b3197a`. It is **deliberately not a particle colour**: the accent used to be `PALETTE[0]`, and a bright accent next to the bright name made them compete. The name stays the loudest thing on the page. |
+| `--rule-dash` | `var(--accent)` | Dotted and dashed rules — today the work-card rule ([§4.5](#45-work--work--work-card)). An alias, so the rules follow the accent. |
 
 Case studies do **not** use this palette. `.cs` declares its own tokens, local
 to that block, because §11b's fidelity rule keeps the source artwork's colours.
@@ -319,7 +319,7 @@ Wordmark is `UV`. There is no language toggle — it was removed deliberately.
 Pills are **sentence case, not uppercase**, and sized to sit on a single row —
 wrapping to two rows makes the copy column taller than the name can reach.
 
-Pills follow the earlier SVG reference: `1px dashed #B3197A`, `rx 3.5`. Its drop
+Pills follow the earlier SVG reference: `1px dashed`, `rx 3.5`, in `--accent` (magenta `#B3197A` in the reference; aubergine since the 2026-09-11 accent change). Its drop
 shadow was **explicitly dropped**; only the hover state carries one. The pills
 are deliberately a lighter treatment than the card frame — see
 [§9.10](#910-pill-geometry-feeds-the-hero-layout).
@@ -363,14 +363,14 @@ card grid. Modelled on the strangepixels work page.
 | `.work-cat__label` | type | `--sans` `14px` / `600`, `0.2em`, `uppercase`, **`--blue`** |
 | `.work-grid` | layout | `repeat(3, 1fr)`, `grid-auto-rows: 1fr`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
 | `.work-grid li` | `display: flex` so the card fills its stretched cell |
-| `.work-card` | frame | `<DashFrame />`, see [§4.6b](#46b-dashed-frame--dash-frame--dashframejsx) — the edge is on the **card**, so image and text sit inside one frame |
-| | padding / radius | `16px` / `9px` |
+| `.work-card` | frame | **none** — no border, no padding. The dashed frame ([§4.6b](#46b-dashed-frame--dash-frame--dashframejsx)) was retired: it boxed every card in a 2px magenta dash and was the loudest thing in the grid |
+| `.work-card__rule` | dotted rule | between media and meta: `2px` tall, round dots `1px` radius on a `9px` pitch (`radial-gradient` repeat-x), `--rule-dash`, `margin-top: 14px`. The particle field lined up — it separates picture from words without enclosing either |
 | | hover | `translateY(-3px)` |
 | | cursor | `none` — the follower stands in, see [§4.8](#48-cursor-follower--cursor) |
-| `.work-card__media` | aspect | `4 / 3`, radius `2px`, no border |
-| | background | `rgba(0, 29, 87, 0.06)` — the ground the artwork sits on, and the whole media block on a card that has none |
+| `.work-card__media` | aspect | `4 / 3`, radius `6px`, no border |
+| | background | the **sparkle ground**: `#fcfbff` with eight scattered dots (`1.1–1.5px`), one per sparkle colour from `PALETTE` ([§5](#5-particle-system)), each `radial-gradient` on its own tile size (`109×91` … `163×142`) so the repeats never align into a grid. The hero's field, scattered, behind every card — and the whole media block on a card with no art |
 | `.card-art` | fill | absolute `inset: 0`, `place-content: center`, padding `9% 8%` |
-| `.work-card__meta` | padding | `16px 4px 6px`, `flex: 1` |
+| `.work-card__meta` | padding | `14px 0 0`, `flex: 1` |
 
 
 | `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
@@ -418,6 +418,12 @@ The hover `.work-card__wave` still paints over the artwork; it is the grid's
 hover language and is not per-card.
 
 ### 4.6b Dashed frame — `.dash-frame` / `DashFrame.jsx`
+
+> **Retired (2026-09-11).** The work cards no longer have a frame — they
+> separate picture from words with a dotted rule instead (§4.6), and
+> `DashFrame.jsx` and `.dash-frame` are deleted. The notes below are kept
+> because the technique (an unscaled `<svg>` rect for exact dash geometry on
+> a rounded corner) is still the right answer if a dashed box comes back.
 
 **Project cards only.** The credential pills keep their own `1px dashed
 var(--accent)` at `3.5px` radius — applying this frame to them changed their
@@ -1497,6 +1503,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Accent is deep aubergine `#48005e`, no longer the particle magenta; work cards lose the dashed frame and gain the sparkle ground behind their art and a dotted rule between picture and words (§2.1, §4.5) |
 | _pending_ | NGMA: the aside paragraph was printing twice — a raster region had swallowed it (§9.19) — the mockups were soft at 1.44x and now render at a true 2x, and both stand-in faces are re-picked against the export (Bodoni Moda, Figtree) |
 | _pending_ | About is a real page built from its own export (§4.12), and the landing page is the hero and the work alone — About, Photography and Contact are routes now, not empty sections in the home scroll (§7.1) |
 | _pending_ | NGMA matches the published case study: the title's green fan and yellow asterisk and the pink band under every page heading were missing, and both CTAs — "Full Website Here" and "Full Prototype Here", which is what the export's orphan "Prototype" heading belongs to — were not there at all |

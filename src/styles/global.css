@@ -9,9 +9,11 @@
   --ink: #001d57;
   --muted: #4a5875;
   --rule: rgba(0, 29, 87, 0.14);
-  /* dashed frames. The reference SVG used #D6576B; we use our own accent. */
-  --rule-dash: #b3197a;
-  --accent: #b3197a;
+  /* Deep aubergine. Deliberately NOT a particle colour: the sparkle palette
+     is bright, and a darker accent lets the name stay the loudest thing. */
+  --accent: #48005e;
+  /* dotted and dashed rules (the work-card rule, pills) */
+  --rule-dash: var(--accent);
 
   --serif: 'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
@@ -138,33 +140,6 @@ body {
 
 .nav-links a:hover::after {
   width: 100%;
-}
-
-/* ---------------------------------------------------------------------------
-   Dashed frame — see DashFrame.jsx. Used by PROJECT CARDS ONLY; the credential
-   pills keep their own 1px dashed accent border. No viewBox, so SVG user units
-   are CSS pixels and the dashes never stretch with the box. Geometry is set
-   here because CSS allows calc(); SVG presentation attributes do not.
---------------------------------------------------------------------------- */
-.dash-frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.dash-frame rect {
-  x: 1px;
-  y: 1px;
-  width: calc(100% - 2px);
-  height: calc(100% - 2px);
-  rx: 9px;
-  fill: none;
-  stroke: var(--rule-dash);
-  stroke-width: 2;
-  stroke-dasharray: 10 10;
 }
 
 /* ---------- headline block ---------- */
@@ -522,8 +497,6 @@ body {
   color: var(--blue);
   cursor: none;
   position: relative;
-  padding: 16px;
-  border-radius: 9px;
   transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
@@ -532,14 +505,39 @@ body {
 }
 
 /* the media block: the project's artwork when it has one (see CardThumb),
-   otherwise the plain ground on its own */
+   otherwise the ground on its own. The ground is the hero's particle field,
+   scattered: eight dots in eight sparkle colours (lib/palette.js), each on its
+   own tile size so the repeat never lines up into a visible grid. */
 .work-card__media {
   display: block;
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: 2px;
-  background: rgba(0, 29, 87, 0.06);
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 12% 18%, #b3197a 0 1.5px, transparent 1.6px),
+    radial-gradient(circle at 71% 9%, #e08a00 0 1.3px, transparent 1.4px),
+    radial-gradient(circle at 88% 63%, #0e7c6b 0 1.5px, transparent 1.6px),
+    radial-gradient(circle at 26% 88%, #2a3fa8 0 1.2px, transparent 1.3px),
+    radial-gradient(circle at 57% 71%, #d6246b 0 1.4px, transparent 1.5px),
+    radial-gradient(circle at 5% 52%, #1e8a4d 0 1.2px, transparent 1.3px),
+    radial-gradient(circle at 41% 33%, #5b2ba8 0 1.1px, transparent 1.2px),
+    radial-gradient(circle at 93% 22%, #0f6fa8 0 1.3px, transparent 1.4px),
+    #fcfbff;
+  background-size:
+    118px 96px, 142px 124px, 131px 108px, 156px 137px,
+    127px 113px, 149px 131px, 109px 91px, 163px 142px, 100% 100%;
+}
+
+/* The dotted rule between the picture and the words: round dots, 2px on a 9px
+   pitch — the particle field lined up. It separates without enclosing, which
+   is the job the card's dashed frame used to do. */
+.work-card__rule {
+  display: block;
+  height: 2px;
+  margin-top: 14px;
+  background: radial-gradient(circle, var(--rule-dash) 0 1px, transparent 1.2px) 0 50% / 9px 2px
+    repeat-x;
 }
 
 /* the subtle wave: a wide soft band that drifts across on hover */
@@ -647,7 +645,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 16px 4px 6px;
+  padding: 14px 0 0;
   flex: 1;
 }
 

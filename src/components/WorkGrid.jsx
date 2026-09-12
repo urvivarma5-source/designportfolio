@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import DashFrame from './DashFrame'
 import { getThumb } from './CardThumb'
 import { categories } from '../projects'
 
@@ -20,11 +19,11 @@ export default function WorkGrid() {
               return (
                 <li key={p.slug}>
                   <Link className="work-card" to={`/work/${p.slug}`} data-cursor="view">
-                    <DashFrame />
                     <span className="work-card__media" aria-hidden="true">
                       {Thumb && <Thumb />}
                       <span className="work-card__wave" />
                     </span>
+                    <span className="work-card__rule" aria-hidden="true" />
                     {/* note and desc are always rendered, empty when absent, so
                         every card reserves the same space and they all match
                         height across categories */}
