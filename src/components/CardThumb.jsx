@@ -23,16 +23,22 @@ import ngma from '../assets/ngma/thumb.webp'
 // outline both, which is fine at full size and reads as a badly-centred
 // thumbnail at card size. The thumb cut stops at the dashed outline.
 
+//
+// The line-art thumbnails sit on a SOLID ground in one of their own case
+// study's colours (`card-art--solid` + a `--ground-*` modifier), so they read
+// as covers like NGMA's rather than drawings floating on white. TCTD's green
+// line art would vanish on its own green, so it is knocked out to white.
+
 const TctdThumb = () => (
-  <span className="card-art card-art--tctd">
+  <span className="card-art card-art--tctd card-art--solid card-art--ground-green">
     <img className="card-art__cabinet" src={icons.cabinet} alt="" />
     <img className="card-art__arrow" src={icons.arrow} alt="" />
     <img className="card-art__board" src={icons.board} alt="" />
   </span>
 )
 
-const Single = ({ src }) => (
-  <span className="card-art card-art--single">
+const Single = ({ src, ground }) => (
+  <span className={`card-art card-art--single card-art--solid card-art--ground-${ground}`}>
     <img src={src} alt="" />
   </span>
 )
@@ -46,8 +52,8 @@ const Cover = ({ src }) => (
 
 const thumbs = {
   'filling-cabinets-to-fingertips': TctdThumb,
-  'search-experience-for-guide': () => <Single src={scout} />,
-  'search-experience-for-guide-2': () => <Single src={ship} />,
+  'search-experience-for-guide': () => <Single src={scout} ground="coral" />,
+  'search-experience-for-guide-2': () => <Single src={ship} ground="yellow" />,
   // A visual-design case study, so its card shows the design rather than a
   // drawing about it: the redesigned landing page's hero, cropped to 4:3.
   'website-redesign-for-ngma-mumbai': () => <Cover src={ngma} />,

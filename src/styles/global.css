@@ -615,6 +615,42 @@ body {
   object-fit: cover;
 }
 
+/* Solid covers for the line-art thumbnails. The ground is one of the case
+   study's own colours (DESIGN.md §11b: thumbnails keep their artwork's
+   colours, like the case studies do) under a white round-dot texture on a 14px
+   pitch — the card's dotted rule, as a field. It covers the sparkle ground,
+   which stays for cards with no art. */
+.card-art--solid {
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.22) 0 1.2px, transparent 1.5px) 0 0 / 14px 14px,
+    var(--thumb-ground);
+}
+
+.card-art--ground-green {
+  --thumb-ground: #2f6454; /* --cs-green */
+}
+
+.card-art--ground-coral {
+  --thumb-ground: #cc614d; /* --g-coral */
+}
+
+.card-art--ground-yellow {
+  --thumb-ground: #ffb61d; /* the Guide drawings' own yellow */
+}
+
+/* the yellow is light enough that white dots vanish; the texture goes dark */
+.card-art--ground-yellow.card-art--solid {
+  background:
+    radial-gradient(circle, rgba(0, 22, 10, 0.16) 0 1.2px, transparent 1.5px) 0 0 / 14px 14px,
+    var(--thumb-ground);
+}
+
+/* TCTD's pieces are green and coral line art; on the green ground they are
+   knocked out to white so they read at card size */
+.card-art--ground-green img {
+  filter: brightness(0) invert(1);
+}
+
 .card-art--tctd {
   grid-template-columns: 1fr 1fr;
   align-items: end;

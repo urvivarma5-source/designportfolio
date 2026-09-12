@@ -414,6 +414,21 @@ identical thumbnails side by side in the grid read as a mistake. The car from
 that same section is the stronger image, but its SVG is four times the size and
 this is a 4:3 thumbnail on the home page.
 
+**Line-art thumbnails are solid covers** (`.card-art--solid`), asked for by
+Urvi to match NGMA's full-bleed thumbnail — on the sparkle ground they read as
+drawings floating on white. Each sits on one of **its own case study's
+colours** (the §11b exception: thumbnails keep their artwork's colours, and
+these are local literals, not `:root` tokens) under a round-dot texture on a
+`14px` pitch — the card's dotted rule as a field:
+
+| Card | Ground | Texture | Art |
+| --- | --- | --- | --- |
+| TCTD | `#2f6454` (`--cs-green`) | white `22%` | knocked out to white (`filter: brightness(0) invert(1)`) — green line art vanishes on its own green |
+| Guide Part 1 | `#cc614d` (`--g-coral`) | white `22%` | as drawn; the scout is white-filled |
+| Guide Part 2 | `#ffb61d` (the drawings' yellow) | ink `16%` — white dots vanish on yellow | as drawn |
+
+The sparkle ground stays for cards with no art.
+
 The hover `.work-card__wave` still paints over the artwork; it is the grid's
 hover language and is not per-card.
 
@@ -1503,6 +1518,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | TCTD and both Guide thumbnails are solid covers in their case study's own colour with a dot texture, to match NGMA's full-bleed thumbnail (§4.5) |
 | _pending_ | Accent is deep aubergine `#48005e`, no longer the particle magenta; work cards lose the dashed frame and gain the sparkle ground behind their art and a dotted rule between picture and words (§2.1, §4.5) |
 | _pending_ | NGMA: the aside paragraph was printing twice — a raster region had swallowed it (§9.19) — the mockups were soft at 1.44x and now render at a true 2x, and both stand-in faces are re-picked against the export (Bodoni Moda, Figtree) |
 | _pending_ | About is a real page built from its own export (§4.12), and the landing page is the hero and the work alone — About, Photography and Contact are routes now, not empty sections in the home scroll (§7.1) |
