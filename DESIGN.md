@@ -425,7 +425,7 @@ these are local literals, not `:root` tokens) under a round-dot texture on a
 | --- | --- | --- | --- |
 | TCTD | `#2f6454` (`--cs-green`) | white `22%` | knocked out to white (`filter: brightness(0) invert(1)`) — green line art vanishes on its own green |
 | Guide Part 1 | `#cc614d` (`--g-coral`) | white `22%` | as drawn; the scout is white-filled |
-| Guide Part 2 | `#ffb61d` (the drawings' yellow) | ink `16%` — white dots vanish on yellow | as drawn |
+| Guide Part 2 | `#2d6a4f` (`--g-green`, Guide's dashed-frame green) | white `22%` | as drawn. Was the drawings' yellow `#ffb61d`: it swallowed the ship's yellow details and made the white hull look dirty |
 
 The sparkle ground stays for cards with no art.
 
@@ -1518,6 +1518,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Guide Part 2's thumbnail ground is Guide's green, not yellow — the yellow was swallowing the ship's own yellow |
 | _pending_ | TCTD and both Guide thumbnails are solid covers in their case study's own colour with a dot texture, to match NGMA's full-bleed thumbnail (§4.5) |
 | _pending_ | Accent is deep aubergine `#48005e`, no longer the particle magenta; work cards lose the dashed frame and gain the sparkle ground behind their art and a dotted rule between picture and words (§2.1, §4.5) |
 | _pending_ | NGMA: the aside paragraph was printing twice — a raster region had swallowed it (§9.19) — the mockups were soft at 1.44x and now render at a true 2x, and both stand-in faces are re-picked against the export (Bodoni Moda, Figtree) |

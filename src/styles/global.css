@@ -634,15 +634,11 @@ body {
   --thumb-ground: #cc614d; /* --g-coral */
 }
 
-.card-art--ground-yellow {
-  --thumb-ground: #ffb61d; /* the Guide drawings' own yellow */
-}
-
-/* the yellow is light enough that white dots vanish; the texture goes dark */
-.card-art--ground-yellow.card-art--solid {
-  background:
-    radial-gradient(circle, rgba(0, 22, 10, 0.16) 0 1.2px, transparent 1.5px) 0 0 / 14px 14px,
-    var(--thumb-ground);
+/* Guide's own green, not TCTD's: the ship keeps its colours on it (a yellow
+   ground swallowed the ship's yellow details and made the white hull look
+   dirty), so it takes no knockout filter */
+.card-art--ground-guide-green {
+  --thumb-ground: #2d6a4f; /* --g-green */
 }
 
 /* TCTD's pieces are green and coral line art; on the green ground they are

@@ -53,7 +53,7 @@ const Cover = ({ src }) => (
 const thumbs = {
   'filling-cabinets-to-fingertips': TctdThumb,
   'search-experience-for-guide': () => <Single src={scout} ground="coral" />,
-  'search-experience-for-guide-2': () => <Single src={ship} ground="yellow" />,
+  'search-experience-for-guide-2': () => <Single src={ship} ground="guide-green" />,
   // A visual-design case study, so its card shows the design rather than a
   // drawing about it: the redesigned landing page's hero, cropped to 4:3.
   'website-redesign-for-ngma-mumbai': () => <Cover src={ngma} />,
