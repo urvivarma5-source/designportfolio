@@ -138,6 +138,7 @@ values live in [§4](#4-component-tokens).
 | `--muted` | `#4a5875` | Secondary prose only (`.sub`, `.section__note`, `.project__note`). |
 | `--rule` | `rgba(0, 29, 87, 0.14)` | Every hairline divider. Always this, never a solid grey. |
 | `--accent` | `#48005e` | Deep aubergine. Eyebrow text, section titles, pills, card notes, nav hover underline, CTA underline, hover states. Chosen by Urvi (2026-09-11) over the old magenta `#b3197a`. It is **deliberately not a particle colour**: the accent used to be `PALETTE[0]`, and a bright accent next to the bright name made them compete. The name stays the loudest thing on the page. |
+| `--cursor` | `#000000` | The cursor follower and its "View" badge ([§4.8](#48-cursor-follower--cursor)), and nothing else. Black rather than the accent so the badge reads over every card cover, including the coloured thumbnails; the aubergine sank into the coral and green grounds. Chosen by Urvi (2026-09-15). |
 | `--rule-dash` | `var(--accent)` | Dotted and dashed rules — today the work-card rule ([§4.5](#45-work--work--work-card)). An alias, so the rules follow the accent. |
 
 Case studies do **not** use this palette. `.cs` declares its own tokens, local
@@ -504,7 +505,7 @@ A lagging dot that swells into a "View" badge over anything carrying
 
 | State | Value |
 | --- | --- |
-| Rest | `10px` circle, `--accent` |
+| Rest | `10px` circle, `--cursor` (black) |
 | Over a card (`.is-view`) | `84px` circle, label `opacity 0 → 1` |
 | Transition | `0.28s` standard ease |
 | Follow | GSAP `quickTo`, `0.42s`, `power3` |
@@ -1518,6 +1519,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Cursor follower is black (`--cursor`), not the accent |
 | _pending_ | Guide Part 2's thumbnail ground is Guide's green, not yellow — the yellow was swallowing the ship's own yellow |
 | _pending_ | TCTD and both Guide thumbnails are solid covers in their case study's own colour with a dot texture, to match NGMA's full-bleed thumbnail (§4.5) |
 | _pending_ | Accent is deep aubergine `#48005e`, no longer the particle magenta; work cards lose the dashed frame and gain the sparkle ground behind their art and a dotted rule between picture and words (§2.1, §4.5) |

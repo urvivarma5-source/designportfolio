@@ -14,6 +14,9 @@
   --accent: #48005e;
   /* dotted and dashed rules (the work-card rule, pills) */
   --rule-dash: var(--accent);
+  /* the cursor follower and its "View" badge — black, so it reads over any
+     card cover, including the coloured thumbnails */
+  --cursor: #000000;
 
   --serif: 'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
@@ -414,7 +417,7 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--cursor);
   pointer-events: none;
   display: grid;
   place-items: center;
