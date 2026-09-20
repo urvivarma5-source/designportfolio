@@ -137,13 +137,18 @@ values live in [§4](#4-component-tokens).
 | `--ink` | `#001d57` | Alias of `--blue`, set as `body` colour. |
 | `--muted` | `#4a5875` | Secondary prose only (`.sub`, `.section__note`, `.project__note`). |
 | `--rule` | `rgba(0, 29, 87, 0.14)` | Every hairline divider. Always this, never a solid grey. |
-| `--accent` | `#48005e` | Deep aubergine. Eyebrow text, section titles, pills, card notes, nav hover underline, CTA underline, hover states. Chosen by Urvi (2026-09-11) over the old magenta `#b3197a`. It is **deliberately not a particle colour**: the accent used to be `PALETTE[0]`, and a bright accent next to the bright name made them compete. The name stays the loudest thing on the page. |
-| `--cursor` | `#000000` | The cursor follower and its "View" badge ([§4.8](#48-cursor-follower--cursor)), and nothing else. Black rather than the accent so the badge reads over every card cover, including the coloured thumbnails; the aubergine sank into the coral and green grounds. Chosen by Urvi (2026-09-15). |
+| `--accent` | `#8a4a7a` | Muted orchid plum. Eyebrow text, section titles, tabs, tags, buttons, nav hover underline, CTA underline, hover states. Chosen by Urvi (2026-09-20) after trying teal `#0d5c66` the same day, aubergine `#48005e` on 2026-09-11, and magenta `#b3197a` before that. **Saturation is what makes it work**: the magenta was 75% saturated and read as jarring; this is 30%, and 6.3:1 on white, so it passes AA as 11px tag text and as white-on-fill. It stays **deliberately not a particle colour**: the accent used to be `PALETTE[0]`, and a bright accent next to the bright name made them compete. |
+| `--cursor` | `var(--accent)` | The cursor follower and its "View" badge ([§4.8](#48-cursor-follower--cursor)), and nothing else. An alias, so the badge matches the buttons it hovers towards. It was a literal `#000000` from 2026-09-15 until 2026-09-20, while the cards had solid colour covers that an accent-coloured badge sank into; those covers are gone. |
+| `--card-ground` | `rgba(0, 29, 87, 0.035)` | The pale panel behind each work card ([§4.5](#45-work--work--work-card)). It is `--blue` at 3.5%, so the panel is the page's own ink rather than a new grey. |
 | `--rule-dash` | `var(--accent)` | Dotted and dashed rules — today the work-card rule ([§4.5](#45-work--work--work-card)). An alias, so the rules follow the accent. |
 
 Case studies do **not** use this palette. `.cs` declares its own tokens, local
 to that block, because §11b's fidelity rule keeps the source artwork's colours.
-They live in [§4.9](#49-case-study--cs) and must not leak onto `:root`.
+They live in [§4.9](#49-case-study--cs) and must not leak onto `:root`. The
+same is true of `.g` ([§4.10](#410-guide-case-studies--g)), `.n`
+([§4.11](#411-ngma-case-study--n)) and `.sm`
+([§4.13](#413-smarter-case-studies-sm)). `.sm`'s eight are the SMARTER
+product's own palette, which is the one this project was given.
 
 **Opacity is a token too.** Hierarchy below `--blue` is expressed as opacity on
 `--blue`, not as new colours:
@@ -353,85 +358,124 @@ is fitted to.
 **Sections carry no index numbers.** `01 —`, `02 —` etc. were removed
 deliberately; do not reintroduce them.
 
-### 4.5 Work — `.work` / `.work-card`
+### 4.5 Work — `.work` / `.work-tabs` / `.work-card`
 
-Projects are grouped into three labelled categories, each with a two-column
-card grid. Modelled on the strangepixels work page.
+Modelled on nicolearoberts.com's case-study list, at Urvi's request (2026-09-15):
+**one large card per project, stacked**, with a row of **category tabs** under
+"Work". The hero is untouched.
+
+The heading was "Selected work" until 2026-09-20. Everything Urvi has made is
+on the page, so "selected" claimed a curation that is not happening. The word
+lives in `content.js` as `workTitle`, not in `Home.jsx`.
+
+#### Tabs — `.work-tabs` / `.work-tab`
+
+`All · Product Design · Visual Design · UX Research`, opening on **All**. The
+tab set is built from `categories` in `projects.js`, so a new category becomes a
+tab with no other change.
+
+They are a real WAI-ARIA tablist, not a row of buttons: `role="tablist"`,
+`role="tab"` with `aria-selected` / `aria-controls`, one `role="tabpanel"`
+around the list, a **roving tabindex** (only the selected tab is in the tab
+order), and **arrow keys / Home / End** move between tabs and select as they go.
+A pill row that only answers clicks is a mouse-only control.
 
 | Element | Property | Value |
 | --- | --- | --- |
-| `.work` | layout | flex column, gap `clamp(48px, 8vh, 96px)` between categories |
-| `.work-cat__label` | type | `--sans` `14px` / `600`, `0.2em`, `uppercase`, **`--blue`** |
-| `.work-grid` | layout | `repeat(3, 1fr)`, `grid-auto-rows: 1fr`, gap `clamp(28px, 3.4vh, 56px) clamp(24px, 2.6vw, 44px)`; two columns at `≤1100px`, one at `≤700px` |
-| `.work-grid li` | `display: flex` so the card fills its stretched cell |
-| `.work-card` | frame | **none** — no border, no padding. The dashed frame ([§4.6b](#46b-dashed-frame--dash-frame--dashframejsx)) was retired: it boxed every card in a 2px magenta dash and was the loudest thing in the grid |
-| `.work-card__rule` | dotted rule | between media and meta: `2px` tall, round dots `1px` radius on a `9px` pitch (`radial-gradient` repeat-x), `--rule-dash`, `margin-top: 14px`. The particle field lined up — it separates picture from words without enclosing either |
-| | hover | `translateY(-3px)` |
-| | cursor | `none` — the follower stands in, see [§4.8](#48-cursor-follower--cursor) |
-| `.work-card__media` | aspect | `4 / 3`, radius `6px`, no border |
-| | background | the **sparkle ground**: `#fcfbff` with eight scattered dots (`1.1–1.5px`), one per sparkle colour from `PALETTE` ([§5](#5-particle-system)), each `radial-gradient` on its own tile size (`109×91` … `163×142`) so the repeats never align into a grid. The hero's field, scattered, behind every card — and the whole media block on a card with no art |
-| `.card-art` | fill | absolute `inset: 0`, `place-content: center`, padding `9% 8%` |
-| `.work-card__meta` | padding | `14px 0 0`, `flex: 1` |
+| `.work-tabs` | layout | flex, wrap, gap `10px`, margin-bottom `clamp(28px, 4.4vh, 52px)` |
+| `.work-tab` | type | `--sans` `12px` / `600`, `0.16em`, `uppercase`, `--blue` |
+| | shape | `1px solid --rule`, radius `999px`, padding `11px 20px` |
+| | hover | text and border → `--accent` |
+| | selected | `--accent` fill, white text — the only filled pill besides the primary button, so it reads as state |
+| | focus | `2px` `--accent` outline, offset `3px` |
 
+#### Cards — `.work-card`
 
-| `.work-card__wave` | effect | soft `#004CE4` radial band, `opacity 0 → 1` on hover, drifting ±12% over `6s` alternate |
-| `.work-card__title` | type | `--serif` `400`, `clamp(17px, 1.4vw, 23px)`, lh `1.15`; `--accent` on hover |
-| `.work-card__note` | type | `9px` / `600`, `0.16em`, `uppercase`, `--accent` (e.g. "Part 1"); lh `1.2`, `min-height: 1.2em` |
-| `.work-card__title` | reserve | `min-height: 2.3em` (two lines) |
-| `.work-card__desc` | type | `13px`, lh `1.5`, `--muted`, `44ch`; `min-height: 4.5em` (three lines) |
+Words on the left, the case study's art on the right, on a pale rounded panel.
+**Finished case studies sort first**, coming-soon cards after, each group in
+`projects.js` order.
 
-**Every card is the same size.** `note` and `desc` are always rendered — empty
-when absent — and each reserves fixed line-space, so cards match across
-categories and leave whitespace rather than shrinking. `grid-auto-rows: 1fr`
-alone is not enough: each category is its own grid, so it only equalises within
-one. Measured: all 11 cards 516 × 551.
+| Element | Property | Value |
+| --- | --- | --- |
+| `.work-list` | layout | flex column, gap `clamp(24px, 3vw, 40px)` |
+| `.work-card` | layout | grid `1fr 1fr`, centred, gap `clamp(28px, 4.4vw, 80px)` |
+| | panel | `--card-ground`, radius `28px`, padding `clamp(28px, 4.6vw, 76px)`. **No border, no shadow, no solid fill behind the art** |
+| `.work-card--text` | layout | one column — a project with no art |
+| `.work-card__eyebrow` | type | `--sans` `13px` / `600`, `0.18em`, `uppercase`, **`--muted`, solid**. Not `--blue` at an opacity: translucent type read as washed out on the card's pale ground (Urvi, 2026-09-20) |
+| `.work-card__context` | type | the product or domain ("Guide App", "NGMA Mumbai", "Hospital patient management") in `--accent`, after a solid `--muted` `·`. It is the part of the line that names the actual project |
+| `.work-card__note` | type | a sequence label ("Part 1"), `--accent`, after a solid `--muted` `·` |
+| `.work-card__title` | type | `--serif` `400`, `clamp(28px, 2.9vw, 46px)`, lh `1.12`, `-0.01em`, `text-wrap: balance` |
+| `.work-card__desc` | type | `clamp(15px, 1.15vw, 18px)`, lh `1.55`, `--muted`, `46ch` |
+| `.work-card__tag` | pill | `--sans` `11px` / `600`, `0.14em`, `uppercase`, `--accent` text and `1px` border, radius `999px`, padding `7px 14px` |
+| `.work-card__outcome` | type | `clamp(16px, 1.25vw, 20px)`, lh `1.5`, `--blue`, `52ch`; `1px --rule` top border, `30px` above and below it |
+| `.work-card__metrics` | row | a `<dl>`; same hairline and spacing — **dropped when an outcome precedes it**, so a card draws one hairline, not two |
+| `.work-card__value` | type | `--serif` `clamp(30px, 3vw, 46px)`, lh `1`, `--blue` |
+| `.work-card__label` | type | `--sans` `12px` / `600`, `0.16em`, `uppercase`, `--muted` |
+| `.work-btn--primary` | button | `--accent` fill, white; hover → `--blue`. "View case study" |
+| `.work-btn--secondary` | button | `1px --blue` outline; hover → `--accent`. An external link with a `→` that nudges `3px` on hover. Today only NGMA has one, to its prototype |
+| `.work-btn--soon` | statement | "Coming soon", `--muted` on a `--rule` outline, `cursor: default`, `aria-disabled` |
+| `.work-btn` | shape | `--sans` `12px` / `600`, `0.16em`, `uppercase`, radius `999px`, padding `17px 28px` |
+| `.work-card__media` | box | `4 / 3`, radius `18px`, **transparent** — the art sits on the card's own ground |
+| | hover | art `scale(1.03)` over `0.6s` |
+| | cursor | `none` on the linked media only — the follower's "View" badge ([§4.8](#48-cursor-follower--cursor)) |
+
+**The metric row is a `<dl>`**, so each label (`dt`) precedes its value (`dd`) in
+the markup; `.work-card__metric` is `column-reverse` to put the figure on top.
+
+**Two links, one labelled.** The art links to the case study for pointer users,
+but it is `aria-hidden` and `tabIndex={-1}`: the "View case study" button is the
+same destination with a real label, so keyboard and screen-reader users meet it
+once, not twice.
+
+**"Coming soon" is derived, not stored.** A card shows it when
+`src/caseStudies` has no page for its slug (`getCaseStudy`). A card can never
+promise a case study that does not exist, and publishing one flips its card
+with no edit to `projects.js`.
+
+Below `900px` the card is one column with the art first; below `700px` the
+radius drops to `20px` and the padding to `24px`.
+
+#### Where the copy comes from
+
+Every word on a card is in `projects.js` ([§8.2](#82-srcprojectsjs)).
+
+**A card says what the work achieved, in a sentence.** `outcome` is that
+sentence and it is the card's point; `metrics` is optional evidence under it.
+Urvi asked for this over a pair of figures (2026-09-20) — an earlier version
+put "8 users interviewed · 5 sprints" on the Guide cards, which measures effort,
+not impact. **Both are drawn from the project's own case study, never invented:**
+
+| Card | Outcome drawn from | Metrics |
+| --- | --- | --- |
+| Filling Cabinets | `tctd.js` outcomes — "Staff could use the system on day one…", and the `0 seconds` added to a consultation | `78%` faster record retrieval · `~70%` less repeat history-taking |
+| Guide Part 1 | `guide1.js` sprint goals and the 8-user research | none — mid-project, nothing measured yet |
+| Guide Part 2 | `guide2.js` test roster, the reshaped views, and "My Guide" | none |
+| NGMA | `ngma.js` inspiration and cohesion, plus its prototype link | none; carries a `live` button instead |
+
+The seven projects without a case study carry eyebrows and tags **inferred from
+their title and description alone. They are placeholders**, flagged as such in
+`projects.js`.
+
+#### Artwork
 
 **Card artwork lives in `CardThumb.jsx`, not in `projects.js`.** It is a
 slug → component map with a `getThumb(slug)` lookup, the same shape as
-[§8.3](#83-srccasestudies)'s case-study registry, for the same reason: a card's
-art is markup and CSS, not copy, and `projects.js` stays copy-only. A slug with
-no entry renders the plain ground — still eight of the eleven, because those
-projects have no source artwork in the repo at all.
+[§8.3](#83-srccasestudies)'s case-study registry: a card's art is markup, not
+copy. Four projects have art; the rest are text-only cards.
 
-"Filling Cabinets to Fingertips" reuses **its own case-study hero art**,
-imported from `caseStudies/icons` rather than re-exported so each SVG is
-imported once in the bundle. Its three pieces are laid out on the same
-two-column grid as `.cs-hero__art`, sized as a share of the media block, so the
-arrangement holds at every card width. The hero's **title panel is deliberately
-not in the thumbnail** — the card prints the title and description directly
-underneath it, and text baked into an image is neither selectable nor legible
-at card size.
+The line art sits **straight on the card's ground in its own colours.** The
+solid colour covers it used to sit on (TCTD's green with the art knocked out to
+white, Guide's coral and green) were removed with this redesign. NGMA's
+thumbnail is a screenshot, so it still fills its box (`.card-art--cover`) —
+that is the design itself, not a fill behind a drawing.
 
-The two Guide cards take **one drawing each**, through `.card-art--single`,
-which is `display: block` with `object-fit: contain` rather than the centred
-grid the multi-piece TCTD thumbnail uses. The reason is
-[§9.16](#916-an-extracted-svg-has-no-intrinsic-size): these SVGs carry a
-viewBox and no width/height, so a box has to be given or the card renders
-empty.
-
-Part 1 takes its own hero drawing. **Part 2 takes the ship from its pivot
-section, not its hero** — both Guide pages open with the same drawing, and two
-identical thumbnails side by side in the grid read as a mistake. The car from
-that same section is the stronger image, but its SVG is four times the size and
-this is a 4:3 thumbnail on the home page.
-
-**Line-art thumbnails are solid covers** (`.card-art--solid`), asked for by
-Urvi to match NGMA's full-bleed thumbnail — on the sparkle ground they read as
-drawings floating on white. Each sits on one of **its own case study's
-colours** (the §11b exception: thumbnails keep their artwork's colours, and
-these are local literals, not `:root` tokens) under a round-dot texture on a
-`14px` pitch — the card's dotted rule as a field:
-
-| Card | Ground | Texture | Art |
-| --- | --- | --- | --- |
-| TCTD | `#2f6454` (`--cs-green`) | white `22%` | knocked out to white (`filter: brightness(0) invert(1)`) — green line art vanishes on its own green |
-| Guide Part 1 | `#cc614d` (`--g-coral`) | white `22%` | as drawn; the scout is white-filled |
-| Guide Part 2 | `#2d6a4f` (`--g-green`, Guide's dashed-frame green) | white `22%` | as drawn. Was the drawings' yellow `#ffb61d`: it swallowed the ship's yellow details and made the white hull look dirty |
-
-The sparkle ground stays for cards with no art.
-
-The hover `.work-card__wave` still paints over the artwork; it is the grid's
-hover language and is not per-card.
+"Filling Cabinets to Fingertips" reuses its case study's hero art on the same
+two-column grid as `.cs-hero__art`. The two Guide cards take one drawing each
+through `.card-art--single`, which must be `display: block` with a given box
+and `object-fit: contain` — see
+[§9.16](#916-an-extracted-svg-has-no-intrinsic-size). Part 2 takes the ship from
+its pivot section rather than its hero, because both Guide pages open on the
+same drawing.
 
 ### 4.6b Dashed frame — `.dash-frame` / `DashFrame.jsx`
 
@@ -505,7 +549,7 @@ A lagging dot that swells into a "View" badge over anything carrying
 
 | State | Value |
 | --- | --- |
-| Rest | `10px` circle, `--cursor` (black) |
+| Rest | `10px` circle, `--cursor`, which follows `--accent` |
 | Over a card (`.is-view`) | `84px` circle, label `opacity 0 → 1` |
 | Transition | `0.28s` standard ease |
 | Follow | GSAP `quickTo`, `0.42s`, `power3` |
@@ -811,6 +855,88 @@ is derived from a shrinking multiplier.
 
 **Mockups take a hairline border.** Several of the frames start on white, and
 without `1px solid rgba(9, 17, 51, 0.1)` they dissolve into the page.
+
+---
+
+### 4.13 SMARTER case studies: `.sm`
+
+**One block, three pages.** `SmarterNavPage.jsx`, `SmarterLibPage.jsx` and
+`SmarterEhiePage.jsx` share `.sm` the way the two Guide pages share `.g`. One
+product, one design system, one set of tokens.
+
+**This block bends §11b's fidelity rule, and the bend is the point.** `.cs`,
+`.g` and `.n` each transcribe a finished Figma *case-study frame*: its point
+sizes, its gutters, its palette, all scaled from one `--k`. SMARTER has no such
+frame: there is no designed case study to transcribe, only the design work.
+What it does have is a product with a real design system, so `.sm` takes **the
+product's own tokens** instead. The palette below is SMARTER's, sampled from
+its Figma library and visible in every spec sheet these pages show; the face is
+**Inter**, which is what the product is drawn in and which the site already
+loads as `--sans`.
+
+There is therefore **no `--sm-k`**. Nothing here is preserving an artwork's
+proportions, so sizes are the site's own fluid `clamp()`s. Do not add a scale
+factor to this block on the grounds that the other three have one.
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--sm-dark` | `#0f1419` | Primary Dark: the h1 and every section title |
+| `--sm-navy` | `#2c3957` | CTA Blue: sub-headings, table row headers, the pull quote |
+| `--sm-ink` | `#414042` | 90% Black: all running prose |
+| `--sm-grey` | `#939598` | 50% Gray: captions, meta labels, the source line |
+| `--sm-line` | `#e2e4e6` | Salt Flat Gray: every hairline and card border |
+| `--sm-orange` | `#dc6b01` | Orange: section numbers, the eyebrow, spec figures |
+| `--sm-red` | `#be0000` | Utah Red: **the open-question aside, and nothing else** |
+| `--sm-white` | `#ffffff` | White: the ground under every figure |
+
+Two more are derived rather than sampled, because they are grounds and not
+marks, and §0.3 wants the role stated either way:
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--sm-band` | `#f4f5f6` | Salt Flat Gray at about a quarter strength: the tint behind the open-question aside |
+| `--sm-sheet` | `#fcfcfc` | The ground the spec sheets are themselves drawn on, so a rendered sheet meets its frame without a seam |
+
+**`--sm-red` is rationed on purpose.** Every SMARTER page carries exactly one
+red element: the `.sm-ask` aside, which marks something that was still
+unresolved when the work was handed over. It is a question, not a finding, and
+the colour is what says so. Using it for a second thing on a page destroys that
+signal. If something else needs marking, it is not red.
+
+| Element | Property | Value |
+| --- | --- | --- |
+| `.sm` | max-width | `1180px`, centred |
+| | `overflow-x` | `clip`, the wide figures bleed past the column. `clip`, not `hidden`, for the reason in [§4.9](#49-case-study--cs) |
+| `.sm-fig--wide` | width | `min(100vw - 2 × gutter, 1440px)`, centred with `margin-left: 50%` and a `-50%` translate |
+| `.sm-num` | | Inter 700, tabular, `--sm-orange` |
+| solid card | | `1px --sm-line`, radius `12px`, on white |
+
+**The numbering is information, not decoration.** These pages number their
+sections because the sections are a sequence and the order carries meaning ,
+the navigation study's §07 escalation only makes sense after its §03 rule. The
+seven numbered items in the navigation study's §02 are load-bearing in a
+stronger sense still: they are the same seven annotations printed on the sheet
+directly underneath them, so the list and the picture are read together.
+
+**Three figure treatments, and they are not interchangeable.**
+
+- `.sm-fig`, a figure inside the text column, framed as the product frames a
+  card: `1px --sm-line`, `12px` radius, on `--sm-sheet`. The frame reads as the
+  sheet's own edge rather than a border drawn round a screenshot.
+- `.sm-fig--wide`, runs out to the viewport gutters. The spec sheets are
+  1400–1480pt of drawing and shrink to illegibility inside a text measure.
+- `.sm-fig--pan` / `.sm-pan`, the EHIE block's BPMN diagrams, which are
+  2300–5800pt wide. They are given a fixed height and allowed to **scroll
+  sideways** rather than be fitted; fitted to the column their labels fall
+  below 5px. The scroller carries `tabIndex="0"`, `role="group"` and an
+  `aria-label`, because content only reachable by scrolling has to be reachable
+  by keyboard.
+
+`.sm-pair` (library §02) sets the browse listing beside the filter drawer: one
+decision seen twice. Both sources are full-page designs, 1400×2900 and
+640×3794, so the pair caps its height at `760px` and shows each from the top
+with `object-fit: cover`. The thing that section is about (a count on every
+option, nothing greyed out) is in the first screenful of both.
 
 ---
 
@@ -1170,7 +1296,22 @@ design. Slugs match the original Adobe Portfolio URLs where they existed; three
 projects are new and have no page content: `smarter-project`,
 `branding-for-sugar-rush`, `employee-tool-use-at-intuit`.
 
-When adding metadata (year, role), add the fields here, extend `WorkGrid`, and
+Each project is `{ slug, title, context?, note?, desc?, tags?, outcome?, metrics?, live? }`.
+The eyebrow line reads **category · context · note**, the middots drawn in CSS.
+`context` names the product or domain the work sat in, which keeps it out of
+the title: the two Guide cards are titled "Building a Robust Search Experience"
+rather than repeating "Guide App:" in a line that already says it
+(Urvi, 2026-09-20). **The card's
+eyebrow is not a field** — it is the project's category, attached by the
+`projects` flat map, so it can never disagree with the tab that filtered it.
+`metrics` is a list of `{ value, label }`, and a project without real figures
+**omits the key** rather than carrying an empty one; the header comment in
+`projects.js` names the case study each figure came from. `tags` on a project
+with no case study are marked `PLACEHOLDER` there.
+
+`live` is `{ label, href }` and renders `.work-btn--secondary`
+([§4.5](#45-work--work--work-card)); only NGMA has one, taken from its case
+study's own prototype link. When adding metadata (year, role), add the fields here, extend `WorkGrid`, and
 **document the new card tokens in [§4.5](#45-work-grid--work-grid--work-card)**.
 Thumbnails are the exception — they are components in `CardThumb.jsx`, not a
 field here. See [§4.5](#45-work-grid--work-grid--work-card).
@@ -1183,9 +1324,9 @@ copy-out-of-components rule as `content.js`:
 | File | Holds |
 | --- | --- |
 | `index.js` | `caseStudies`, a slug → component map, and `getCaseStudy(slug)`. A slug absent from it renders the stub in [§4.6](#46-project-detail--project) |
-| `tctd.js`, `guide1.js`, `guide2.js`, `ngma.js` | **Every word** of a case study, as structured data |
-| `TctdPage.jsx`, `Guide1Page.jsx`, `Guide2Page.jsx`, `NgmaPage.jsx` | Layout only — each reads its data file and holds no copy |
-| `icons.js`, `guide1Art.js`, `guide2Art.js`, `ngmaArt.js` | Import a page's artwork from `src/assets/<study>/` and re-export it as maps |
+| `tctd.js`, `guide1.js`, `guide2.js`, `ngma.js`, `smarterNav.js`, `smarterLib.js`, `smarterEhie.js` | **Every word** of a case study, as structured data |
+| `TctdPage.jsx`, `Guide1Page.jsx`, `Guide2Page.jsx`, `NgmaPage.jsx`, `SmarterNavPage.jsx`, `SmarterLibPage.jsx`, `SmarterEhiePage.jsx` | Layout only — each reads its data file and holds no copy |
+| `icons.js`, `guide1Art.js`, `guide2Art.js`, `ngmaArt.js`, `smarterNavArt.js`, `smarterLibArt.js`, `smarterEhieArt.js` | Import a page's artwork from `src/assets/<study>/` and re-export it as maps |
 | `rich.jsx` | Turns the Guide files' `{ em }` runs into markup — the one place that happens |
 
 **Emphasis lives in the data, not the layout.** In the Guide files a paragraph
@@ -1443,6 +1584,44 @@ Two defences:
   rectangle crop can — and the result is sharp at any size and a tenth of the
   bytes.
 
+### 9.20 A live-text SVG in an `<img>` loses the page's webfonts
+
+The SMARTER spec sheets are Figma SVG exports whose labels are **live `<text>`
+in Inter**, not outlined paths. Importing one and dropping it in an `<img>`
+(which is what `ngmaArt.js` does for its vector art, and what §8.3 otherwise
+recommends) does not work here. An SVG referenced by an `<img>` renders in an
+isolated document that cannot reach the host page's `@font-face` rules or its
+Google Fonts link, so every label silently falls back to Helvetica. Because the
+text in these sheets is absolutely positioned with no wrapping, the fallback
+does not merely look different: labels overrun their boxes and collide.
+
+So the sheets are **rasterised** by `tools/render_svg_sheets.mjs`, which inlines
+each one into a page that links Google Fonts and screenshots it in headless
+Chrome. That is the only reason these case studies carry WebP where vector
+would otherwise be better. `ngma.js`'s SVGs are safe because they are paths.
+
+Three things the renderer has to handle, each of which cost a run:
+
+- **Some exports carry an `<?xml ?>` declaration**, so the root element is
+  found rather than anchored at position 0.
+- **The BPMN exports have a non-zero `viewBox` origin** (`120 10 …`). The
+  default crop is the sheet's own viewBox, not `[0, 0, w, h]`; assuming zero
+  shifts every diagram up and left by its own inset.
+- **A crop re-frames the root `viewBox`** rather than wrapping the content in a
+  transformed `<g>`, which would break the filters and gradients these sheets
+  use.
+
+Design PNGs go through `tools/crop_png_shots.mjs` instead. It also uses Chrome,
+because `sips` crops from the centre and every box in these specs is given from
+the top-left.
+
+**Not every export in a source folder is usable.** `Aim4_Outline_View` ships as
+both SVG and PNG and both are broken, with overlapping boxes and content
+running past the right edge, so neither is on the EHIE page. Render a sheet and look at it
+before writing copy around it.
+
+---
+
 ## 10. Verification protocol
 
 **Screenshots of the particle field are not evidence.** The preview pane
@@ -1519,6 +1698,14 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Card eyebrows are solid rather than translucent, and the project name in them takes the accent (§4.5) |
+| _pending_ | Work-card eyebrows carry the product or domain: "Product Design · Guide App · Part 1", with the Guide titles losing the prefix the eyebrow now holds (§4.5, §8.2) |
+| _pending_ | The work heading is "Work", not "Selected work", and smaller; the cursor badge follows the accent again (§2.1, §4.5, §4.8) |
+| _pending_ | Accent moves from aubergine to muted orchid plum `#8a4a7a`; work cards drop to one paragraph, smaller type and more air (§2.1, §4.5) |
+| _pending_ | Three SMARTER case studies (the Station Navigator, the sensor library, and the EHIE process map) sharing a new `.sm` block on SMARTER's own palette and face. First case studies written rather than transcribed, and the first whose artwork is rendered from live-text design sheets (§2.1, §4.13, §8.3, §9.20, §11e). The empty `smarter-project` card becomes three |
+| _pending_ | Work cards lead with an outcome sentence instead of a pair of figures; metrics stay only where a case study measured them, and NGMA gains a prototype link (§4.5, §8.2) |
+| _pending_ | Work becomes one large card per project under category tabs, wired up at last: `WorkGrid` renders the panel cards the CSS was already written for, and `projects.js` carries each card's tags and its metrics (§4.5, §8.2) |
+| _pending_ | Work section rebuilt after nicolearoberts.com: category tabs (All · Product Design · Visual Design · UX Research) under "Selected work", and one large card per project with eyebrow, tags, case-study metrics and buttons; solid thumbnail covers removed; new `--card-ground` token (§2.1, §4.5) |
 | _pending_ | Cursor follower is black (`--cursor`), not the accent |
 | _pending_ | Guide Part 2's thumbnail ground is Guide's green, not yellow — the yellow was swallowing the ship's own yellow |
 | _pending_ | TCTD and both Guide thumbnails are solid covers in their case study's own colour with a dot texture, to match NGMA's full-bleed thumbnail (§4.5) |
@@ -1864,12 +2051,102 @@ Collection one, and a render of that region shows no such heading anywhere.
 Rather than place it by guess it is left out, and noted in `ngma.js` and in
 [§12](#12-open-threads).
 
+## 11e. The SMARTER case studies
+
+Three pages (`smarter-station-navigator`, `smarter-sensor-library` and
+`smarter-ehie-process-map`) sharing `.sm` ([§4.13](#413-smarter-case-studies-sm)).
+
+### They are written, not transcribed
+
+This is the one thing to understand before editing any of them. The other four
+case studies are **extractions**: `tools/extract_case_study.py` pulls the copy
+out of a finished Figma case-study frame, and §11b's fidelity rule then says
+keep the artwork's colours, faces and measurements. There is no such frame for
+SMARTER. The sources are the design work itself:
+
+| Page | Source |
+| --- | --- |
+| Station Navigator | `Desktop/High Fidelity Screens/Instrument Tree/`: five spec sheets, three nav state sheets, two working prototypes |
+| Sensor library | `Desktop/High Fidelity Screens/`: the high-fidelity screens, plus `04 New Components.svg` and the prototype in `Desktop/UU/CLAUDE PROTOTYPE/html/` |
+| EHIE process map | `Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/`: nine BPMN files, the plain-language guide, the open-questions register |
+
+Each is read together with the decision record in the design sessions those
+folders came out of.
+
+### The fidelity rule, restated for written copy
+
+Because the copy is authored, "fidelity" cannot mean transcription. It means:
+
+**Every fact on these pages comes from a sheet or from the record.** A token, a
+measurement, a rejected option, a heuristic cited, a question escalated: each
+is traceable. Nothing is added to round out a story.
+
+**No invented figures, anywhere.** None of this work has been tested with
+users, so there are no outcome numbers and the three work cards carry **no
+`metrics` key**, which is the rule `projects.js` states at the top of its own
+file. The
+only figures on any of the three pages measure the *build* (90 sensors, 9
+categories, nine diagrams, a 48px row) and are labelled as such.
+
+**Gaps are marked, not filled.** Each data file opens with a `TODO (Urvi)`
+block listing what could not be sourced: in all three cases the hero's role,
+context and dates, and in all three cases the absence of testing. Fill those
+in; do not guess them.
+
+### One rule the EHIE page has that the others do not
+
+**No names.** That work involved a real disagreement with real colleagues, and
+the resolution of it is on the page. Everyone is referred to by role, and dates
+are used where a name would otherwise be needed. This mirrors the rule Urvi set
+on the deliverables themselves, where callouts cite dates and never people. It
+is why §06 reads as a method rather than as a verdict.
+
+### Artwork
+
+Every image on all three pages is a render of a real deliverable. Two
+pipelines, and [§9.20](#920-a-live-text-svg-in-an-img-loses-the-pages-webfonts)
+explains why there are two:
+
+| Tool | Spec | For |
+| --- | --- | --- |
+| `tools/render_svg_sheets.mjs` | `tools/smarter-nav-regions.json`, `smarter-lib-regions.json`, `smarter-ehie-regions.json` | The live-text Figma sheets and the BPMN exports |
+| `tools/crop_png_shots.mjs` | `tools/smarter-lib-png-regions.json` | The high-fidelity design PNGs |
+
+`tools/svg_group_boxes.py` prints an approximate bounding box per top-level
+`<g id>` of a sheet, which is how the crop boxes were written rather than
+eyeballed off a render. The boxes it prints are approximate because it ignores
+path data, so pad every one before using it.
+
+**The plain-language guide is shown only at its opening.** Its diagram panes
+pan and zoom on interaction and render empty in a headless capture, so a shot
+of one of its diagram sections would be a picture of an empty box. The diagrams
+themselves are on the page at full fidelity as the `d00`–`d08` renders, and the
+guide's side-by-side layout is described in the copy instead.
+
+### Copy departures worth knowing
+
+- The navigation study's §02 list and the sheet below it **share their
+  numbering**. Reordering one without the other breaks both.
+- The library study's §04 caption says out loud that the comparison screen's
+  cells read "Value" because it is the grid's specification rather than a
+  filled export. Saying so is better than cropping around it.
+
+---
+
 ## 12. Open threads
 
-- **Six of ten project pages are still stubs.** "Filling Cabinets to
-  Fingertips", the two Guide parts and the NGMA redesign are the case studies;
-  the rest render a title until their content exists. See
-  [§8.3](#83-srccasestudies) for how to add one.
+- **Five of twelve project pages are still stubs.** "Filling Cabinets to
+  Fingertips", the two Guide parts, the NGMA redesign and the three SMARTER
+  studies are the case studies; the rest render a title until their content
+  exists. See [§8.3](#83-srccasestudies) for how to add one.
+- **All three SMARTER pages have a `TODO (Urvi)` block at the top of their data
+  file**: the hero's role, context and dates in each, and in each the fact
+  that nothing has been tested with users. Until that testing happens the three
+  work cards correctly carry no `metrics`. See
+  [§11e](#11e-the-smarter-case-studies).
+- **`Aim4_Outline_View` is unusable in both its SVG and PNG exports** and is
+  therefore missing from the EHIE page's §04. If it is regenerated, it belongs
+  there. See [§9.20](#920-a-live-text-svg-in-an-img-loses-the-pages-webfonts).
 - **The NGMA export's "Prototype" heading has no findable position** — see
   [§11d](#11d-the-ngma-case-study). If it belongs somewhere, put it back.
 - **The two Guide prototype links are missing.** Both CTAs render as marked

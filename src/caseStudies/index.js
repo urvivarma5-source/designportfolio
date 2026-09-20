@@ -8,12 +8,21 @@ import Guide2 from './Guide2Page'
 import { guide2 } from './guide2'
 import Ngma from './NgmaPage'
 import { ngma } from './ngma'
+import SmarterNav from './SmarterNavPage'
+import { smarterNav } from './smarterNav'
+import SmarterLib from './SmarterLibPage'
+import { smarterLib } from './smarterLib'
+import SmarterEhie from './SmarterEhiePage'
+import { smarterEhie } from './smarterEhie'
 
 export const caseStudies = {
   [tctd.slug]: Tctd,
   [guide1.slug]: Guide1,
   [guide2.slug]: Guide2,
   [ngma.slug]: Ngma,
+  [smarterNav.slug]: SmarterNav,
+  [smarterLib.slug]: SmarterLib,
+  [smarterEhie.slug]: SmarterEhie,
 }
 
 export const getCaseStudy = (slug) => caseStudies[slug]

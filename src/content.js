@@ -18,6 +18,11 @@ export const content = {
     { label: 'Contact', href: '/contact' },
   ],
 
+  // The landing page's one section heading. It was "Selected work" until
+  // 2026-09-20: everything Urvi has made is on the page, so "selected" was
+  // claiming a curation that is not happening.
+  workTitle: 'Work',
+
   // Small tracked label above the headline. Parts joined by a dimmed middot.
   eyebrow: ['Product Design', 'Research', 'Strategy'],
 

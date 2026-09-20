@@ -1,0 +1,38 @@
+{
+  "comp-rows": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/04 New Components.svg",
+    "crop": [
+      40,
+      795,
+      1400,
+      600
+    ]
+  },
+  "comp-spec": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/04 New Components.svg",
+    "crop": [
+      40,
+      1490,
+      1440,
+      230
+    ]
+  },
+  "comp-scope": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/04 New Components.svg",
+    "crop": [
+      40,
+      1855,
+      960,
+      500
+    ]
+  },
+  "comp-accordion": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/04 New Components.svg",
+    "crop": [
+      40,
+      2435,
+      1445,
+      335
+    ]
+  }
+}

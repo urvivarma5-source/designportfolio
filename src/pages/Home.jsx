@@ -1,3 +1,4 @@
+import { content } from '../content'
 import Hero from '../components/Hero'
 import Section from '../components/Section'
 import WorkGrid from '../components/WorkGrid'
@@ -10,7 +11,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <Section id="work" title="Selected work">
+      <Section id="work" title={content.workTitle}>
         <WorkGrid />
       </Section>
     </>

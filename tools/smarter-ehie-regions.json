@@ -1,0 +1,29 @@
+{
+  "d00-overview": {
+    "src": "/Users/urvi-admin/Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/Images/00_Overview_Study_Lifecycle.svg"
+  },
+  "d01-planning": {
+    "src": "/Users/urvi-admin/Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/Images/01_Planning_and_Design.svg"
+  },
+  "d03-operations": {
+    "src": "/Users/urvi-admin/Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/Images/03_Operations_Data_Collection.svg"
+  },
+  "d05-transforms": {
+    "src": "/Users/urvi-admin/Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/Images/05_Run_Transforms_and_Assimilate.svg"
+  },
+  "d07-intake": {
+    "src": "/Users/urvi-admin/Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/Images/07_Intake_Clarification_Loop.svg"
+  },
+  "d08-reentry": {
+    "src": "/Users/urvi-admin/Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/Images/08_Determine_Re_entry_Point.svg"
+  },
+  "thumb": {
+    "src": "/Users/urvi-admin/Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/Images/00_Overview_Study_Lifecycle.svg",
+    "crop": [
+      1190,
+      285,
+      1240,
+      620
+    ]
+  }
+}

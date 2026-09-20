@@ -9,14 +9,22 @@
   --ink: #001d57;
   --muted: #4a5875;
   --rule: rgba(0, 29, 87, 0.14);
-  /* Deep aubergine. Deliberately NOT a particle colour: the sparkle palette
-     is bright, and a darker accent lets the name stay the loudest thing. */
-  --accent: #48005e;
+  /* Muted orchid plum. Deliberately NOT a particle colour: the sparkle palette
+     is bright, and a darker accent lets the name stay the loudest thing.
+     The saturation is the point: the old magenta #b3197a read as jarring at
+     75% saturation, and this sits at 30%, so it reads as a considered colour
+     next to the navy rather than a signal flare. */
+  --accent: #8a4a7a;
   /* dotted and dashed rules (the work-card rule, pills) */
   --rule-dash: var(--accent);
-  /* the cursor follower and its "View" badge — black, so it reads over any
-     card cover, including the coloured thumbnails */
-  --cursor: #000000;
+  /* The cursor follower and its "View" badge. It follows the accent, so the
+     badge is the same colour as the buttons it hovers towards. It was black
+     while the cards had solid colour covers that the accent sank into; those
+     covers are gone. */
+  --cursor: var(--accent);
+  /* the ground of a work card: --blue at 3.5%, so a pale blue-grey panel that
+     is still the page's own ink, not a new grey */
+  --card-ground: rgba(0, 29, 87, 0.035);
 
   --serif: 'Self Modern', 'Newsreader', Georgia, 'Times New Roman', serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
@@ -260,8 +268,8 @@ body {
 .section__title {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(34px, 5vw, 68px);
-  line-height: 1;
+  font-size: clamp(26px, 3.2vw, 44px);
+  line-height: 1.05;
   letter-spacing: -0.012em;
   color: var(--accent);
   /* the rule is what makes it read as a heading rather than loose display type */
@@ -454,121 +462,297 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
-   Work — categorised card grid
+   Work — tabbed case-study cards (DESIGN.md §4.5)
 --------------------------------------------------------------------------- */
 .work {
-  margin-top: clamp(28px, 5vh, 56px);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(48px, 8vh, 96px);
+  margin-top: clamp(24px, 4vh, 44px);
 }
 
-.work-cat__label {
+/* The tabs under the work heading. A real ARIA tablist: the buttons are the
+   tabs, the list below is the one tabpanel, and arrow keys move between tabs
+   (WorkGrid.jsx). The selected tab is the only filled pill on the page besides
+   the primary button, so it reads as state rather than decoration. */
+.work-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 clamp(28px, 4.4vh, 52px);
+}
+
+.work-tab {
   font-family: var(--sans);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--blue);
-  margin: 0 0 clamp(16px, 2.4vh, 26px);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
 }
 
-.work-grid {
+.work-tab:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.work-tab[aria-selected='true'] {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.work-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.work-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  /* every row the height of the tallest card, so all cards match regardless of
-     how far their title wraps or whether they have a description */
-  grid-auto-rows: 1fr;
-  gap: clamp(28px, 3.4vw, 56px) clamp(24px, 2.6vw, 44px);
-}
-
-.work-grid li {
-  /* the grid row stretches every cell to the tallest card */
-  display: flex;
-}
-
-.work-card {
   display: flex;
   flex-direction: column;
-  /* fill the stretched cell so all cards in a row match height; the meta
-     below absorbs the slack as whitespace when a card has no description */
-  flex: 1;
-  text-decoration: none;
+  gap: clamp(24px, 3vw, 40px);
+}
+
+/* One project per row: words on the left, the case study's own art on the
+   right, on a pale panel. Modelled on nicolearoberts.com's case-study cards. A
+   project with no art is a one-column card of the words alone. */
+.work-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(28px, 4.4vw, 80px);
+  padding: clamp(28px, 4.6vw, 76px);
+  border-radius: 28px;
+  background: var(--card-ground);
   color: var(--blue);
-  cursor: none;
-  position: relative;
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
-.work-card:hover {
-  transform: translateY(-3px);
+.work-card--text {
+  grid-template-columns: minmax(0, 1fr);
 }
 
-/* the media block: the project's artwork when it has one (see CardThumb),
-   otherwise the ground on its own. The ground is the hero's particle field,
-   scattered: eight dots in eight sparkle colours (lib/palette.js), each on its
-   own tile size so the repeat never lines up into a visible grid. */
+.work-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.work-card__eyebrow {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  /* a solid token, not --blue at an opacity: translucent type reads as washed
+     out against the card's pale ground */
+  color: var(--muted);
+}
+
+.work-card__note {
+  color: var(--accent);
+}
+
+/* the product or domain, in the accent: it is the part of the line that names
+   the actual project */
+.work-card__context {
+  color: var(--accent);
+}
+
+.work-card__context::before,
+.work-card__note::before {
+  content: '·';
+  margin: 0 0.6em;
+  color: var(--muted);
+}
+
+.work-card__title {
+  margin: 14px 0 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(25px, 2.3vw, 36px);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--blue);
+  text-wrap: balance;
+}
+
+.work-card__desc {
+  margin: 18px 0 0;
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+
+.work-card__tags {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.work-card__tag {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 7px 14px;
+}
+
+/* The card's one paragraph. Quiet and small on purpose: the title carries the
+   card and this supports it. It used to sit under a hairline below a second
+   paragraph, which made every card a block of text. */
+.work-card__outcome {
+  margin: 20px 0 0;
+  font-size: clamp(14px, 1vw, 16px);
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 50ch;
+  text-wrap: pretty;
+}
+
+/* the hairline and the figures under it */
+.work-card__metrics {
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px clamp(36px, 4.4vw, 72px);
+  margin: 32px 0 0;
+  padding: 32px 0 0;
+  border-top: 1px solid var(--rule);
+}
+
+
+
+.work-card__metric {
+  display: flex;
+  /* the <dl> puts the label (dt) first; reversed so the figure reads first */
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  margin: 0;
+}
+
+.work-card__value {
+  margin: 0;
+}
+
+.work-card__value {
+  font-family: var(--serif);
+  font-size: clamp(30px, 3vw, 46px);
+  line-height: 1;
+  color: var(--blue);
+}
+
+.work-card__label {
+  margin-top: 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.work-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.work-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 17px 28px;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.work-btn--primary {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.work-btn--primary:hover {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.work-btn--secondary {
+  color: var(--blue);
+  border-color: var(--blue);
+}
+
+.work-btn--secondary:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* "Coming soon": a button-shaped statement, not a control */
+.work-btn--soon {
+  color: var(--muted);
+  border-color: var(--rule);
+  cursor: default;
+}
+
+.work-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.work-btn__arrow {
+  transition: transform 0.2s;
+}
+
+.work-btn:hover .work-btn__arrow {
+  transform: translateX(3px);
+}
+
+/* The art, on the card's own ground — no fill of its own. It is a link to the
+   case study and carries the cursor follower's "View" badge, so the native
+   cursor is hidden over it and only over it. */
 .work-card__media {
   display: block;
   position: relative;
   aspect-ratio: 4 / 3;
+  border-radius: 18px;
   overflow: hidden;
-  border-radius: 6px;
-  background:
-    radial-gradient(circle at 12% 18%, #b3197a 0 1.5px, transparent 1.6px),
-    radial-gradient(circle at 71% 9%, #e08a00 0 1.3px, transparent 1.4px),
-    radial-gradient(circle at 88% 63%, #0e7c6b 0 1.5px, transparent 1.6px),
-    radial-gradient(circle at 26% 88%, #2a3fa8 0 1.2px, transparent 1.3px),
-    radial-gradient(circle at 57% 71%, #d6246b 0 1.4px, transparent 1.5px),
-    radial-gradient(circle at 5% 52%, #1e8a4d 0 1.2px, transparent 1.3px),
-    radial-gradient(circle at 41% 33%, #5b2ba8 0 1.1px, transparent 1.2px),
-    radial-gradient(circle at 93% 22%, #0f6fa8 0 1.3px, transparent 1.4px),
-    #fcfbff;
-  background-size:
-    118px 96px, 142px 124px, 131px 108px, 156px 137px,
-    127px 113px, 149px 131px, 109px 91px, 163px 142px, 100% 100%;
 }
 
-/* The dotted rule between the picture and the words: round dots, 2px on a 9px
-   pitch — the particle field lined up. It separates without enclosing, which
-   is the job the card's dashed frame used to do. */
-.work-card__rule {
-  display: block;
-  height: 2px;
-  margin-top: 14px;
-  background: radial-gradient(circle, var(--rule-dash) 0 1px, transparent 1.2px) 0 50% / 9px 2px
-    repeat-x;
+a.work-card__media {
+  cursor: none;
 }
 
-/* the subtle wave: a wide soft band that drifts across on hover */
-.work-card__wave {
-  position: absolute;
-  inset: -30% -60%;
-  background: radial-gradient(
-    45% 60% at 30% 50%,
-    rgba(0, 76, 228, 0.16),
-    rgba(0, 76, 228, 0) 70%
-  );
-  opacity: 0;
-  transform: translateX(-12%);
-  transition: opacity 0.5s ease;
+.work-card__media .card-art img {
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
-.work-card:hover .work-card__wave {
-  opacity: 1;
-  animation: wave 6s ease-in-out infinite alternate;
-}
-
-@keyframes wave {
-  from {
-    transform: translateX(-12%) translateY(-2%);
-  }
-  to {
-    transform: translateX(12%) translateY(2%);
-  }
+a.work-card__media:hover .card-art img {
+  transform: scale(1.03);
 }
 
 /* Card artwork. The composition is the case study's own hero art, so it keeps
@@ -596,7 +780,7 @@ body {
    with `place-content: center` that `.card-art` sets. */
 .card-art--single {
   display: block;
-  padding: 11% 9%;
+  padding: 6% 5%;
 }
 
 .card-art--single img {
@@ -616,38 +800,6 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* Solid covers for the line-art thumbnails. The ground is one of the case
-   study's own colours (DESIGN.md §11b: thumbnails keep their artwork's
-   colours, like the case studies do) under a white round-dot texture on a 14px
-   pitch — the card's dotted rule, as a field. It covers the sparkle ground,
-   which stays for cards with no art. */
-.card-art--solid {
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.22) 0 1.2px, transparent 1.5px) 0 0 / 14px 14px,
-    var(--thumb-ground);
-}
-
-.card-art--ground-green {
-  --thumb-ground: #2f6454; /* --cs-green */
-}
-
-.card-art--ground-coral {
-  --thumb-ground: #cc614d; /* --g-coral */
-}
-
-/* Guide's own green, not TCTD's: the ship keeps its colours on it (a yellow
-   ground swallowed the ship's yellow details and made the white hull look
-   dirty), so it takes no knockout filter */
-.card-art--ground-guide-green {
-  --thumb-ground: #2d6a4f; /* --g-green */
-}
-
-/* TCTD's pieces are green and coral line art; on the green ground they are
-   knocked out to white so they read at card size */
-.card-art--ground-green img {
-  filter: brightness(0) invert(1);
 }
 
 .card-art--tctd {
@@ -676,71 +828,36 @@ body {
   width: 88%;
 }
 
-.work-card__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px 0 0;
-  flex: 1;
-}
+/* Below 900px the two columns become one, art first, as the reference does */
+@media (max-width: 900px) {
+  .work-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
-.work-card__note {
-  /* reserved even when empty; line-height is pinned so an empty note occupies
-     exactly the same box as a filled one */
-  line-height: 1.2;
-  min-height: 1.2em;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.work-card__desc {
-  font-size: 13px;
-  line-height: 1.5;
-  /* three lines reserved; empty on cards without a description */
-  min-height: 4.5em;
-  color: var(--muted);
-  max-width: 44ch;
-}
-
-.work-card__title {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(17px, 1.4vw, 23px);
-  line-height: 1.15;
-  /* two lines reserved */
-  min-height: 2.3em;
-  letter-spacing: -0.005em;
-  transition: color 0.2s;
-}
-
-.work-card:hover .work-card__title {
-  color: var(--accent);
-}
-
-@media (max-width: 1100px) {
-  .work-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .work-card__media {
+    order: -1;
   }
 }
 
 @media (max-width: 700px) {
-  /* 9px uppercase is a fine eyebrow on a desktop card and unreadable on a
-     phone; §9.17. */
-  .work-card__note {
-    font-size: 11px;
+  .work-card {
+    border-radius: 20px;
+    padding: 24px;
   }
 
-  .work-grid {
-    grid-template-columns: 1fr;
+  .work-btn {
+    padding: 15px 22px;
+  }
+
+  .work-tab {
+    padding: 10px 16px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .work-card:hover .work-card__wave {
-    animation: none;
+  .work-card__media .card-art img,
+  .work-btn__arrow {
+    transition: none;
   }
 }
 
@@ -4053,4 +4170,680 @@ body {
   .about__row--left .about__collage {
     order: 0;
   }
+}
+
+
+/* ===========================================================================
+   SMARTER CASE STUDIES: `.sm`
+   ---------------------------------------------------------------------------
+   Shared by all three SMARTER pages (`SmarterNavPage.jsx`, `SmarterLibPage.jsx`
+   and `SmarterEhiePage.jsx`), the way `.g` is shared by the two Guide pages.
+
+   THIS BLOCK IS `.g` WITH A DIFFERENT PALETTE. Urvi asked for the SMARTER
+   pages to match the Guide case studies exactly: same faces, same dashed
+   frames, same tint bands behind card prose, same icons above card titles.
+   So every measurement here is the Guide's own, `--sm-k` is `--g-k`, and the
+   roles below map one to one onto §4.10's table. The only thing that changes
+   is which colour fills each role, because the palette is the one Urvi
+   supplied for SMARTER.
+
+   Mapping, Guide role to SMARTER colour:
+
+     --g-slate  hero title      -> --sm-slate  #0F1419  Primary Dark
+     --g-navy   headings        -> --sm-navy   #2C3957  CTA Blue
+     --g-coral  running prose   -> --sm-prose  #BE0000  Utah Red
+     --g-green  dashed frames   -> --sm-dash-c #414042  90% Black
+     --g-band   tint strip      -> --sm-band   a tint of Salt Flat Gray
+                icon line art   -> --sm-orange #DC6B01  Orange
+                labels, captions-> --sm-grey   #939598  50% Gray
+
+   Nothing here uses --serif or the site palette. See DESIGN.md §11e.
+--------------------------------------------------------------------------- */
+.sm {
+  /* SMARTER's palette, local to this block. Roles are stated because §0.3
+     forbids a colour without one; these are the product's own eight. */
+  --sm-slate: #0f1419;   /* Primary Dark: the hero title, and nothing else */
+  --sm-navy: #2c3957;    /* CTA Blue: every heading, and prose inside a card */
+  --sm-prose: #be0000;   /* Utah Red: running prose and pull quotes */
+  --sm-dash-c: #414042;  /* 90% Black: every dashed frame */
+  --sm-orange: #dc6b01;  /* Orange: the icon line art, and section numbers */
+  --sm-grey: #939598;    /* 50% Gray: captions, meta labels, source lines */
+  --sm-white: #ffffff;   /* White: the ground under every figure */
+
+  /* Two grounds rather than marks, so they are tints of palette colours: the
+     band is Salt Flat Gray (#E2E4E6) at about a quarter strength, and the
+     sheet is the #FCFCFC the SMARTER spec sheets are themselves drawn on, so a
+     rendered sheet meets its frame without a seam. */
+  --sm-band: #f4f5f6;
+  --sm-sheet: #fcfcfc;
+
+  --sm-slab: 'Roboto Slab', Georgia, 'Times New Roman', serif;
+
+  /* The Guide's own scale. Both pages are 1180px wide against a 1498pt frame,
+     which is where 0.7877 comes from; if the max-width changes, this must
+     change with it. See §4.10. */
+  --sm-k: 0.7877;
+  --sm-bleed: calc(26px * var(--sm-k)); /* how far a band runs past its row */
+  /* The same 26pt as a literal: `overflow-clip-margin` silently computes a
+     calc() to 0px in Chrome, which clips the band flush at the row edge. See
+     §9.15. Keep this in step with --sm-bleed at every breakpoint. */
+  --sm-clip: 20.5px;
+  --sm-dash: 2px dashed var(--sm-dash-c);
+  --sm-radius: calc(14px * var(--sm-k));
+  --sm-pad: calc(20px * var(--sm-k));
+
+  max-width: 1180px;
+  margin: clamp(30px, 5vh, 64px) auto 0;
+  font-family: var(--sans-copy);
+  /* The Guide's body setting: Source Sans 24/32. */
+  font-size: calc(24px * var(--sm-k));
+  line-height: 1.34;
+  color: var(--sm-prose);
+  /* NOT `overflow-x: clip` here. The wide figures deliberately overflow this
+     1180px column out to the viewport gutters, and clipping on `.sm` would cut
+     them off at the column edge instead of at the viewport. `.project` already
+     clips at the viewport for exactly this case, so the scrollbar is handled a
+     level up. */
+}
+
+.sm p {
+  text-wrap: pretty;
+  margin: 0;
+}
+
+.sm b,
+.sm strong {
+  font-weight: 700;
+}
+
+/* ---------- the tint band ------------------------------------------------ */
+/* Exactly `.g`'s: an opaque strip *behind* the dashed frame, bleeding past its
+   card on both sides, with the dashes drawn over it. The fill must stay
+   opaque, because two bands whose bleeds overlap would otherwise darken where
+   they meet. */
+.sm-band {
+  position: relative;
+}
+
+.sm-band::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(-1 * var(--sm-bleed));
+  background: var(--sm-band);
+}
+
+.sm-metas,
+.sm-cards,
+.sm-hero,
+.sm-pair {
+  overflow: clip;
+  overflow-clip-margin: var(--sm-clip); /* a literal, see §9.15 */
+}
+
+/* ---------- frames, cards, headings -------------------------------------- */
+.sm-frame,
+.sm-card,
+.sm-table,
+.sm-fig--framed img,
+.sm-pan {
+  border: var(--sm-dash);
+  border-radius: var(--sm-radius);
+}
+
+.sm-frame,
+.sm-card {
+  padding: var(--sm-pad) 0 calc(18px * var(--sm-k));
+}
+
+.sm-frame > *,
+.sm-card > :not(.sm-band) {
+  padding: 0 var(--sm-pad);
+}
+
+.sm-card > .sm-band {
+  padding: calc(12px * var(--sm-k)) var(--sm-pad);
+  margin-top: calc(14px * var(--sm-k));
+}
+
+.sm-frame {
+  padding: var(--sm-pad);
+}
+
+.sm-h1,
+.sm-display,
+.sm-kicker,
+.sm-card__title,
+.sm-meta__title,
+.sm-h3 {
+  font-family: var(--sm-slab);
+  font-weight: 700;
+  color: var(--sm-navy);
+  line-height: 1.16;
+  margin: 0;
+}
+
+.sm-h1 {
+  color: var(--sm-slate);
+  font-size: calc(40px * var(--sm-k));
+  font-weight: 400;
+}
+
+.sm-h1 b {
+  font-weight: 700;
+}
+
+.sm-display {
+  font-size: calc(48px * var(--sm-k));
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.sm-kicker {
+  font-size: calc(26px * var(--sm-k));
+}
+
+.sm-kicker--lg {
+  font-size: calc(28px * var(--sm-k));
+}
+
+.sm-card__title,
+.sm-h3 {
+  font-size: calc(24px * var(--sm-k));
+}
+
+.sm-small {
+  font-size: calc(18px * var(--sm-k));
+  line-height: 1.28;
+}
+
+.sm-quote {
+  font-size: calc(22px * var(--sm-k));
+  line-height: 1.3;
+}
+
+.sm-ink {
+  color: var(--sm-navy);
+}
+
+.sm-prose p + p {
+  margin-top: calc(14px * var(--sm-k));
+}
+
+.sm-icon {
+  display: block;
+  height: calc(62px * var(--sm-k));
+  width: auto;
+}
+
+.sm-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sm-sec {
+  margin-top: clamp(56px, 8vw, 116px);
+}
+
+.sm-sec--tight {
+  margin-top: clamp(28px, 4vw, 56px);
+}
+
+/* ---------- hero ---------------------------------------------------------- */
+/* `.g-hero`'s geometry: the drawing in a fixed 447pt column, the dashed frame
+   in the rest, and the Guide's own 154pt gutter between them. */
+.sm-hero {
+  display: grid;
+  grid-template-columns: calc(447px * var(--sm-k)) 1fr;
+  gap: calc(154px * var(--sm-k));
+  align-items: center;
+  padding: 0 calc(27px * var(--sm-k)) 0 calc(59px * var(--sm-k));
+}
+
+.sm-hero__art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sm-hero__frame {
+  border: var(--sm-dash);
+  border-radius: var(--sm-radius);
+  padding: calc(34px * var(--sm-k)) calc(35px * var(--sm-k)) 0;
+  overflow: hidden;
+}
+
+/* The sub runs its tint band the full width of the frame's inside, which is
+   why the negative margin is exactly the frame's own padding. */
+.sm-hero__sub {
+  font-size: calc(32px * var(--sm-k));
+  line-height: 1.36;
+  margin: calc(26px * var(--sm-k)) calc(-35px * var(--sm-k)) 0;
+  padding: calc(14px * var(--sm-k)) calc(35px * var(--sm-k)) calc(30px * var(--sm-k));
+}
+
+/* ---------- the four meta cards ------------------------------------------ */
+.sm-metas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: calc(39px * var(--sm-k));
+  margin-top: clamp(40px, 6vw, 84px);
+}
+
+.sm-meta {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  color: var(--sm-navy);
+}
+
+.sm-meta > .sm-band {
+  flex: 1;
+}
+
+.sm-meta__icon {
+  display: block;
+  height: calc(78px * var(--sm-k));
+  width: auto;
+  margin: 0 auto calc(10px * var(--sm-k));
+}
+
+.sm-meta__title {
+  font-size: calc(28px * var(--sm-k));
+}
+
+/* ---------- section heads ------------------------------------------------- */
+/* The number is a small slab numeral sitting on the kicker's own line, the way
+   the Guide sets a section label above its prose. */
+.sm-head {
+  display: flex;
+  align-items: baseline;
+  gap: calc(16px * var(--sm-k));
+  margin-bottom: calc(22px * var(--sm-k));
+}
+
+.sm-num {
+  font-family: var(--sm-slab);
+  font-weight: 700;
+  font-size: calc(26px * var(--sm-k));
+  font-variant-numeric: tabular-nums;
+  color: var(--sm-orange);
+  margin: 0;
+  flex: none;
+}
+
+.sm-lede {
+  max-width: calc(980px * var(--sm-k));
+}
+
+.sm-note {
+  font-size: calc(18px * var(--sm-k));
+  line-height: 1.3;
+  color: var(--sm-grey);
+  max-width: calc(900px * var(--sm-k));
+  margin-top: calc(18px * var(--sm-k));
+}
+
+/* ---------- card grids ---------------------------------------------------- */
+/* One pattern for every named-decision row on all three pages: a dashed card
+   with an optional icon, a slab title, and the body on the tint band. This is
+   `.g-card` with a grid around it. */
+.sm-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(300px * var(--sm-k)), 1fr));
+  gap: calc(23px * var(--sm-k));
+  margin-top: calc(34px * var(--sm-k));
+}
+
+.sm-cards--2 {
+  grid-template-columns: repeat(auto-fit, minmax(calc(420px * var(--sm-k)), 1fr));
+}
+
+.sm-card__icon {
+  display: block;
+  height: calc(56px * var(--sm-k));
+  width: auto;
+  margin-bottom: calc(10px * var(--sm-k));
+}
+
+.sm-card .sm-band {
+  color: var(--sm-navy);
+}
+
+.sm-card__src {
+  display: block;
+  margin-top: calc(10px * var(--sm-k));
+  font-size: calc(17px * var(--sm-k));
+  color: var(--sm-grey);
+}
+
+/* ---------- the numbered problem list ------------------------------------- */
+/* Numbered because the numbers are load-bearing: they are the same seven
+   annotations printed on the sheet underneath. */
+.sm-problems {
+  counter-reset: p;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(330px * var(--sm-k)), 1fr));
+  gap: calc(20px * var(--sm-k)) calc(34px * var(--sm-k));
+  margin: calc(34px * var(--sm-k)) 0 0;
+  padding: 0;
+}
+
+.sm-problems li {
+  counter-increment: p;
+  position: relative;
+  padding-left: calc(44px * var(--sm-k));
+  font-size: calc(20px * var(--sm-k));
+  line-height: 1.32;
+}
+
+.sm-problems li::before {
+  content: counter(p);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: calc(30px * var(--sm-k));
+  height: calc(30px * var(--sm-k));
+  border-radius: 50%;
+  background: var(--sm-orange);
+  color: var(--sm-white);
+  font-family: var(--sm-slab);
+  font-size: calc(17px * var(--sm-k));
+  font-weight: 700;
+}
+
+/* ---------- the figures row ----------------------------------------------- */
+.sm-stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(180px * var(--sm-k)), 1fr));
+  gap: calc(27px * var(--sm-k));
+  margin: calc(34px * var(--sm-k)) 0 0;
+  padding: 0;
+  text-align: center;
+}
+
+.sm-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--sm-k));
+}
+
+.sm-stats__v {
+  font-family: var(--sm-slab);
+  font-weight: 700;
+  font-size: calc(46px * var(--sm-k));
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--sm-orange);
+}
+
+.sm-stats__k {
+  font-size: calc(19px * var(--sm-k));
+  line-height: 1.26;
+  color: var(--sm-navy);
+}
+
+/* ---------- the interaction table ----------------------------------------- */
+/* The Guide frames its comparison table in the same dash as its cards, so this
+   one does too; the rules between rows are the band colour, not a new grey. */
+.sm-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  margin-top: calc(34px * var(--sm-k));
+  font-size: calc(20px * var(--sm-k));
+  text-align: left;
+}
+
+.sm-table th,
+.sm-table td {
+  padding: calc(14px * var(--sm-k)) calc(22px * var(--sm-k));
+  vertical-align: top;
+  line-height: 1.3;
+  border-top: 1px solid var(--sm-band);
+}
+
+.sm-table thead th {
+  border-top: 0;
+  font-family: var(--sm-slab);
+  font-weight: 700;
+  font-size: calc(19px * var(--sm-k));
+  color: var(--sm-navy);
+  background: var(--sm-band);
+}
+
+.sm-table tbody th {
+  font-weight: 600;
+  color: var(--sm-navy);
+  width: 34%;
+}
+
+.sm-table td {
+  color: var(--sm-prose);
+}
+
+/* ---------- the open-question aside --------------------------------------- */
+/* A dashed card like any other, but its label is set in Utah Red so it reads
+   as a question rather than a finding. It is the only place the prose colour
+   is used as a label. */
+.sm-ask {
+  margin-top: calc(34px * var(--sm-k));
+  max-width: calc(1270px * var(--sm-k));
+}
+
+.sm-ask__label {
+  font-family: var(--sm-slab);
+  font-weight: 700;
+  font-size: calc(21px * var(--sm-k));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sm-prose);
+  margin-bottom: calc(10px * var(--sm-k)) !important;
+}
+
+.sm-ask__after {
+  margin-top: calc(12px * var(--sm-k));
+  font-size: calc(18px * var(--sm-k));
+  color: var(--sm-grey);
+}
+
+/* ---------- the open list ------------------------------------------------- */
+.sm-open {
+  list-style: none;
+  margin: calc(34px * var(--sm-k)) 0 0;
+  padding: 0;
+  max-width: calc(1270px * var(--sm-k));
+  display: grid;
+  gap: calc(14px * var(--sm-k));
+}
+
+.sm-open li {
+  position: relative;
+  padding-left: calc(38px * var(--sm-k));
+  line-height: 1.32;
+}
+
+/* A small open circle, drawn in the icon colour, so the list reads as a set of
+   questions rather than a set of statements. */
+.sm-open li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(9px * var(--sm-k));
+  width: calc(14px * var(--sm-k));
+  height: calc(14px * var(--sm-k));
+  border-radius: 50%;
+  border: 2px solid var(--sm-orange);
+}
+
+/* ---------- figures ------------------------------------------------------- */
+.sm-fig {
+  margin: calc(34px * var(--sm-k)) 0 0;
+}
+
+.sm-fig img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(6px * var(--sm-k));
+  background: var(--sm-sheet);
+}
+
+/* The dashed frame goes round the picture itself, the way the Guide frames a
+   numbered panel's artwork. */
+.sm-fig--framed img {
+  padding: calc(10px * var(--sm-k));
+}
+
+.sm-fig figcaption {
+  margin-top: calc(12px * var(--sm-k));
+  font-size: calc(18px * var(--sm-k));
+  line-height: 1.3;
+  color: var(--sm-grey);
+}
+
+/* A wide figure runs past the 1180px column out to the viewport's gutters:
+   these sheets are 1400 to 1480pt of drawing and shrink to illegibility inside
+   a text measure. */
+.sm-fig--wide {
+  width: min(calc(100vw - 2 * clamp(20px, 3.4vw, 46px)), 1440px);
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+/* The browse listing beside the filter drawer: one decision seen twice. Both
+   sources are full-page designs, so the pair caps its height and shows each
+   from the top. */
+.sm-pair {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: calc(23px * var(--sm-k));
+  align-items: start;
+  margin-top: calc(34px * var(--sm-k));
+}
+
+.sm-pair .sm-fig {
+  margin-top: 0;
+}
+
+.sm-pair .sm-fig img {
+  max-height: 760px;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* The BPMN diagrams are 2300 to 5800pt wide. Fitting one to the page column
+   would put its labels below 5px, so the figure scrolls sideways at a size the
+   labels survive. The scroller is focusable and labelled in the JSX, because
+   content only reachable by scrolling has to be reachable by keyboard. */
+.sm-pan {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  background: var(--sm-sheet);
+  padding: calc(10px * var(--sm-k));
+}
+
+.sm-pan:focus-visible {
+  outline: 2px solid var(--sm-navy);
+  outline-offset: 3px;
+}
+
+.sm-fig--pan img {
+  width: auto;
+  max-width: none;
+  height: clamp(420px, 52vh, 680px);
+  border-radius: 0;
+}
+
+/* ---------- responsive ---------------------------------------------------- */
+/* The same two steps the Guide takes, holding the ratio: 0.66 then 0.62, with
+   --sm-clip kept in step with --sm-bleed as a literal. */
+@media (max-width: 1080px) {
+  .sm {
+    --sm-k: 0.66;
+    --sm-clip: 17px;
+  }
+
+  .sm-metas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .sm {
+    --sm-k: 0.62;
+    --sm-clip: 16px;
+  }
+
+  .sm-hero {
+    grid-template-columns: 1fr;
+    gap: calc(40px * var(--sm-k));
+    padding: 0;
+  }
+
+  .sm-hero__art {
+    max-width: calc(360px * var(--sm-k) * 1.6);
+    margin: 0 auto;
+  }
+
+  .sm-metas {
+    grid-template-columns: 1fr;
+  }
+
+  .sm-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .sm-table tbody th {
+    width: auto;
+  }
+
+  .sm-table,
+  .sm-table tbody,
+  .sm-table tr {
+    display: block;
+  }
+
+  .sm-table thead {
+    display: none;
+  }
+
+  .sm-table tr + tr {
+    border-top: 1px solid var(--sm-band);
+  }
+
+  .sm-table th,
+  .sm-table td {
+    display: block;
+    border: 0;
+    padding-bottom: 0;
+  }
+
+  .sm-table td {
+    padding-top: calc(4px * var(--sm-k));
+    padding-bottom: calc(14px * var(--sm-k));
+  }
+}
+
+/* A framed quote: the Guide's callout card without a heading, used where the
+   work has a line worth pulling out but no title to give it. */
+.sm-quote-wrap {
+  margin-top: calc(34px * var(--sm-k));
+  max-width: calc(1270px * var(--sm-k));
+  display: flex;
+  align-items: flex-start;
+  gap: calc(20px * var(--sm-k));
+}
+
+.sm-quote-wrap .sm-card__icon {
+  flex: none;
+  margin-bottom: 0;
 }

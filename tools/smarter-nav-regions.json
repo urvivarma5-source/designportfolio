@@ -1,0 +1,59 @@
+{
+  "tree-old": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/02 Instrument Tree - component and states.svg",
+    "crop": [
+      40,
+      130,
+      1040,
+      900
+    ]
+  },
+  "before-after": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
+    "crop": [
+      40,
+      250,
+      1400,
+      565
+    ]
+  },
+  "click-does": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
+    "crop": [
+      40,
+      905,
+      1400,
+      790
+    ]
+  },
+  "row-states": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
+    "crop": [
+      40,
+      1745,
+      1400,
+      305
+    ]
+  },
+  "detail-in-situ": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/01 Sensor Detail Page with Instrument Tree.svg"
+  },
+  "long-content": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/03 Sensor Detail Page - long content.svg"
+  },
+  "scope-dropdown": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/NAV BAR - SPECS SCOPE DROPDOWN.svg"
+  },
+  "station-overview": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/TECH SPECS - STATION OVERVIEW.svg"
+  },
+  "thumb": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
+    "crop": [
+      190,
+      980,
+      1240,
+      930
+    ]
+  }
+}

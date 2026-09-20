@@ -1,0 +1,50 @@
+{
+  "browse": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Browse by/Measured Entity/Air Quality.png",
+    "w": 1400
+  },
+  "filter": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Filter/Default.png",
+    "w": 640
+  },
+  "compare": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/03 Comparison Dashboard Filled_ Technical.png",
+    "crop": [
+      0,
+      0,
+      5760,
+      3400
+    ],
+    "w": 1400
+  },
+  "intake": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Intake Form/For Dev.png",
+    "crop": [
+      0,
+      0,
+      2880,
+      4200
+    ],
+    "w": 1400
+  },
+  "detail": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/02 Sensor Detail Page.png",
+    "crop": [
+      0,
+      0,
+      4320,
+      6000
+    ],
+    "w": 1400
+  },
+  "thumb": {
+    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/03 Comparison Dashboard Filled_ Technical.png",
+    "crop": [
+      0,
+      700,
+      5760,
+      4320
+    ],
+    "w": 1200
+  }
+}

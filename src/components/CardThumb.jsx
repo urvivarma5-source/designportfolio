@@ -2,9 +2,12 @@ import { icons } from '../caseStudies/icons'
 import scout from '../assets/guide1/art-scout.svg'
 import ship from '../assets/guide2/art-ship-thumb.svg'
 import ngma from '../assets/ngma/thumb.webp'
+import smarterNav from '../assets/smarterNav/thumb.webp'
+import smarterLib from '../assets/smarterLib/thumb.webp'
+import smarterEhie from '../assets/smarterEhie/thumb.webp'
 
 // Artwork for a work card's media block, keyed by slug. A project without an
-// entry keeps the plain placeholder ground — see WorkGrid.
+// entry keeps the plain placeholder ground, see WorkGrid.
 //
 // Each thumbnail is its own case study's drawing, imported straight from the
 // asset folder (or from caseStudies/icons where that map already holds it), so
@@ -24,21 +27,21 @@ import ngma from '../assets/ngma/thumb.webp'
 // thumbnail at card size. The thumb cut stops at the dashed outline.
 
 //
-// The line-art thumbnails sit on a SOLID ground in one of their own case
-// study's colours (`card-art--solid` + a `--ground-*` modifier), so they read
-// as covers like NGMA's rather than drawings floating on white. TCTD's green
-// line art would vanish on its own green, so it is knocked out to white.
+// The line art sits straight on the work card's own pale ground, in the
+// drawings' own colours. It used to sit on solid colour covers (a coral, two
+// greens) with the TCTD art knocked out to white; those were removed when the
+// cards became large case-study panels (DESIGN.md §4.5).
 
 const TctdThumb = () => (
-  <span className="card-art card-art--tctd card-art--solid card-art--ground-green">
+  <span className="card-art card-art--tctd">
     <img className="card-art__cabinet" src={icons.cabinet} alt="" />
     <img className="card-art__arrow" src={icons.arrow} alt="" />
     <img className="card-art__board" src={icons.board} alt="" />
   </span>
 )
 
-const Single = ({ src, ground }) => (
-  <span className={`card-art card-art--single card-art--solid card-art--ground-${ground}`}>
+const Single = ({ src }) => (
+  <span className="card-art card-art--single">
     <img src={src} alt="" />
   </span>
 )
@@ -52,11 +55,18 @@ const Cover = ({ src }) => (
 
 const thumbs = {
   'filling-cabinets-to-fingertips': TctdThumb,
-  'search-experience-for-guide': () => <Single src={scout} ground="coral" />,
-  'search-experience-for-guide-2': () => <Single src={ship} ground="guide-green" />,
+  'search-experience-for-guide': () => <Single src={scout} />,
+  'search-experience-for-guide-2': () => <Single src={ship} />,
   // A visual-design case study, so its card shows the design rather than a
   // drawing about it: the redesigned landing page's hero, cropped to 4:3.
   'website-redesign-for-ngma-mumbai': () => <Cover src={ngma} />,
+  // The three SMARTER cards are covers for the same reason NGMA's is: there is
+  // no drawing *about* this work, only the work. Each is a crop of the thing
+  // the case study is about: the navigator mid-interaction, the comparison
+  // grid, and a stretch of the lifecycle diagram with its two pools visible.
+  'smarter-station-navigator': () => <Cover src={smarterNav} />,
+  'smarter-sensor-library': () => <Cover src={smarterLib} />,
+  'smarter-ehie-process-map': () => <Cover src={smarterEhie} />,
 }
 
 export const getThumb = (slug) => thumbs[slug]
