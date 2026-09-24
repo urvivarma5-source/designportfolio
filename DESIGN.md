@@ -141,6 +141,7 @@ values live in [§4](#4-component-tokens).
 | `--cursor` | `var(--accent)` | The cursor follower and its "View" badge ([§4.8](#48-cursor-follower--cursor)), and nothing else. An alias, so the badge matches the buttons it hovers towards. It was a literal `#000000` from 2026-09-15 until 2026-09-20, while the cards had solid colour covers that an accent-coloured badge sank into; those covers are gone. |
 | `--card-ground` | `rgba(0, 29, 87, 0.035)` | The pale panel behind each work card ([§4.5](#45-work--work--work-card)). It is `--blue` at 3.5%, so the panel is the page's own ink rather than a new grey. |
 | `--rule-dash` | `var(--accent)` | Dotted and dashed rules — today the work-card rule ([§4.5](#45-work--work--work-card)). An alias, so the rules follow the accent. |
+| `--banner-h` | `44px` | Height of the site notice ([§4.14](#414-site-notice--banner)). A **measurement**, not a preference: the hero subtracts it. |
 
 Case studies do **not** use this palette. `.cs` declares its own tokens, local
 to that block, because §11b's fidelity rule keeps the source artwork's colours.
@@ -861,82 +862,104 @@ without `1px solid rgba(9, 17, 51, 0.1)` they dissolve into the page.
 ### 4.13 SMARTER case studies: `.sm`
 
 **One block, three pages.** `SmarterNavPage.jsx`, `SmarterLibPage.jsx` and
-`SmarterEhiePage.jsx` share `.sm` the way the two Guide pages share `.g`. One
-product, one design system, one set of tokens.
+`SmarterEhiePage.jsx`.
 
-**This block bends §11b's fidelity rule, and the bend is the point.** `.cs`,
-`.g` and `.n` each transcribe a finished Figma *case-study frame*: its point
-sizes, its gutters, its palette, all scaled from one `--k`. SMARTER has no such
-frame: there is no designed case study to transcribe, only the design work.
-What it does have is a product with a real design system, so `.sm` takes **the
-product's own tokens** instead. The palette below is SMARTER's, sampled from
-its Figma library and visible in every spec sheet these pages show; the face is
-**Inter**, which is what the product is drawn in and which the site already
-loads as `--sans`.
+**This block follows TCTD ([§4.9](#49-case-study--cs)), not the Guide.** Urvi
+asked (2026-09-20) for the SMARTER pages to match "Filling Cabinets to
+Fingertips": its section label and bold italic serif title, its dashed cards
+with an icon over the title and the prose on a tint band, its numbered solid
+cards, its stat row. `--sm-k` is `0.787`, TCTD's own, from 1500pt of artwork
+against this page's 1180px.
 
-There is therefore **no `--sm-k`**. Nothing here is preserving an artwork's
-proportions, so sizes are the site's own fluid `clamp()`s. Do not add a scale
-factor to this block on the grounds that the other three have one.
+**Match the visual language, do not copy the structure.** This is Urvi's own
+correction and it is the difference between the two. TCTD's *look* is the
+reference; TCTD's *section sequence and shapes* are not. Reaching for one of
+its forms because it exists is how the pages went wrong once already: the row
+anatomy was set as TCTD's time-study bar chart, which implies magnitudes worth
+comparing, when a row height against an icon size is nothing of the kind. It
+is now `Specs`, a redline list with no TCTD twin. When the content does not fit
+a shape on the list below, add a shape.
+
+Two earlier versions of this block were wrong and both are worth naming so they
+are not tried again. The first invented a layout in Inter on fluid `clamp()`
+sizes. The second copied `.g`. Read "TCTD CASE STUDY.pdf" before changing
+anything here.
+
+**The rule that matters most is not a colour, it is density.** TCTD almost
+never runs more than two short paragraphs before it breaks into cards, chips,
+bullets or a diagram. A section that is four paragraphs of prose is wrong even
+if every token is right. The data files enforce this by shape: a section is
+`label`, `title`, a `lede` of at most two strings, and then structured content.
+
+**Colour is Urvi's own instruction and it departs from the artwork.** TCTD sets
+its titles in dark green and its labels in coral. These pages set **every
+heading in Orange and every piece of running text in CTA Blue**:
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--sm-dark` | `#0f1419` | Primary Dark: the h1 and every section title |
-| `--sm-navy` | `#2c3957` | CTA Blue: sub-headings, table row headers, the pull quote |
-| `--sm-ink` | `#414042` | 90% Black: all running prose |
-| `--sm-grey` | `#939598` | 50% Gray: captions, meta labels, the source line |
-| `--sm-line` | `#e2e4e6` | Salt Flat Gray: every hairline and card border |
-| `--sm-orange` | `#dc6b01` | Orange: section numbers, the eyebrow, spec figures |
-| `--sm-red` | `#be0000` | Utah Red: **the open-question aside, and nothing else** |
-| `--sm-white` | `#ffffff` | White: the ground under every figure |
+| `--sm-orange` | `#dc6b01` | Orange: **headings only**, plus the numerals attached to one (the numbered disc, a step number) and the drawn icons |
+| `--sm-blue` | `#2c3957` | CTA Blue: **every** piece of running text, and the stat figures |
+| `--sm-rule` | `#939598` | 50% Gray: **every** dashed frame, rule, bullet and chip arrow |
+| `--sm-grey` | `#939598` | 50% Gray again, as type: captions, notes, card sub-lines |
+| `--sm-line` | `#e2e4e6` | Salt Flat Gray: the solid card border |
+| `--sm-red` | `#be0000` | Utah Red: the open-question aside, nothing else |
+| `--sm-band` | `#f4f5f6` | Salt Flat Gray at a quarter strength: the tint band |
+| `--sm-sheet` | `#fcfcfc` | The ground the SMARTER spec sheets are drawn on |
+| `--sm-dark` | `#0f1419` | Primary Dark: reserved, currently unused |
 
-Two more are derived rather than sampled, because they are grounds and not
-marks, and §0.3 wants the role stated either way:
+**The dashes are grey, and that is load-bearing.** TCTD dashes its frames in
+its coral accent, and doing the same here put orange on every frame, rule, bar
+and bullet on the page. Urvi's note was that the orange was too much for the
+dotted lines and that only headings should carry it. So `--sm-rule` takes all
+the line work and the accent is spent on headings alone. `--sm-rule` and
+`--sm-grey` are the same value with different jobs: one is line, one is type.
+Keep them separate, so the lines can be re-toned without touching the captions.
+CTA Blue is the louder alternative for `--sm-rule` if the frames ever need more
+presence, and it is a one-token change.
 
-| Token | Value | Role |
-| --- | --- | --- |
-| `--sm-band` | `#f4f5f6` | Salt Flat Gray at about a quarter strength: the tint behind the open-question aside |
-| `--sm-sheet` | `#fcfcfc` | The ground the spec sheets are themselves drawn on, so a rendered sheet meets its frame without a seam |
+**Before adding orange to anything, check it is a heading.** The live test:
+every element computing to `rgb(220, 107, 1)` should be `.sm-h1`, `.sm-label`,
+`.sm-title`, or a `__title` / step numeral. Nothing else.
 
-**`--sm-red` is rationed on purpose.** Every SMARTER page carries exactly one
-red element: the `.sm-ask` aside, which marks something that was still
-unresolved when the work was handed over. It is a question, not a finding, and
-the colour is what says so. Using it for a second thing on a page destroys that
-signal. If something else needs marking, it is not red.
+**The component vocabulary**, all in `smarterParts.jsx`, each mirroring one of
+TCTD's:
 
-| Element | Property | Value |
-| --- | --- | --- |
-| `.sm` | max-width | `1180px`, centred |
-| | `overflow-x` | `clip`, the wide figures bleed past the column. `clip`, not `hidden`, for the reason in [§4.9](#49-case-study--cs) |
-| `.sm-fig--wide` | width | `min(100vw - 2 × gutter, 1440px)`, centred with `margin-left: 50%` and a `-50%` translate |
-| `.sm-num` | | Inter 700, tabular, `--sm-orange` |
-| solid card | | `1px --sm-line`, radius `12px`, on white |
+| Piece | TCTD equivalent |
+| --- | --- |
+| `Section` | the label plus the bold italic serif title |
+| `Stats` | the four dashed figure cards with a tint-band label |
+| `Metas` | the unframed Team / Duration / Methods / Role row |
+| `Probs` | the dashed card: icon, serif title, orange note, prose on the band |
+| `NCards` | the numbered solid card, disc inside the title row |
+| `Steps` | a short numbered sequence set side by side |
+| `Specs` | a redline list. **No TCTD twin**: its bar chart would imply magnitudes these values do not have |
+| `Chips` | a flow, never set as a sentence |
+| `Pull` | the centred constraint quote with its label above |
 
-**The numbering is information, not decoration.** These pages number their
-sections because the sections are a sequence and the order carries meaning ,
-the navigation study's §07 escalation only makes sense after its §03 rule. The
-seven numbered items in the navigation study's §02 are load-bearing in a
-stronger sense still: they are the same seven annotations printed on the sheet
-directly underneath them, so the list and the picture are read together.
+**The numbered disc lives inside the title row, not on top of the card**, so it
+is aligned to the title's own middle and its right edge falls on the card's
+padding, making the two side insets equal by construction. This is
+[§4.9](#49-case-study--cs)'s rule and it applies here for the same reason.
 
-**Three figure treatments, and they are not interchangeable.**
+**Tint bands bleed and must stay opaque.** `.sm-stat__k` and `.sm-prob__text`
+each paint a band one gutter past their own box on both sides, so a row of them
+meets into one strip. A translucent fill would darken where two bleeds overlap.
+Rows carry `overflow: clip` with an `overflow-clip-margin` written as a
+**literal** `56px`, because `overflow-clip-margin` computes a `calc()` to 0 in
+Chrome. See [§9.15](#915-overflow-clip-margin-computes-to-0-from-a-calc).
 
-- `.sm-fig`, a figure inside the text column, framed as the product frames a
-  card: `1px --sm-line`, `12px` radius, on `--sm-sheet`. The frame reads as the
-  sheet's own edge rather than a border drawn round a screenshot.
-- `.sm-fig--wide`, runs out to the viewport gutters. The spec sheets are
-  1400–1480pt of drawing and shrink to illegibility inside a text measure.
-- `.sm-fig--pan` / `.sm-pan`, the EHIE block's BPMN diagrams, which are
-  2300–5800pt wide. They are given a fixed height and allowed to **scroll
-  sideways** rather than be fitted; fitted to the column their labels fall
-  below 5px. The scroller carries `tabIndex="0"`, `role="group"` and an
-  `aria-label`, because content only reachable by scrolling has to be reachable
-  by keyboard.
+**`.sm` must not carry `overflow-x: clip`.** It had it, and it silently cut
+every full-bleed figure off at the 1180px column edge instead of at the
+viewport, a clipping `getBoundingClientRect` cannot see: the box measures its
+full width whether or not its content paints. `.project` clips at the viewport
+already ([§4.6](#46-project-detail--project)).
 
-`.sm-pair` (library §02) sets the browse listing beside the filter drawer: one
-decision seen twice. Both sources are full-page designs, 1400×2900 and
-640×3794, so the pair caps its height at `760px` and shows each from the top
-with `object-fit: cover`. The thing that section is about (a count on every
-option, nothing greyed out) is in the first screenful of both.
+**Three figure treatments.** `.sm-fig--framed` puts the page's dash round the
+picture; `.sm-fig--wide` runs out to the viewport gutters, because the spec
+sheets are 1400 to 1480pt of drawing; `.sm-fig--pan` gives the EHIE block's
+BPMN diagrams a fixed height and lets them scroll sideways, because fitted to
+the column their labels fall below 5px. That scroller carries `tabIndex="0"`,
+`role="group"` and an `aria-label`.
 
 ---
 
@@ -977,6 +1000,41 @@ the picture lands under the words that introduce it.
 content yet still land somewhere styled.
 
 ---
+
+### 4.14 Site notice — `.banner`
+
+One bar above every page, on every route, rendered by `Banner.jsx` from
+`content.banner`. **Setting `content.banner` to `null` takes it down**; the
+component then renders nothing and the hero reclaims the height.
+
+| Element | Property | Value |
+| --- | --- | --- |
+| `.banner` | layout | flex, centred, `min-height: var(--banner-h)`, padding `10px clamp(20px, 3.4vw, 46px)` |
+| | fill | `--accent`, white text |
+| `.banner__text` | type | `--sans` `13px` / `500`, lh `1.45`, centred, `112ch` (`12px` below `700px`) |
+
+It sits **in the flow, not fixed**, so it can never cover the nav, and
+`role="status"` rather than `role="alert"`: a screen reader should mention it
+on reaching it, not interrupt what it is already reading.
+
+**`--banner-h` and the hero are coupled.** `.hero` is
+`min-height: calc(100svh - var(--banner-h))`, so the scroll cue stays on screen
+instead of being pushed under the fold. That makes the token a measurement, not
+a preference: **if the notice's copy, type or padding changes, re-measure and
+update the token and its steps**, or the hero will overflow the viewport by the
+difference.
+
+The steps are where this copy wraps, measured rather than guessed:
+
+| Width | `--banner-h` | Lines |
+| --- | --- | --- |
+| `941px` and up | `44px` | one |
+| `940px` down | `58px` | two |
+| `700px` down | `62px` | two, at `12px` |
+| `420px` down | `80px` | three |
+
+Verified at 1400, 900, 820, 700, 480 and 390: the rendered bar matches the
+token at each, and `.hero` ends exactly on the viewport edge.
 
 ## 5. Particle system
 
@@ -1698,10 +1756,13 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | A site-wide "under construction" notice above every page (§4.14), and the browser tab title is English only |
 | _pending_ | Card eyebrows are solid rather than translucent, and the project name in them takes the accent (§4.5) |
 | _pending_ | Work-card eyebrows carry the product or domain: "Product Design · Guide App · Part 1", with the Guide titles losing the prefix the eyebrow now holds (§4.5, §8.2) |
 | _pending_ | The work heading is "Work", not "Selected work", and smaller; the cursor badge follows the accent again (§2.1, §4.5, §4.8) |
 | _pending_ | Accent moves from aubergine to muted orchid plum `#8a4a7a`; work cards drop to one paragraph, smaller type and more air (§2.1, §4.5) |
+| _pending_ | SMARTER restyled onto TCTD: `.sm` follows `.cs`, orange headings and blue text throughout, and every section's prose is chunked into cards, steps, bars and chips so no page reads as a wall (§4.13, §11e) |
+| _pending_ | SMARTER restyled onto the Guide's design language, since superseded (§4.13) |
 | _pending_ | Three SMARTER case studies (the Station Navigator, the sensor library, and the EHIE process map) sharing a new `.sm` block on SMARTER's own palette and face. First case studies written rather than transcribed, and the first whose artwork is rendered from live-text design sheets (§2.1, §4.13, §8.3, §9.20, §11e). The empty `smarter-project` card becomes three |
 | _pending_ | Work cards lead with an outcome sentence instead of a pair of figures; metrics stay only where a case study measured them, and NGMA gains a prototype link (§4.5, §8.2) |
 | _pending_ | Work becomes one large card per project under category tabs, wired up at last: `WorkGrid` renders the panel cards the CSS was already written for, and `projects.js` carries each card's tags and its metrics (§4.5, §8.2) |
@@ -2103,9 +2164,30 @@ is why §06 reads as a method rather than as a verdict.
 
 ### Artwork
 
-Every image on all three pages is a render of a real deliverable. Two
-pipelines, and [§9.20](#920-a-live-text-svg-in-an-img-loses-the-pages-webfonts)
-explains why there are two:
+Two kinds, and they are made differently.
+
+**Drawn for this project**: the fifteen icons and the three hero drawings in
+`src/assets/smarter/`, mapped in `smarterArt.js`. They follow TCTD's idiom:
+fine single-weight line art, round caps and joins, enough internal detail to
+read at 74px. Each hero drawing is a before-and-after pair with an orange arrow
+between, which is the device TCTD's own hero uses (a filing cabinet, an arrow,
+a board). There is no dashed blob behind them; that is the Guide's device, not
+TCTD's.
+
+The colour is baked into each file rather than inherited, because the icons
+render through an `<img>` and an `<img>` cannot reach `currentColor`. If the
+palette changes, these files change with it, since there is no token in them to
+update. **Add a new icon to the `icons` map in `smarterArt.js` as well as to
+the folder**: a name missing from the map renders nothing at all, silently, and
+that has happened once already.
+
+A section's icon is chosen in the page component, never in the data file, for
+the same reason work-card art lives in `CardThumb.jsx` rather than in
+`projects.js`: an icon is markup, not copy.
+
+**Rendered from a real deliverable**: everything else. Two pipelines, and
+[§9.20](#920-a-live-text-svg-in-an-img-loses-the-pages-webfonts) explains why
+there are two:
 
 | Tool | Spec | For |
 | --- | --- | --- |

@@ -1,20 +1,15 @@
-// Layout for "Making a sensor station navigable". Every word comes from
+// Layout for "Making a Sensor Station Navigable". Every word comes from
 // smarterNav.js; every colour and measurement from the `sm-` block in
-// global.css, which is `.g` with the SMARTER palette. See DESIGN.md §4.13
-// and §11e.
-//
-// Icons are chosen here, not in the data file, for the same reason work-card
-// art lives in `CardThumb.jsx` rather than in `projects.js`: a section's icon
-// is markup, not copy.
+// global.css, which follows TCTD. See DESIGN.md §4.13 and §11e.
 
 import { smarterNav } from './smarterNav'
 import { shots } from './smarterNavArt'
-import { Ask, Cards, Head, Hero, Metas, OpenList, Stats, Table } from './smarterParts'
-import { icons } from './smarterArt'
+import {
+  Ask, Bullets, Chips, Cards, Hero, Metas, NCards, Probs,
+  Pull, Section, Specs, Stats, Steps, Table,
+} from './smarterParts'
 
-const ruleIcon = icons.rule
-
-const Fig = ({ name, alt, cap, wide = false }) => (
+const Fig = ({ name, alt, cap, wide = true }) => (
   <figure className={wide ? 'sm-fig sm-fig--wide sm-fig--framed' : 'sm-fig sm-fig--framed'}>
     <img src={shots[name]} alt={alt} loading="lazy" />
     {cap && <figcaption>{cap}</figcaption>}
@@ -22,83 +17,78 @@ const Fig = ({ name, alt, cap, wide = false }) => (
 )
 
 export default function SmarterNav() {
-  const { hero, brief, first, rule, click, states, rules, scope, situ, why, open } = smarterNav
+  const { hero, stats, metas, challenge, first, rule, click, states, rules, scope, situ, why, open } =
+    smarterNav
 
   return (
     <article className="sm">
       <Hero drawing="nav" hero={hero} />
-      <Metas meta={hero.meta} />
 
       <section className="sm-sec">
-        <Head n={brief.n} title={brief.title} body={brief.body} />
-        <p className="sm-note">{brief.note}</p>
-      </section>
-
-      {/* The seven problems are numbered to match the annotations printed on
-          the sheet below them, so the list and the picture read together. */}
-      <section className="sm-sec">
-        <Head n={first.n} title={first.title} body={first.body} />
-        <ol className="sm-problems">
-          {first.problems.map((p) => (
-            <li key={p}>{p}</li>
-          ))}
-        </ol>
-        <Fig name={first.img} alt={first.alt} wide />
+        <Stats items={stats} />
+        <Metas items={metas} />
       </section>
 
       <section className="sm-sec">
-        <Head n={rule.n} title={rule.title} body={rule.body} />
-        {/* A framed quote rather than a titled card: giving it a heading
-            would mean writing a heading the work does not have. */}
-        <div className="sm-frame sm-quote-wrap">
-          <img className="sm-card__icon" src={ruleIcon} alt="" aria-hidden="true" />
-          <p className="sm-quote sm-ink">{rule.pull}</p>
-        </div>
-        <Fig name={rule.img} alt={rule.alt} wide />
+        <Section {...challenge} />
+        <Chips label={challenge.flowLabel} items={challenge.flow} />
+        <p className="sm-note">{challenge.note}</p>
+      </section>
+
+      {/* The seven numbered cards carry the same numbering as the annotations
+          printed on the sheet below them, so the two read together. */}
+      <section className="sm-sec">
+        <Section {...first} />
+        <NCards items={first.problems} />
+        <Fig name={first.img} alt={first.alt} />
       </section>
 
       <section className="sm-sec">
-        <Head n={click.n} title={click.title} body={click.body} />
-        <Fig name={click.img} alt={click.alt} wide />
+        <Section {...rule} />
+        <Pull label={rule.pullLabel}>{rule.pull}</Pull>
+        <Fig name={rule.img} alt={rule.alt} />
       </section>
 
       <section className="sm-sec">
-        <Head n={states.n} title={states.title} body={states.body} />
-        <Stats items={states.specs.map((s) => ({ v: s.v, k: s.k }))} />
+        <Section {...click} />
+        <Steps items={click.steps} />
+        <Fig name={click.img} alt={click.alt} />
+      </section>
+
+      <section className="sm-sec">
+        <Section {...states} />
+        <Specs items={states.specs} />
         <p className="sm-note">{states.note}</p>
-        <Fig name={states.img} alt={states.alt} wide />
+        <Fig name={states.img} alt={states.alt} />
       </section>
 
       <section className="sm-sec">
-        <Head n={rules.n} title={rules.title} body={rules.body} />
+        <Section {...rules} />
         <Table head={['When you', 'The navigator']} rows={rules.table} />
       </section>
 
       <section className="sm-sec">
-        <Head n={scope.n} title={scope.title} body={scope.body} />
-        <Cards
-          wide
-          items={scope.moves.map((m, i) => ({ ...m, icon: i === 0 ? 'states' : 'filter' }))}
-        />
+        <Section {...scope} />
+        <Cards items={scope.moves} />
         <Ask {...scope.question} />
-        <Fig name={scope.img} alt={scope.alt} wide />
+        <Fig name={scope.img} alt={scope.alt} />
       </section>
 
       <section className="sm-sec">
-        <Head n={situ.n} title={situ.title} body={situ.body} />
+        <Section {...situ} />
         {situ.shots.map((s) => (
-          <Fig key={s.img} name={s.img} alt={s.alt} cap={s.cap} wide />
+          <Fig key={s.img} name={s.img} alt={s.alt} cap={s.cap} />
         ))}
       </section>
 
       <section className="sm-sec">
-        <Head n={why.n} title={why.title} />
-        <Cards items={why.items.map((i, n) => ({ ...i, icon: n === 0 ? 'problem' : undefined }))} />
+        <Section label={why.label} title={why.title} />
+        <Probs items={why.items} />
       </section>
 
       <section className="sm-sec">
-        <Head n={open.n} title={open.title} body={open.body} />
-        <OpenList items={open.items} />
+        <Section {...open} />
+        <Bullets items={open.items} />
       </section>
     </article>
   )

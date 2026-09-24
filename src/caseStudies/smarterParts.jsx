@@ -1,84 +1,66 @@
 // The pieces all three SMARTER pages are built from. They exist because the
-// three pages are one design language, exactly as `.g`'s two pages are, and
-// repeating this markup three times is how the three would drift apart.
+// three pages are one design language and repeating this markup three times is
+// how the three would drift apart.
 //
-// Every piece here mirrors one of the Guide's: `Banded` is `.g-card` with its
-// tint band, `Hero` is `.g-hero`, `Metas` is `.g-metas`. See DESIGN.md §4.13.
+// Every piece here mirrors one of TCTD's: `Section` is its label plus bold
+// italic serif title, `Probs` is its dashed icon cards, `NCards` is its
+// numbered solid cards, `Stats` is its figure row. Not everything here has a
+// TCTD twin: `Specs` exists because the form should follow the content rather
+// than the reference.
+// See DESIGN.md §4.13.
 
-import { icons, art, metaIcons } from './smarterArt'
+import { icons, art } from './smarterArt'
 
-export const Icon = ({ name, className = 'sm-icon' }) =>
+export const Icon = ({ name, className }) =>
   icons[name] ? (
     <img className={className} src={icons[name]} alt="" aria-hidden="true" />
   ) : null
 
-/** A dashed card whose lower half carries the tint band. */
-export const Banded = ({ head, children, className = 'sm-card' }) => (
-  <div className={className}>
-    {head}
-    <div className="sm-band">{children}</div>
-  </div>
+/** The hero: line art in a narrow column, the title in a dashed frame. */
+export const Hero = ({ drawing, hero }) => (
+  <header className="sm-hero">
+    <img className="sm-hero__art" src={art[drawing]} alt="" aria-hidden="true" />
+    <div className="sm-hero__frame">
+      <h1 className="sm-h1">{hero.title}</h1>
+      <p className="sm-hero__sub">{hero.sub}</p>
+    </div>
+  </header>
 )
 
-/**
- * The hero: the drawing in its own column, the title and its banded sub-line
- * inside a dashed frame beside it. The title splits on its first colon so the
- * lead reads bold and the rest regular, which is how the Guide sets its own.
- */
-export const Hero = ({ drawing, hero }) => {
-  const [lead, ...rest] = hero.title.split(':')
-  const tail = rest.join(':')
-
-  return (
-    <header className="sm-hero">
-      <img className="sm-hero__art" src={art[drawing]} alt="" aria-hidden="true" />
-      <div className="sm-hero__frame">
-        <h1 className="sm-h1">
-          {tail ? (
-            <>
-              <b>{lead}:</b>
-              {tail}
-            </>
-          ) : (
-            <b>{lead}</b>
-          )}
-        </h1>
-        <p className="sm-hero__sub sm-band">{hero.sub}</p>
-      </div>
-    </header>
-  )
-}
-
-/** The four meta cards. Same four, same order, same icons on every page. */
-export const Metas = ({ meta }) => (
-  <section className="sm-sec sm-metas">
-    {meta.map((m, i) => (
-      <Banded
-        key={m.k}
-        className="sm-card sm-meta"
-        head={
-          <>
-            <Icon name={metaIcons[i]} className="sm-meta__icon" />
-            <h2 className="sm-meta__title">{m.k}</h2>
-          </>
-        }
-      >
-        <p>{m.v}</p>
-      </Banded>
+/** The four dashed figure cards. */
+export const Stats = ({ items }) => (
+  <ul className="sm-stats">
+    {items.map((s) => (
+      <li className="sm-stat" key={s.k}>
+        <Icon name={s.icon} className="sm-stat__icon" />
+        <span className="sm-stat__v">{s.v}</span>
+        <span className="sm-stat__k">{s.k}</span>
+      </li>
     ))}
-  </section>
+  </ul>
 )
 
-/** A section's number and its slab-serif kicker, then its opening prose. */
-export const Head = ({ n, title, body }) => (
+/** The four unframed meta items under the stat row. */
+export const Metas = ({ items }) => (
+  <ul className="sm-metas">
+    {items.map((m) => (
+      <li key={m.title}>
+        <Icon name={m.icon} className="sm-meta__icon" />
+        <p className="sm-meta__title">{m.title}</p>
+        <p className="sm-meta__v">{m.v}</p>
+      </li>
+    ))}
+  </ul>
+)
+
+/** A section's label, its bold italic serif title, and its short lede. */
+export const Section = ({ label, title, lede }) => (
   <>
-    <header className="sm-head">
-      <p className="sm-num">{n}</p>
-      <h2 className="sm-kicker">{title}</h2>
-    </header>
-    {body && (
-      <div className="sm-prose sm-lede">
-        {body.map((p) => (
+    <p className="sm-label">{label}</p>
+    <h2 className="sm-title">{title}</h2>
+    {lede && (
+      <div className="sm-lede">
+        {lede.map((p) => (
           <p key={p}>{p}</p>
         ))}
       </div>
@@ -86,38 +68,114 @@ export const Head = ({ n, title, body }) => (
   </>
 )
 
-/**
- * A row of named decisions, each a dashed card with its body on the band. The
- * `icon` is optional: the Guide only puts one on a card that opens a section.
- */
-export const Cards = ({ items, wide = false }) => (
-  <div className={wide ? 'sm-cards sm-cards--2' : 'sm-cards'}>
+/** Numbered solid cards. The number is a counter, so order is the numbering. */
+export const NCards = ({ items }) => (
+  <ol className="sm-ncards">
     {items.map((c) => (
-      <Banded
-        key={c.t}
-        head={
-          <>
-            {c.icon && <Icon name={c.icon} className="sm-card__icon" />}
-            <h3 className="sm-card__title">{c.t}</h3>
-          </>
-        }
-      >
-        <p>{c.d}</p>
-        {c.src && <span className="sm-card__src">{c.src}</span>}
-      </Banded>
+      <li className="sm-ncard" key={c.t}>
+        <div className="sm-ncard__head">
+          <h3 className="sm-ncard__title">{c.t}</h3>
+        </div>
+        <p className="sm-ncard__body">{c.d}</p>
+      </li>
+    ))}
+  </ol>
+)
+
+/** Dashed cards: icon, serif title, an orange note, prose on the tint band. */
+export const Probs = ({ items }) => (
+  <div className="sm-probs">
+    {items.map((p) => (
+      <div className="sm-prob" key={p.t}>
+        <Icon name={p.icon} className="sm-prob__icon" />
+        <h3 className="sm-prob__title">{p.t}</h3>
+        <p className="sm-prob__note">{p.note || ' '}</p>
+        <p className="sm-prob__text">{p.d}</p>
+      </div>
     ))}
   </div>
 )
 
-export const Stats = ({ items }) => (
-  <ul className="sm-stats">
-    {items.map((s) => (
-      <li key={s.k}>
-        <span className="sm-stats__v">{s.v}</span>
-        <span className="sm-stats__k">{s.k}</span>
+/** Three short steps side by side, for a sequence that must not be prose. */
+export const Steps = ({ items }) => (
+  <ol className="sm-steps">
+    {items.map((s, i) => (
+      <li className="sm-step" key={s.t}>
+        <span className="sm-step__n">{String(i + 1).padStart(2, '0')}</span>
+        <h3 className="sm-step__t">{s.t}</h3>
+        <p className="sm-step__d">{s.d}</p>
       </li>
     ))}
+  </ol>
+)
+
+/**
+ * A set of specification values. Deliberately not TCTD's bar chart: a bar
+ * implies a magnitude worth comparing, and a row height against an icon size
+ * is not that. Same visual language, honest form.
+ */
+export const Specs = ({ items }) => (
+  <div className="sm-specs">
+    {items.map((b) => (
+      <div className="sm-spec" key={b.k}>
+        <span className="sm-spec__k">{b.k}</span>
+        <span className="sm-spec__v">{b.v}</span>
+        <span className="sm-spec__note">{b.note}</span>
+      </div>
+    ))}
+  </div>
+)
+
+/** A flow set as chips with arrows between, never as a sentence. */
+export const Chips = ({ label, items }) => (
+  <div className="sm-flow">
+    {label && <p className="sm-card__label">{label}</p>}
+    <ul className="sm-chips">
+      {items.map((c) => (
+        <li key={c}>
+          <span className="sm-chip">{c}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)
+
+export const Bullets = ({ items }) => (
+  <ul className="sm-bullets">
+    {items.map((i) => (
+      <li key={i}>{i}</li>
+    ))}
   </ul>
+)
+
+/** Solid cards with a labelled block inside, TCTD's Department A / B shape. */
+export const Cards = ({ items }) => (
+  <div className="sm-cards">
+    {items.map((c) => (
+      <div className="sm-card" key={c.t}>
+        <h3 className="sm-card__title">{c.t}</h3>
+        {c.sub && <p className="sm-card__sub">{c.sub}</p>}
+        {c.label && <p className="sm-card__label">{c.label}</p>}
+        <p className="sm-card__body">{c.body}</p>
+      </div>
+    ))}
+  </div>
+)
+
+export const Pull = ({ label, children }) => (
+  <div className="sm-pull-wrap">
+    {label && <p className="sm-label">{label}</p>}
+    <p className="sm-pull">{children}</p>
+  </div>
+)
+
+/** The one question per page that was still open at handover. */
+export const Ask = ({ label, body, after }) => (
+  <aside className="sm-ask">
+    <p className="sm-ask__label">{label}</p>
+    <p>{body}</p>
+    {after && <p className="sm-ask__after">{after}</p>}
+  </aside>
 )
 
 export const Table = ({ head, rows }) => (
@@ -137,32 +195,4 @@ export const Table = ({ head, rows }) => (
       ))}
     </tbody>
   </table>
-)
-
-export const OpenList = ({ items }) => (
-  <ul className="sm-open">
-    {items.map((i) => (
-      <li key={i}>{i}</li>
-    ))}
-  </ul>
-)
-
-/**
- * The one question per page that was still open at handover. A dashed card
- * like any other; only its label is set in the prose red, so it reads as a
- * question rather than a finding.
- */
-export const Ask = ({ label, body, after }) => (
-  <Banded
-    className="sm-card sm-ask"
-    head={
-      <>
-        <Icon name="question" className="sm-card__icon" />
-        <p className="sm-ask__label">{label}</p>
-      </>
-    }
-  >
-    <p>{body}</p>
-    {after && <p className="sm-ask__after">{after}</p>}
-  </Banded>
 )

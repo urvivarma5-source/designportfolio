@@ -1,28 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="34 34 392 318">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 250">
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M46 190c0-74 62-136 148-146 96-11 190 34 214 104 22 64-22 138-108 164-84 26-186 8-228-48-18-24-26-48-26-74Z" fill="#f4f5f6" stroke="#414042" stroke-width="2.4" stroke-dasharray="10 10"/>
-    <g stroke="#414042" stroke-width="3.4">
-      <path d="M232 296V126"/>
-      <path d="M196 314h72"/>
-      <path d="M212 314l16-18"/>
-      <path d="M252 314l-16-18"/>
-      <path d="M232 126c-7.8 0-13.6-5.8-13.6-13.6s5.8-13.6 13.6-13.6 13.6 5.8 13.6 13.6S239.8 126 232 126Z"/>
-      <path d="M108 166c0-3.4 2.8-6 6.2-6h96c3.4 0 6.2 2.6 6.2 6v36c0 3.4-2.8 6.2-6.2 6.2h-96c-3.4 0-6.2-2.8-6.2-6.2Z"/>
-      <path d="M247 232c0-3.4 2.8-6 6.2-6h96c3.4 0 6.2 2.6 6.2 6v36c0 3.4-2.8 6.2-6.2 6.2h-96c-3.4 0-6.2-2.8-6.2-6.2Z"/>
-      <path d="M216.4 184H232"/>
-      <path d="M247 250h-15"/>
-      <path d="M126 178h44"/>
-      <path d="M126 192h62"/>
-      <path d="M265 244h44"/>
-      <path d="M265 258h62"/>
+    <!-- left: a station, read as an undifferentiated stack -->
+    <g stroke="#0f1419" stroke-width="2.6">
+      <path d="M40 40c0-2.2 1.8-4 4-4h96c2.2 0 4 1.8 4 4v26c0 2.2-1.8 4-4 4H44c-2.2 0-4-1.8-4-4Z"/>
+      <path d="M40 84c0-2.2 1.8-4 4-4h96c2.2 0 4 1.8 4 4v26c0 2.2-1.8 4-4 4H44c-2.2 0-4-1.8-4-4Z"/>
+      <path d="M40 128c0-2.2 1.8-4 4-4h96c2.2 0 4 1.8 4 4v26c0 2.2-1.8 4-4 4H44c-2.2 0-4-1.8-4-4Z"/>
+      <path d="M40 172c0-2.2 1.8-4 4-4h96c2.2 0 4 1.8 4 4v26c0 2.2-1.8 4-4 4H44c-2.2 0-4-1.8-4-4Z"/>
+      <path d="M56 53h40M56 97h52M56 141h44M56 185h56"/>
     </g>
-    <g stroke="#dc6b01" stroke-width="3.4">
-      <path d="M232 100c0-13 7-23 20-26"/>
-      <path d="M232 100c0-13-7-23-20-26"/>
-      <path d="M90 184c-6.6 0-11.4-4.8-11.4-11.4S83.4 161 90 161s11.4 5.2 11.4 11.8S96.6 184 90 184Z"/>
-      <path d="M382 250c-6.6 0-11.4-4.8-11.4-11.4S375.4 227 382 227s11.4 5.2 11.4 11.8S388.6 250 382 250Z"/>
-      <path d="M101.4 172.6H108"/>
-      <path d="M370.6 238.6H359.4"/>
+    <!-- the orange arrow, TCTD's own device -->
+    <g stroke="#dc6b01" stroke-width="3">
+      <path d="M170 118h56"/>
+      <path d="M216 106l14 12-14 12"/>
+    </g>
+    <!-- right: the same content, now a tree with levels -->
+    <g stroke="#0f1419" stroke-width="2.6">
+      <path d="M252 30c0-2.4 2-4.4 4.4-4.4h166c2.4 0 4.4 2 4.4 4.4v178c0 2.4-2 4.4-4.4 4.4h-166c-2.4 0-4.4-2-4.4-4.4Z"/>
+      <path d="M252 54h175"/>
+      <path d="M270 72h92M270 106h74M270 140h74M270 174h60"/>
+      <path d="M286 89h76M286 123h60M286 157h66"/>
+      <path d="M272 82v76"/>
+    </g>
+    <g stroke="#dc6b01" stroke-width="2.6">
+      <path d="M266 42h34"/>
+      <path d="M270 106h74"/>
+      <path d="M262 99v14"/>
     </g>
   </g>
 </svg>

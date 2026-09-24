@@ -22,6 +22,11 @@
      while the cards had solid colour covers that the accent sank into; those
      covers are gone. */
   --cursor: var(--accent);
+
+  /* Height of the site-wide notice bar. The hero subtracts it, so the two must
+     stay in step: if the banner's copy, padding or type changes, re-measure
+     and update this and its two responsive steps. See DESIGN.md §4.14. */
+  --banner-h: 44px;
   /* the ground of a work card: --blue at 3.5%, so a pale blue-grey panel that
      is still the page's own ink, not a new grey */
   --card-ground: rgba(0, 29, 87, 0.035);
@@ -58,11 +63,63 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
+   Site notice: .banner (DESIGN.md §4.14)
+--------------------------------------------------------------------------- */
+/* One bar above every page. It is in the flow rather than fixed, so it never
+   covers the nav, and the hero subtracts --banner-h from its own height. */
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--banner-h);
+  padding: 10px clamp(20px, 3.4vw, 46px);
+  background: var(--accent);
+  color: #fff;
+}
+
+.banner__text {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-wrap: pretty;
+  max-width: 112ch;
+}
+
+/* The steps below are where the notice's copy wraps to another line. Measured,
+   not guessed: it wraps to two lines just under 960px and again under 420px. */
+@media (max-width: 940px) {
+  :root {
+    --banner-h: 58px;
+  }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --banner-h: 62px;
+  }
+
+  .banner__text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --banner-h: 80px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Hero
 --------------------------------------------------------------------------- */
 .hero {
   position: relative;
-  min-height: 100svh;
+  /* the viewport minus the notice bar, so the scroll cue stays on screen */
+  min-height: calc(100svh - var(--banner-h));
   display: flex;
   flex-direction: column;
   padding: 22px clamp(20px, 3.4vw, 46px) 18px;
@@ -4172,83 +4229,90 @@ a.work-card__media:hover .card-art img {
   }
 }
 
-
 /* ===========================================================================
    SMARTER CASE STUDIES: `.sm`
    ---------------------------------------------------------------------------
    Shared by all three SMARTER pages (`SmarterNavPage.jsx`, `SmarterLibPage.jsx`
-   and `SmarterEhiePage.jsx`), the way `.g` is shared by the two Guide pages.
+   and `SmarterEhiePage.jsx`).
 
-   THIS BLOCK IS `.g` WITH A DIFFERENT PALETTE. Urvi asked for the SMARTER
-   pages to match the Guide case studies exactly: same faces, same dashed
-   frames, same tint bands behind card prose, same icons above card titles.
-   So every measurement here is the Guide's own, `--sm-k` is `--g-k`, and the
-   roles below map one to one onto §4.10's table. The only thing that changes
-   is which colour fills each role, because the palette is the one Urvi
-   supplied for SMARTER.
+   THIS BLOCK FOLLOWS TCTD (`.cs`, §4.9), NOT THE GUIDE. Urvi asked
+   (2026-09-20) for the SMARTER pages to match the "Filling Cabinets to
+   Fingertips" case study: its section label and bold-italic serif title, its
+   dashed problem cards with an icon over the title and the prose on a tint
+   band, its solid cards, its stat row, its bar rows. Two earlier versions of
+   this block got it wrong, first by inventing a layout in Inter, then by
+   copying `.g`. Read the artwork ("TCTD CASE STUDY.pdf") before changing
+   anything here.
 
-   Mapping, Guide role to SMARTER colour:
+   THE RULE THAT MATTERS MOST IS NOT A COLOUR, IT IS DENSITY. TCTD almost never
+   runs more than two short paragraphs before it breaks into cards, chips,
+   bullets or a diagram. A section here that is four paragraphs of prose is
+   wrong even if every token is right; chunk it.
 
-     --g-slate  hero title      -> --sm-slate  #0F1419  Primary Dark
-     --g-navy   headings        -> --sm-navy   #2C3957  CTA Blue
-     --g-coral  running prose   -> --sm-prose  #BE0000  Utah Red
-     --g-green  dashed frames   -> --sm-dash-c #414042  90% Black
-     --g-band   tint strip      -> --sm-band   a tint of Salt Flat Gray
-                icon line art   -> --sm-orange #DC6B01  Orange
-                labels, captions-> --sm-grey   #939598  50% Gray
-
-   Nothing here uses --serif or the site palette. See DESIGN.md §11e.
+   COLOUR IS URVI'S OWN INSTRUCTION, and it departs from the artwork on
+   purpose: **orange for headings, blue for text, and orange for nothing
+   else**. TCTD sets its titles in dark green, its labels in coral and its
+   dashed frames in coral too. Here the orange is reserved for headings and the
+   small numerals that belong to them; every dashed frame, rule, bar, bullet
+   and arrow takes --sm-rule instead, so the headings are the only thing
+   carrying the accent. An earlier version dashed every frame in orange and the
+   page read as orange furniture with headings lost inside it.
 --------------------------------------------------------------------------- */
 .sm {
-  /* SMARTER's palette, local to this block. Roles are stated because §0.3
-     forbids a colour without one; these are the product's own eight. */
-  --sm-slate: #0f1419;   /* Primary Dark: the hero title, and nothing else */
-  --sm-navy: #2c3957;    /* CTA Blue: every heading, and prose inside a card */
-  --sm-prose: #be0000;   /* Utah Red: running prose and pull quotes */
-  --sm-dash-c: #414042;  /* 90% Black: every dashed frame */
-  --sm-orange: #dc6b01;  /* Orange: the icon line art, and section numbers */
-  --sm-grey: #939598;    /* 50% Gray: captions, meta labels, source lines */
-  --sm-white: #ffffff;   /* White: the ground under every figure */
+  /* SMARTER's palette, local to this block. */
+  --sm-orange: #dc6b01; /* Orange: EVERY heading, label, number and icon */
+  --sm-blue: #2c3957;   /* CTA Blue: EVERY piece of running text */
+  --sm-dark: #0f1419;   /* Primary Dark: the hero title only */
+  --sm-grey: #939598;   /* 50% Gray: captions and figure notes */
+  --sm-line: #e2e4e6;   /* Salt Flat Gray: the solid card border */
+  /* 50% Gray. Every dashed frame, bar, bullet and chip arrow. It is the
+     complement orange needs here: a neutral that recedes, so the accent is
+     spent on headings alone. CTA Blue is the louder alternative if these ever
+     need more presence, and it is a one-token change. */
+  --sm-rule: #939598;
+  --sm-red: #be0000;    /* Utah Red: the open-question label, nothing else */
+  --sm-white: #ffffff;
 
-  /* Two grounds rather than marks, so they are tints of palette colours: the
-     band is Salt Flat Gray (#E2E4E6) at about a quarter strength, and the
-     sheet is the #FCFCFC the SMARTER spec sheets are themselves drawn on, so a
-     rendered sheet meets its frame without a seam. */
+  /* Grounds rather than marks: the tint band is Salt Flat Gray at about a
+     quarter strength, and the sheet is the #FCFCFC the SMARTER spec sheets
+     are drawn on, so a rendered sheet meets its frame without a seam. */
   --sm-band: #f4f5f6;
   --sm-sheet: #fcfcfc;
 
-  --sm-slab: 'Roboto Slab', Georgia, 'Times New Roman', serif;
+  --sm-serif: 'Roboto Serif', Georgia, 'Times New Roman', serif;
 
-  /* The Guide's own scale. Both pages are 1180px wide against a 1498pt frame,
-     which is where 0.7877 comes from; if the max-width changes, this must
-     change with it. See §4.10. */
-  --sm-k: 0.7877;
-  --sm-bleed: calc(26px * var(--sm-k)); /* how far a band runs past its row */
-  /* The same 26pt as a literal: `overflow-clip-margin` silently computes a
-     calc() to 0px in Chrome, which clips the band flush at the row edge. See
-     §9.15. Keep this in step with --sm-bleed at every breakpoint. */
-  --sm-clip: 20.5px;
-  --sm-dash: 2px dashed var(--sm-dash-c);
-  --sm-radius: calc(14px * var(--sm-k));
-  --sm-pad: calc(20px * var(--sm-k));
+  /* TCTD's own scale: 1500pt of artwork content against this page's 1180px.
+     Change the max-width and this must change with it. See §4.9. */
+  --sm-k: 0.787;
+  --sm-dash: 2px dashed var(--sm-rule);
+  --sm-radius: calc(12px * var(--sm-k));
+  --sm-pad: calc(26px * var(--sm-k));
 
   max-width: 1180px;
   margin: clamp(30px, 5vh, 64px) auto 0;
   font-family: var(--sans-copy);
-  /* The Guide's body setting: Source Sans 24/32. */
+  /* TCTD's body setting: Source Sans 24/30, tracked. Both inherit. */
   font-size: calc(24px * var(--sm-k));
-  line-height: 1.34;
-  color: var(--sm-prose);
-  /* NOT `overflow-x: clip` here. The wide figures deliberately overflow this
-     1180px column out to the viewport gutters, and clipping on `.sm` would cut
-     them off at the column edge instead of at the viewport. `.project` already
-     clips at the viewport for exactly this case, so the scrollbar is handled a
-     level up. */
+  line-height: 1.25;
+  letter-spacing: 0.05em;
+  color: var(--sm-blue);
+}
+
+/* The serif is set solid, so every serif element resets the tracking. */
+.sm-title,
+.sm-h1,
+.sm-card__title,
+.sm-prob__title,
+.sm-stat__v,
+.sm-pull,
+.sm-meta__title {
+  font-family: var(--sm-serif);
+  letter-spacing: normal;
 }
 
 .sm p {
-  text-wrap: pretty;
   margin: 0;
+  text-wrap: pretty;
 }
 
 .sm b,
@@ -4256,151 +4320,18 @@ a.work-card__media:hover .card-art img {
   font-weight: 700;
 }
 
-/* ---------- the tint band ------------------------------------------------ */
-/* Exactly `.g`'s: an opaque strip *behind* the dashed frame, bleeding past its
-   card on both sides, with the dashes drawn over it. The fill must stay
-   opaque, because two bands whose bleeds overlap would otherwise darken where
-   they meet. */
-.sm-band {
-  position: relative;
-}
-
-.sm-band::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0 calc(-1 * var(--sm-bleed));
-  background: var(--sm-band);
-}
-
-.sm-metas,
-.sm-cards,
-.sm-hero,
-.sm-pair {
-  overflow: clip;
-  overflow-clip-margin: var(--sm-clip); /* a literal, see §9.15 */
-}
-
-/* ---------- frames, cards, headings -------------------------------------- */
-.sm-frame,
-.sm-card,
-.sm-table,
-.sm-fig--framed img,
-.sm-pan {
-  border: var(--sm-dash);
-  border-radius: var(--sm-radius);
-}
-
-.sm-frame,
-.sm-card {
-  padding: var(--sm-pad) 0 calc(18px * var(--sm-k));
-}
-
-.sm-frame > *,
-.sm-card > :not(.sm-band) {
-  padding: 0 var(--sm-pad);
-}
-
-.sm-card > .sm-band {
-  padding: calc(12px * var(--sm-k)) var(--sm-pad);
-  margin-top: calc(14px * var(--sm-k));
-}
-
-.sm-frame {
-  padding: var(--sm-pad);
-}
-
-.sm-h1,
-.sm-display,
-.sm-kicker,
-.sm-card__title,
-.sm-meta__title,
-.sm-h3 {
-  font-family: var(--sm-slab);
-  font-weight: 700;
-  color: var(--sm-navy);
-  line-height: 1.16;
-  margin: 0;
-}
-
-.sm-h1 {
-  color: var(--sm-slate);
-  font-size: calc(40px * var(--sm-k));
-  font-weight: 400;
-}
-
-.sm-h1 b {
-  font-weight: 700;
-}
-
-.sm-display {
-  font-size: calc(48px * var(--sm-k));
-  display: grid;
-  justify-items: center;
-  text-align: center;
-  line-height: 1.2;
-}
-
-.sm-kicker {
-  font-size: calc(26px * var(--sm-k));
-}
-
-.sm-kicker--lg {
-  font-size: calc(28px * var(--sm-k));
-}
-
-.sm-card__title,
-.sm-h3 {
-  font-size: calc(24px * var(--sm-k));
-}
-
-.sm-small {
-  font-size: calc(18px * var(--sm-k));
-  line-height: 1.28;
-}
-
-.sm-quote {
-  font-size: calc(22px * var(--sm-k));
-  line-height: 1.3;
-}
-
-.sm-ink {
-  color: var(--sm-navy);
-}
-
-.sm-prose p + p {
-  margin-top: calc(14px * var(--sm-k));
-}
-
-.sm-icon {
-  display: block;
-  height: calc(62px * var(--sm-k));
-  width: auto;
-}
-
-.sm-art {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 .sm-sec {
-  margin-top: clamp(56px, 8vw, 116px);
-}
-
-.sm-sec--tight {
-  margin-top: clamp(28px, 4vw, 56px);
+  margin-top: clamp(64px, 9vw, 132px);
 }
 
 /* ---------- hero ---------------------------------------------------------- */
-/* `.g-hero`'s geometry: the drawing in a fixed 447pt column, the dashed frame
-   in the rest, and the Guide's own 154pt gutter between them. */
+/* TCTD's: the line art in a narrow column, the title in a dashed frame beside
+   it with the sub on a tint band that overhangs the frame. */
 .sm-hero {
   display: grid;
-  grid-template-columns: calc(447px * var(--sm-k)) 1fr;
-  gap: calc(154px * var(--sm-k));
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
   align-items: center;
-  padding: 0 calc(27px * var(--sm-k)) 0 calc(59px * var(--sm-k));
+  gap: clamp(24px, 4vw, 60px);
 }
 
 .sm-hero__art {
@@ -4411,277 +4342,441 @@ a.work-card__media:hover .card-art img {
 
 .sm-hero__frame {
   border: var(--sm-dash);
-  border-radius: var(--sm-radius);
-  padding: calc(34px * var(--sm-k)) calc(35px * var(--sm-k)) 0;
-  overflow: hidden;
+  border-radius: calc(10px * var(--sm-k));
+  padding: calc(37px * var(--sm-k));
 }
 
-/* The sub runs its tint band the full width of the frame's inside, which is
-   why the negative margin is exactly the frame's own padding. */
-.sm-hero__sub {
-  font-size: calc(32px * var(--sm-k));
-  line-height: 1.36;
-  margin: calc(26px * var(--sm-k)) calc(-35px * var(--sm-k)) 0;
-  padding: calc(14px * var(--sm-k)) calc(35px * var(--sm-k)) calc(30px * var(--sm-k));
-}
-
-/* ---------- the four meta cards ------------------------------------------ */
-.sm-metas {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: calc(39px * var(--sm-k));
-  margin-top: clamp(40px, 6vw, 84px);
-}
-
-.sm-meta {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  color: var(--sm-navy);
-}
-
-.sm-meta > .sm-band {
-  flex: 1;
-}
-
-.sm-meta__icon {
-  display: block;
-  height: calc(78px * var(--sm-k));
-  width: auto;
-  margin: 0 auto calc(10px * var(--sm-k));
-}
-
-.sm-meta__title {
-  font-size: calc(28px * var(--sm-k));
-}
-
-/* ---------- section heads ------------------------------------------------- */
-/* The number is a small slab numeral sitting on the kicker's own line, the way
-   the Guide sets a section label above its prose. */
-.sm-head {
-  display: flex;
-  align-items: baseline;
-  gap: calc(16px * var(--sm-k));
-  margin-bottom: calc(22px * var(--sm-k));
-}
-
-.sm-num {
-  font-family: var(--sm-slab);
+.sm-h1 {
   font-weight: 700;
-  font-size: calc(26px * var(--sm-k));
-  font-variant-numeric: tabular-nums;
+  font-size: calc(46px * var(--sm-k));
+  line-height: 1.12;
   color: var(--sm-orange);
   margin: 0;
-  flex: none;
 }
 
+/* The band runs 32pt past the frame on each side, which is the frame's own
+   37pt inset plus 32pt of overhang. */
+.sm-hero__sub {
+  position: relative;
+  margin-top: calc(22px * var(--sm-k));
+  padding: calc(14px * var(--sm-k)) 0;
+  font-size: calc(30px * var(--sm-k));
+  line-height: 1.42;
+  color: var(--sm-blue);
+}
+
+.sm-hero__sub::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(-69px * var(--sm-k));
+  background: var(--sm-band);
+}
+
+/* ---------- section label and title --------------------------------------- */
+/* "01. The Challenge" in orange, then the bold italic serif title under it.
+   Both are headings, so both are orange. */
+.sm-label {
+  font-size: calc(19px * var(--sm-k));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--sm-orange);
+  margin: 0 0 calc(10px * var(--sm-k));
+}
+
+.sm-title {
+  font-weight: 700;
+  font-style: italic;
+  font-size: calc(32px * var(--sm-k));
+  line-height: 1.24;
+  color: var(--sm-orange);
+  margin: 0 0 calc(24px * var(--sm-k));
+  text-wrap: balance;
+}
+
+/* The measure is the artwork's: ~980pt of a 1492pt content column. Set in the
+   artwork's points, never in `ch`, which drifts with the face. See §4.9. */
 .sm-lede {
   max-width: calc(980px * var(--sm-k));
 }
 
+.sm-lede p + p {
+  margin-top: calc(16px * var(--sm-k));
+}
+
 .sm-note {
-  font-size: calc(18px * var(--sm-k));
-  line-height: 1.3;
+  margin-top: calc(20px * var(--sm-k));
+  font-size: calc(19px * var(--sm-k));
+  line-height: 1.35;
   color: var(--sm-grey);
-  max-width: calc(900px * var(--sm-k));
-  margin-top: calc(18px * var(--sm-k));
+  max-width: calc(980px * var(--sm-k));
 }
 
-/* ---------- card grids ---------------------------------------------------- */
-/* One pattern for every named-decision row on all three pages: a dashed card
-   with an optional icon, a slab title, and the body on the tint band. This is
-   `.g-card` with a grid around it. */
-.sm-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(300px * var(--sm-k)), 1fr));
-  gap: calc(23px * var(--sm-k));
-  margin-top: calc(34px * var(--sm-k));
-}
-
-.sm-cards--2 {
-  grid-template-columns: repeat(auto-fit, minmax(calc(420px * var(--sm-k)), 1fr));
-}
-
-.sm-card__icon {
-  display: block;
-  height: calc(56px * var(--sm-k));
-  width: auto;
-  margin-bottom: calc(10px * var(--sm-k));
-}
-
-.sm-card .sm-band {
-  color: var(--sm-navy);
-}
-
-.sm-card__src {
-  display: block;
-  margin-top: calc(10px * var(--sm-k));
-  font-size: calc(17px * var(--sm-k));
-  color: var(--sm-grey);
-}
-
-/* ---------- the numbered problem list ------------------------------------- */
-/* Numbered because the numbers are load-bearing: they are the same seven
-   annotations printed on the sheet underneath. */
-.sm-problems {
-  counter-reset: p;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(330px * var(--sm-k)), 1fr));
-  gap: calc(20px * var(--sm-k)) calc(34px * var(--sm-k));
-  margin: calc(34px * var(--sm-k)) 0 0;
-  padding: 0;
-}
-
-.sm-problems li {
-  counter-increment: p;
-  position: relative;
-  padding-left: calc(44px * var(--sm-k));
-  font-size: calc(20px * var(--sm-k));
-  line-height: 1.32;
-}
-
-.sm-problems li::before {
-  content: counter(p);
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: grid;
-  place-items: center;
-  width: calc(30px * var(--sm-k));
-  height: calc(30px * var(--sm-k));
-  border-radius: 50%;
-  background: var(--sm-orange);
-  color: var(--sm-white);
-  font-family: var(--sm-slab);
-  font-size: calc(17px * var(--sm-k));
-  font-weight: 700;
-}
-
-/* ---------- the figures row ----------------------------------------------- */
+/* ---------- the stat row -------------------------------------------------- */
+/* Four dashed cards: icon, a big serif figure, then the label on a tint band
+   that bleeds past the card and joins its neighbours into one strip. */
 .sm-stats {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(180px * var(--sm-k)), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(210px * var(--sm-k)), 1fr));
   gap: calc(27px * var(--sm-k));
   margin: calc(34px * var(--sm-k)) 0 0;
+  padding: 0;
+  overflow: clip;
+  overflow-clip-margin: 56px; /* a literal, see §9.15 */
+}
+
+/* A column, with the band pushed to the bottom: the four labels are not the
+   same length, and without this their bands sit at four different heights and
+   the bleed reads as a ragged strip rather than one band. */
+.sm-stat {
+  display: flex;
+  flex-direction: column;
+  border: var(--sm-dash);
+  border-radius: calc(9px * var(--sm-k));
+  padding: calc(24px * var(--sm-k)) 0 0;
+  text-align: center;
+}
+
+.sm-stat__k {
+  margin-top: auto;
+}
+
+.sm-stat__icon {
+  display: block;
+  height: calc(74px * var(--sm-k));
+  width: auto;
+  margin: 0 auto calc(14px * var(--sm-k));
+}
+
+.sm-stat__v {
+  display: block;
+  font-size: calc(38px * var(--sm-k));
+  font-weight: 700;
+  line-height: 1;
+  color: var(--sm-blue);
+  margin-bottom: calc(14px * var(--sm-k));
+}
+
+/* The band is opaque and bleeds one gutter each side, so the four meet into a
+   single strip. A translucent fill would darken where they overlap. */
+.sm-stat__k {
+  position: relative;
+  display: block;
+  padding: calc(12px * var(--sm-k)) calc(12px * var(--sm-k)) calc(16px * var(--sm-k));
+  font-size: calc(19px * var(--sm-k));
+  line-height: 1.3;
+  color: var(--sm-blue);
+}
+
+.sm-stat__k::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(-28px * var(--sm-k));
+  background: var(--sm-band);
+}
+
+/* ---------- the meta row -------------------------------------------------- */
+/* Unframed, the way TCTD sets Team / Duration / Methods / My Role. */
+.sm-metas {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(210px * var(--sm-k)), 1fr));
+  gap: calc(27px * var(--sm-k));
+  margin: calc(54px * var(--sm-k)) 0 0;
   padding: 0;
   text-align: center;
 }
 
-.sm-stats li {
-  display: flex;
-  flex-direction: column;
-  gap: calc(6px * var(--sm-k));
+.sm-meta__icon {
+  display: block;
+  height: calc(66px * var(--sm-k));
+  width: auto;
+  margin: 0 auto calc(12px * var(--sm-k));
 }
 
-.sm-stats__v {
-  font-family: var(--sm-slab);
+.sm-meta__title {
+  font-size: calc(26px * var(--sm-k));
   font-weight: 700;
-  font-size: calc(46px * var(--sm-k));
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
   color: var(--sm-orange);
+  margin-bottom: calc(10px * var(--sm-k));
 }
 
-.sm-stats__k {
+.sm-meta__v {
   font-size: calc(19px * var(--sm-k));
-  line-height: 1.26;
-  color: var(--sm-navy);
+  line-height: 1.35;
+  color: var(--sm-blue);
 }
 
-/* ---------- the interaction table ----------------------------------------- */
-/* The Guide frames its comparison table in the same dash as its cards, so this
-   one does too; the rules between rows are the band colour, not a new grey. */
-.sm-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
+/* ---------- the dashed problem cards -------------------------------------- */
+/* Icon, serif title, an orange note line, then the prose on a tint band. The
+   horizontal insets are not uniform on purpose: the title block runs nearly
+   the full card while the prose is inset, which is what keeps a title on one
+   line. */
+.sm-probs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(300px * var(--sm-k)), 1fr));
+  gap: calc(51px * var(--sm-k));
   margin-top: calc(34px * var(--sm-k));
+  overflow: clip;
+  overflow-clip-margin: 56px; /* a literal, see §9.15 */
+}
+
+.sm-prob {
+  border: var(--sm-dash);
+  border-radius: calc(9px * var(--sm-k));
+  padding: calc(37px * var(--sm-k)) 0 calc(34px * var(--sm-k));
+  text-align: center;
+}
+
+.sm-prob__icon {
+  display: block;
+  height: calc(74px * var(--sm-k));
+  width: auto;
+  margin: 0 auto calc(30px * var(--sm-k));
+}
+
+.sm-prob__title {
+  font-size: calc(24px * var(--sm-k));
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--sm-orange);
+  padding: 0 calc(3px * var(--sm-k));
+  margin: 0;
+}
+
+.sm-prob__note {
+  margin: calc(6px * var(--sm-k)) 0 calc(30px * var(--sm-k));
   font-size: calc(20px * var(--sm-k));
-  text-align: left;
-}
-
-.sm-table th,
-.sm-table td {
-  padding: calc(14px * var(--sm-k)) calc(22px * var(--sm-k));
-  vertical-align: top;
-  line-height: 1.3;
-  border-top: 1px solid var(--sm-band);
-}
-
-.sm-table thead th {
-  border-top: 0;
-  font-family: var(--sm-slab);
-  font-weight: 700;
-  font-size: calc(19px * var(--sm-k));
-  color: var(--sm-navy);
-  background: var(--sm-band);
-}
-
-.sm-table tbody th {
-  font-weight: 600;
-  color: var(--sm-navy);
-  width: 34%;
-}
-
-.sm-table td {
-  color: var(--sm-prose);
-}
-
-/* ---------- the open-question aside --------------------------------------- */
-/* A dashed card like any other, but its label is set in Utah Red so it reads
-   as a question rather than a finding. It is the only place the prose colour
-   is used as a label. */
-.sm-ask {
-  margin-top: calc(34px * var(--sm-k));
-  max-width: calc(1270px * var(--sm-k));
-}
-
-.sm-ask__label {
-  font-family: var(--sm-slab);
-  font-weight: 700;
-  font-size: calc(21px * var(--sm-k));
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--sm-prose);
-  margin-bottom: calc(10px * var(--sm-k)) !important;
-}
-
-.sm-ask__after {
-  margin-top: calc(12px * var(--sm-k));
-  font-size: calc(18px * var(--sm-k));
   color: var(--sm-grey);
 }
 
-/* ---------- the open list ------------------------------------------------- */
-.sm-open {
-  list-style: none;
-  margin: calc(34px * var(--sm-k)) 0 0;
-  padding: 0;
-  max-width: calc(1270px * var(--sm-k));
-  display: grid;
-  gap: calc(14px * var(--sm-k));
-}
-
-.sm-open li {
+.sm-prob__text {
   position: relative;
-  padding-left: calc(38px * var(--sm-k));
-  line-height: 1.32;
+  padding: calc(14px * var(--sm-k)) calc(24px * var(--sm-k)) calc(18px * var(--sm-k));
+  font-size: calc(20px * var(--sm-k));
+  line-height: 1.4;
+  color: var(--sm-blue);
 }
 
-/* A small open circle, drawn in the icon colour, so the list reads as a set of
-   questions rather than a set of statements. */
-.sm-open li::before {
+.sm-prob__text::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: calc(9px * var(--sm-k));
-  width: calc(14px * var(--sm-k));
-  height: calc(14px * var(--sm-k));
-  border-radius: 50%;
-  border: 2px solid var(--sm-orange);
+  z-index: -1;
+  inset: 0 calc(-28px * var(--sm-k));
+  background: var(--sm-band);
+}
+
+/* ---------- the solid cards ----------------------------------------------- */
+/* TCTD's white card: thin solid border, a centred serif title with an orange
+   sub-line, then labelled blocks inside it. */
+.sm-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(430px * var(--sm-k)), 1fr));
+  gap: calc(67px * var(--sm-k));
+  margin-top: calc(34px * var(--sm-k));
+}
+
+.sm-card {
+  border: 1px solid var(--sm-line);
+  border-radius: calc(12px * var(--sm-k));
+  box-shadow: 0 2px 12px rgba(44, 57, 87, 0.05);
+  padding: var(--sm-pad);
+}
+
+.sm-card__title {
+  font-size: calc(24px * var(--sm-k));
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--sm-orange);
+  text-align: center;
+  margin: 0;
+}
+
+.sm-card__sub {
+  margin-top: calc(6px * var(--sm-k));
+  text-align: center;
+  font-size: calc(19px * var(--sm-k));
+  color: var(--sm-grey);
+}
+
+/* The small caps label above a block inside a card. */
+.sm-card__label {
+  margin: calc(26px * var(--sm-k)) 0 calc(12px * var(--sm-k));
+  font-size: calc(18px * var(--sm-k));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sm-blue);
+}
+
+.sm-card__body {
+  font-size: calc(20px * var(--sm-k));
+  line-height: 1.4;
+}
+
+/* ---------- chips and bullets --------------------------------------------- */
+/* The flow chips TCTD uses for a patient journey, and the bullet list under
+   "Key issues identified". Both exist so a sequence is never set as prose. */
+.sm-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(8px * var(--sm-k)) calc(6px * var(--sm-k));
+  margin: 0;
+  padding: 0;
+}
+
+.sm-chips li {
+  display: flex;
+  align-items: center;
+  gap: calc(6px * var(--sm-k));
+}
+
+.sm-chip {
+  border: 1px solid var(--sm-line);
+  border-radius: calc(6px * var(--sm-k));
+  padding: calc(6px * var(--sm-k)) calc(11px * var(--sm-k));
+  font-size: calc(18px * var(--sm-k));
+  color: var(--sm-blue);
+  white-space: nowrap;
+}
+
+.sm-chips li:not(:last-child)::after {
+  content: '\2192';
+  color: var(--sm-rule);
+  font-size: calc(18px * var(--sm-k));
+}
+
+.sm-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: calc(11px * var(--sm-k));
+}
+
+.sm-bullets li {
+  position: relative;
+  padding-left: calc(20px * var(--sm-k));
+  font-size: calc(19px * var(--sm-k));
+  line-height: 1.38;
+}
+
+.sm-bullets li::before {
+  content: '\00b7';
+  position: absolute;
+  left: calc(4px * var(--sm-k));
+  top: calc(-2px * var(--sm-k));
+  color: var(--sm-rule);
+  font-weight: 700;
+  font-size: calc(24px * var(--sm-k));
+}
+
+/* ---------- the redline list ---------------------------------------------- */
+/* A set of specification values in a dashed frame. This is deliberately NOT
+   TCTD's time-study bar chart: a bar implies a magnitude worth comparing, and
+   a row height against an icon size is not that. The visual language is
+   shared; the form follows what the content actually is. */
+.sm-specs {
+  border: var(--sm-dash);
+  border-radius: calc(9px * var(--sm-k));
+  padding: calc(10px * var(--sm-k)) calc(24px * var(--sm-k));
+  margin-top: calc(34px * var(--sm-k));
+  display: grid;
+  gap: 0;
+}
+
+.sm-spec {
+  display: grid;
+  grid-template-columns: calc(200px * var(--sm-k)) calc(120px * var(--sm-k)) 1fr;
+  align-items: baseline;
+  gap: calc(16px * var(--sm-k));
+  padding: calc(13px * var(--sm-k)) 0;
+}
+
+.sm-spec + .sm-spec {
+  border-top: 1px solid var(--sm-band);
+}
+
+.sm-spec__k {
+  font-size: calc(19px * var(--sm-k));
+  font-weight: 700;
+  color: var(--sm-blue);
+}
+
+.sm-spec__v {
+  font-family: var(--sm-serif);
+  letter-spacing: normal;
+  font-size: calc(22px * var(--sm-k));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--sm-blue);
+}
+
+.sm-spec__note {
+  font-size: calc(18px * var(--sm-k));
+  line-height: 1.35;
+  color: var(--sm-grey);
+}
+
+@media (max-width: 640px) {
+  .sm-spec {
+    grid-template-columns: 1fr auto;
+    gap: calc(4px * var(--sm-k)) calc(12px * var(--sm-k));
+  }
+
+  .sm-spec__note {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- the pull quote ------------------------------------------------ */
+/* Centred, with its orange label above it, the way TCTD sets the
+   non-negotiable constraint. The measure is the artwork's longest line. */
+.sm-pull-wrap {
+  margin-top: calc(48px * var(--sm-k));
+  text-align: center;
+}
+
+.sm-pull-wrap .sm-label {
+  margin-bottom: calc(14px * var(--sm-k));
+}
+
+.sm-pull {
+  font-size: calc(28px * var(--sm-k));
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.34;
+  color: var(--sm-blue);
+  max-width: calc(1270px * var(--sm-k));
+  margin: 0 auto;
+}
+
+/* ---------- the open-question aside --------------------------------------- */
+.sm-ask {
+  margin-top: calc(34px * var(--sm-k));
+  max-width: calc(1270px * var(--sm-k));
+  border: 2px dashed var(--sm-red);
+  border-radius: calc(9px * var(--sm-k));
+  padding: var(--sm-pad);
+}
+
+.sm-ask__label {
+  font-size: calc(18px * var(--sm-k));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sm-red);
+  margin-bottom: calc(12px * var(--sm-k)) !important;
+}
+
+.sm-ask__after {
+  margin-top: calc(12px * var(--sm-k)) !important;
+  font-size: calc(18px * var(--sm-k));
+  color: var(--sm-grey);
 }
 
 /* ---------- figures ------------------------------------------------------- */
@@ -4697,35 +4792,33 @@ a.work-card__media:hover .card-art img {
   background: var(--sm-sheet);
 }
 
-/* The dashed frame goes round the picture itself, the way the Guide frames a
-   numbered panel's artwork. */
 .sm-fig--framed img {
+  border: var(--sm-dash);
+  border-radius: calc(9px * var(--sm-k));
   padding: calc(10px * var(--sm-k));
 }
 
 .sm-fig figcaption {
   margin-top: calc(12px * var(--sm-k));
   font-size: calc(18px * var(--sm-k));
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--sm-grey);
 }
 
-/* A wide figure runs past the 1180px column out to the viewport's gutters:
-   these sheets are 1400 to 1480pt of drawing and shrink to illegibility inside
-   a text measure. */
+/* Runs out to the viewport gutters: the spec sheets are 1400 to 1480pt of
+   drawing and shrink to illegibility inside a text measure. `.sm` must never
+   carry `overflow-x: clip` or this is cut off at the column edge instead of at
+   the viewport; `.project` clips at the viewport already. */
 .sm-fig--wide {
   width: min(calc(100vw - 2 * clamp(20px, 3.4vw, 46px)), 1440px);
   margin-left: 50%;
   transform: translateX(-50%);
 }
 
-/* The browse listing beside the filter drawer: one decision seen twice. Both
-   sources are full-page designs, so the pair caps its height and shows each
-   from the top. */
 .sm-pair {
   display: grid;
   grid-template-columns: 1.55fr 1fr;
-  gap: calc(23px * var(--sm-k));
+  gap: calc(30px * var(--sm-k));
   align-items: start;
   margin-top: calc(34px * var(--sm-k));
 }
@@ -4740,19 +4833,21 @@ a.work-card__media:hover .card-art img {
   object-position: top center;
 }
 
-/* The BPMN diagrams are 2300 to 5800pt wide. Fitting one to the page column
-   would put its labels below 5px, so the figure scrolls sideways at a size the
-   labels survive. The scroller is focusable and labelled in the JSX, because
-   content only reachable by scrolling has to be reachable by keyboard. */
+/* The BPMN diagrams are 2300 to 5800pt wide. Fitted to the column their labels
+   fall below 5px, so they take a fixed height and scroll sideways. The
+   scroller is focusable and labelled in the JSX, because content only
+   reachable by scrolling has to be reachable by keyboard. */
 .sm-pan {
   overflow-x: auto;
   overscroll-behavior-x: contain;
+  border: var(--sm-dash);
+  border-radius: calc(9px * var(--sm-k));
   background: var(--sm-sheet);
   padding: calc(10px * var(--sm-k));
 }
 
 .sm-pan:focus-visible {
-  outline: 2px solid var(--sm-navy);
+  outline: 2px solid var(--sm-blue);
   outline-offset: 3px;
 }
 
@@ -4760,52 +4855,210 @@ a.work-card__media:hover .card-art img {
   width: auto;
   max-width: none;
   height: clamp(420px, 52vh, 680px);
+  border: 0;
   border-radius: 0;
+  padding: 0;
 }
 
 /* ---------- responsive ---------------------------------------------------- */
-/* The same two steps the Guide takes, holding the ratio: 0.66 then 0.62, with
-   --sm-clip kept in step with --sm-bleed as a literal. */
+/* TCTD's own steps, holding the ratio. */
 @media (max-width: 1080px) {
   .sm {
-    --sm-k: 0.66;
-    --sm-clip: 17px;
-  }
-
-  .sm-metas {
-    grid-template-columns: repeat(2, 1fr);
+    --sm-k: 0.7;
   }
 }
 
-@media (max-width: 760px) {
-  .sm {
-    --sm-k: 0.62;
-    --sm-clip: 16px;
-  }
-
+@media (max-width: 860px) {
   .sm-hero {
     grid-template-columns: 1fr;
-    gap: calc(40px * var(--sm-k));
-    padding: 0;
   }
 
   .sm-hero__art {
-    max-width: calc(360px * var(--sm-k) * 1.6);
-    margin: 0 auto;
+    max-width: calc(420px * var(--sm-k));
   }
 
-  .sm-metas {
+  .sm-cards {
     grid-template-columns: 1fr;
+    gap: calc(34px * var(--sm-k));
+  }
+
+  .sm-probs {
+    gap: calc(30px * var(--sm-k));
+  }
+}
+
+@media (max-width: 640px) {
+  .sm {
+    --sm-k: 0.656;
   }
 
   .sm-pair {
     grid-template-columns: 1fr;
   }
 
-  .sm-table tbody th {
-    width: auto;
-  }
+}
 
+/* ---------- the numbered solid cards -------------------------------------- */
+/* TCTD's "The 8:30am Problem" card: a solid white card with a serif title and
+   a numbered orange disc beside it. The disc lives INSIDE the title row, not
+   positioned on top of the card, so it is aligned to the title's own middle
+   and its right edge falls on the card's padding, making the two side insets
+   equal by construction. See §4.9. */
+.sm-ncards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(430px * var(--sm-k)), 1fr));
+  gap: calc(40px * var(--sm-k));
+  margin-top: calc(34px * var(--sm-k));
+  list-style: none;
+  padding: 0;
+  counter-reset: n;
+}
+
+.sm-ncard {
+  counter-increment: n;
+  border: 1px solid var(--sm-line);
+  border-radius: calc(12px * var(--sm-k));
+  box-shadow: 0 2px 12px rgba(44, 57, 87, 0.05);
+  padding: var(--sm-pad);
+}
+
+.sm-ncard__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(16px * var(--sm-k));
+}
+
+.sm-ncard__title {
+  font-family: var(--sm-serif);
+  letter-spacing: normal;
+  font-size: calc(24px * var(--sm-k));
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--sm-orange);
+  margin: 0;
+}
+
+.sm-ncard__head::after {
+  content: counter(n);
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(34px * var(--sm-k));
+  height: calc(34px * var(--sm-k));
+  border-radius: 50%;
+  background: var(--sm-orange);
+  color: var(--sm-white);
+  font-family: var(--sm-serif);
+  letter-spacing: normal;
+  font-size: calc(20px * var(--sm-k));
+  font-weight: 700;
+}
+
+.sm-ncard__body {
+  margin-top: calc(16px * var(--sm-k));
+  font-size: calc(20px * var(--sm-k));
+  line-height: 1.42;
+  color: var(--sm-blue);
+}
+
+/* ---------- the step row -------------------------------------------------- */
+/* Three short steps side by side, each a label, a title and one line. TCTD
+   uses this shape for a sequence it does not want set as prose. */
+.sm-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(280px * var(--sm-k)), 1fr));
+  gap: calc(35px * var(--sm-k));
+  margin: calc(34px * var(--sm-k)) 0 0;
+  padding: 0;
+  counter-reset: s;
+}
+
+.sm-step {
+  counter-increment: s;
+  padding-top: calc(14px * var(--sm-k));
+  border-top: 2px solid var(--sm-rule);
+}
+
+.sm-step__n {
+  display: block;
+  font-family: var(--sm-serif);
+  letter-spacing: normal;
+  font-size: calc(22px * var(--sm-k));
+  font-weight: 700;
+  color: var(--sm-orange);
+  margin-bottom: calc(6px * var(--sm-k));
+}
+
+.sm-step__t {
+  font-family: var(--sm-serif);
+  letter-spacing: normal;
+  font-size: calc(22px * var(--sm-k));
+  font-weight: 700;
+  color: var(--sm-orange);
+  margin: 0 0 calc(8px * var(--sm-k));
+}
+
+.sm-step__d {
+  font-size: calc(19px * var(--sm-k));
+  line-height: 1.38;
+  color: var(--sm-blue);
+}
+
+/* A problem card with no note: the title carries the gap the note would have. */
+.sm-prob__title:not(:has(+ .sm-prob__note)) {
+  margin-bottom: calc(30px * var(--sm-k));
+}
+
+/* ---------- the interaction table ----------------------------------------- */
+/* TCTD frames a table in the same dash as its diagrams, so this one does too,
+   and the rules between rows are the band colour rather than a new grey. */
+.sm-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: var(--sm-dash);
+  border-radius: calc(9px * var(--sm-k));
+  overflow: hidden;
+  margin-top: calc(34px * var(--sm-k));
+  font-size: calc(19px * var(--sm-k));
+  text-align: left;
+}
+
+.sm-table th,
+.sm-table td {
+  padding: calc(13px * var(--sm-k)) calc(22px * var(--sm-k));
+  vertical-align: top;
+  line-height: 1.34;
+  border-top: 1px solid var(--sm-band);
+}
+
+.sm-table thead th {
+  border-top: 0;
+  background: var(--sm-band);
+  font-size: calc(17px * var(--sm-k));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sm-blue);
+}
+
+.sm-table tbody th {
+  font-weight: 700;
+  color: var(--sm-blue);
+  width: 36%;
+}
+
+.sm-table td {
+  color: var(--sm-blue);
+}
+
+.sm-flow {
+  margin-top: calc(30px * var(--sm-k));
+}
+
+@media (max-width: 640px) {
   .sm-table,
   .sm-table tbody,
   .sm-table tr {
@@ -4816,8 +5069,8 @@ a.work-card__media:hover .card-art img {
     display: none;
   }
 
-  .sm-table tr + tr {
-    border-top: 1px solid var(--sm-band);
+  .sm-table tbody th {
+    width: auto;
   }
 
   .sm-table th,
@@ -4827,23 +5080,12 @@ a.work-card__media:hover .card-art img {
     padding-bottom: 0;
   }
 
+  .sm-table tr + tr {
+    border-top: 1px solid var(--sm-band);
+  }
+
   .sm-table td {
     padding-top: calc(4px * var(--sm-k));
-    padding-bottom: calc(14px * var(--sm-k));
+    padding-bottom: calc(13px * var(--sm-k));
   }
-}
-
-/* A framed quote: the Guide's callout card without a heading, used where the
-   work has a line worth pulling out but no title to give it. */
-.sm-quote-wrap {
-  margin-top: calc(34px * var(--sm-k));
-  max-width: calc(1270px * var(--sm-k));
-  display: flex;
-  align-items: flex-start;
-  gap: calc(20px * var(--sm-k));
-}
-
-.sm-quote-wrap .sm-card__icon {
-  flex: none;
-  margin-bottom: 0;
 }

@@ -1,137 +1,140 @@
 // ---------------------------------------------------------------------------
 // ALL COPY FOR "MAKING A SENSOR STATION NAVIGABLE" (SMARTER, part 1 of 3).
 // Layout is in SmarterNavPage.jsx; nothing below is styling. See DESIGN.md
-// §11e.
+// §4.13 and §11e.
 //
-// THIS ONE IS NOT A TRANSCRIPTION. The other four case studies are lifted out
-// of a finished Figma case-study frame with tools/extract_case_study.py. There
-// is no such frame for SMARTER: the source is the design work itself: the
-// spec sheets in `Desktop/High Fidelity Screens/Instrument Tree/`, the two
-// working prototypes, and the decision record in the design sessions. So the
-// copy here is written rather than transcribed, and §11e's fidelity rule is
-// the narrower one: every *fact* (a token, a measurement, a rejected
-// option, a heuristic cited) comes from the sheets or the record, and nothing is
-// added to round out a story.
+// THE SHAPE OF THIS FILE IS THE POINT. A section is a label, a title, at most
+// two short paragraphs, and then the content breaks into whatever form it
+// actually is: cards, steps, a redline list, chips, bullets. An earlier
+// version wrote every section as four or five paragraphs of running prose and
+// the page read as a wall of text. If a section here grows past two paragraphs
+// before its first card, it has gone wrong.
 //
-// NOTHING IS INVENTED. In particular there are no outcome figures anywhere
-// below, because none exist yet: this work shipped as a spec and a prototype,
-// and it has not been tested with users. A `metrics` key on the work card
-// would have to be made up, so the card carries none. That is the same rule
-// projects.js states at the top of its own file.
+// TCTD sets the *visual* language, not the structure. Do not reach for one of
+// its shapes because it is there: the row anatomy below is a redline list and
+// not TCTD's time-study bar chart, because a bar implies a magnitude worth
+// comparing and a row height against an icon size is not that.
 //
-// TODO (Urvi): three things I could not source and did not guess.
-//   1. `hero.meta`: the team, the client and the dates are marked TODO below.
-//   2. §09, what happened when this went to the team. The record ends at the
-//      handover, with the scope question still open with your boss.
-//   3. Any usability testing. If the navigator gets tested, that is §10 and it
-//      is also where the card's `metrics` would finally come from.
+// NOT A TRANSCRIPTION. The other four case studies are lifted out of a Figma
+// case-study frame. There is no such frame for SMARTER, so this copy is
+// written from the spec sheets in `Desktop/High Fidelity Screens/Instrument
+// Tree/`, the two working prototypes, and the decision record in the design
+// sessions. Every fact traces to one of those.
+//
+// NOTHING IS INVENTED. There are no outcome figures, because none exist: this
+// shipped as a spec and a prototype and has not been tested with users. The
+// figures in `stats` count the work, not its effect, and the work card carries
+// no `metrics` key at all.
+//
+// TODO (Urvi): `metas` holds the only placeholders. Fill in role, context and
+// duration; they render as visible "TODO" text until you do.
 // ---------------------------------------------------------------------------
 
 export const smarterNav = {
   slug: 'smarter-station-navigator',
 
   hero: {
-    eyebrow: 'SMARTER · Product design',
-    title: 'Making a sensor station navigable',
-    sub: 'A detail page built for one sensor had to hold a station containing modules containing sensors. This is the navigation that let it.',
-    // TODO (Urvi): fill these four in. I have left them as placeholders rather
-    // than guessing at a team size, a client name or a date range.
-    meta: [
-      { k: 'Role', v: 'TODO: your title on the project' },
-      { k: 'Context', v: 'TODO: team, client, funder' },
-      { k: 'Dates', v: 'TODO: e.g. Jan to Sep 2026' },
-      {
-        k: 'Shipped',
-        v: 'Two navigation specs, a component sheet, and two clickable prototypes',
-      },
+    title: 'Making a Sensor Station Navigable',
+    sub: 'Redesigning the navigation for a sensor detail page that had to hold a station, its modules, and the sensors inside them.',
+  },
+
+  // Four dashed stat cards. Each counts something real in the delivered work;
+  // none of them claims an outcome.
+  stats: [
+    { icon: 'states', v: '3', k: 'Levels of hierarchy' },
+    { icon: 'problem', v: '7', k: 'Problems in the first pass' },
+    { icon: 'keyboard', v: '9', k: 'Interaction rules specified' },
+    { icon: 'shipped', v: '2', k: 'Clickable prototypes' },
+  ],
+
+  metas: [
+    { icon: 'role', title: 'Role', v: 'TODO: your title on the project' },
+    { icon: 'context', title: 'Context', v: 'TODO: team, client, funder' },
+    { icon: 'clock', title: 'Duration', v: 'TODO: e.g. Jan to Sep 2026' },
+    { icon: 'gears', title: 'Methods', v: 'Heuristic review, component spec, prototyping' },
+  ],
+
+  // -------------------------------------------------------------------------
+  challenge: {
+    label: '01. The Challenge',
+    title: 'A page built for one sensor had to hold a station of them',
+    lede: [
+      'SMARTER catalogues environmental sensors. Its detail page was designed around a single instrument: a header, a row of tabs, a column of specifications.',
+      'Real deployments are not single instruments. A station holds modules, and modules hold sensors, with specifications belonging to a different level at each step.',
     ],
+    flowLabel: 'The hierarchy the page had to carry',
+    flow: ['EnviroStation Pro 5000', 'AQ-Module 300', 'PMS7003'],
+    note: 'The station, modules and sensors named throughout are the ones the spec sheets use.',
   },
 
   // -------------------------------------------------------------------------
-  // 01
-  // -------------------------------------------------------------------------
-  brief: {
-    n: '01',
-    title: 'The page was built for one sensor. Then the sensors arrived in boxes.',
-    body: [
-      'SMARTER catalogues environmental sensors: what each one measures, how it is deployed, what it costs to run. The detail page was designed around a single instrument: a header, a row of tabs, and a long column of specifications underneath.',
-      'Real deployments are not single instruments. An EnviroStation Pro 5000 is a station that holds an AQ-Module 300 and a MetStation 200; those modules hold five sensors between them: PMS7003, OX-B431, SHT45, an 05103 Wind Monitor and a BMP390. Three levels, and specifications that belong to a different level at each step.',
-      'So the page needed a way to say which of those things you were reading about, without becoming a second site.',
-    ],
-    note: 'The station, the modules and the sensors in this case study are the ones the spec sheets use throughout.',
-  },
-
-  // -------------------------------------------------------------------------
-  // 02. The rejected first component
-  // -------------------------------------------------------------------------
+  // The seven problems as numbered cards. The numbers match the annotations
+  // printed on the sheet below them, so the list and the picture read together.
   first: {
-    n: '02',
-    title: 'The first component, and the seven things wrong with it',
-    body: [
-      'The first pass was a card called Instrument Tree, styled to match the detail page it sat next to. It listed the station, its modules and their sensors, and it did not work. Reading it back against the interface it was meant to serve, the same failure kept appearing in different forms: the card showed structure but never said what a click would do.',
+    label: '02. What the First Component Got Wrong',
+    title: 'It showed the structure but never said what a click would do',
+    lede: [
+      'The first pass was a card called Instrument Tree, styled to match the page beside it. Read back against the interface it served, the same failure kept reappearing in different forms.',
     ],
-    // Each of these is one of the seven numbered annotations on
-    // "05 Navigation Redesign.svg". The image below carries the same numbers.
     problems: [
-      'Three fills, grey, pale grey and navy, with no stated meaning. They read as three states, so “selected” could not be told apart from “container”.',
-      'The selected row copied the active tab pill above it. Two “you are here” signals competing for the same job.',
-      'Rows were indented pills of different widths, which reads as a stack of buttons. Platform to module was only 12 px of indent.',
-      'The right-hand column meant three different things: a level (“Platform”), a category (“Air Quality”), a manufacturer (“Plantower”).',
-      'Modules contained sensors, but nothing said so. No chevron, and no way to fold them.',
-      'Filled rows looked like buttons; sensor rows looked like plain text. Which of these could you click?',
-      '“Instrument tree” is system language, and nothing said what a click would do.',
+      { t: 'Three fills, no stated meaning', d: 'Grey, pale grey and navy read as three states, so “selected” could not be told apart from “container”.' },
+      { t: 'Two “you are here” signals', d: 'The selected row copied the active tab pill above it. Both claimed to say where you were.' },
+      { t: 'Indented pills read as buttons', d: 'Rows were pills of different widths. Platform to module was only 12 px of indent.' },
+      { t: 'One column, three meanings', d: 'The right-hand column held a level, a category and a manufacturer, with nothing to tell them apart.' },
+      { t: 'No way to fold a module', d: 'Modules contained sensors, but there was no chevron and no way to collapse them.' },
+      { t: 'Unclear what was clickable', d: 'Filled rows looked like buttons; sensor rows looked like plain text.' },
+      { t: 'System language on the label', d: '“Instrument tree” names the data structure, not the thing the reader is looking for.' },
     ],
     img: 'tree-old',
     alt: 'The first Instrument Tree component sheet: the assembled card, its states, redlines, overflow behaviour and the tokens it used.',
   },
 
   // -------------------------------------------------------------------------
-  // 03. The rule
-  // -------------------------------------------------------------------------
   rule: {
-    n: '03',
-    title: 'One rule: the navigator picks what, the tabs pick which aspect of it',
-    body: [
-      'Every problem above is a version of the same one: two controls were both trying to tell you where you were. The fix was to give them different jobs and make them look different enough that you could not confuse them.',
-      'The navigator chooses the subject: the station, a module, or a sensor. The tabs choose the aspect: technical specifications, deployment, data, network. Selection in the navigator therefore had to look nothing like the active tab pill, which is why it became a tint, a 3 px bar and a bold navy name rather than a filled pill.',
-      'The panel beside it then answers with a header named after the row you clicked, so the result of every click is visible without scrolling.',
+    label: '03. Design Strategy',
+    title: 'Give the two controls different jobs',
+    lede: [
+      'Every problem above is one problem: two controls were both trying to say where you were.',
+      'So the navigator picks the subject and the tabs pick the aspect of it. Selection had to look nothing like the active tab pill, which is why it became a tint, a bar and a weight change rather than a filled pill.',
     ],
-    pull: 'Selection is carried by a bar and a weight change as well as a tint, and levels by icon shape. Both survive greyscale and colour-blindness.',
+    pullLabel: 'The accessibility floor this set',
+    pull: '“Selection is a bar and a weight change as well as a tint. Levels are carried by icon shape. Both survive greyscale.”',
     img: 'before-after',
     alt: 'Before and after, side by side: the old Instrument Tree card with its seven numbered problems, and the Station Navigator with the seven numbered answers.',
   },
 
   // -------------------------------------------------------------------------
-  // 04
-  // -------------------------------------------------------------------------
   click: {
-    n: '04',
-    title: 'What a click does',
-    body: [
-      'The navigator and the panel header use the same words, side by side, so you can check the system against itself. Select the station and the panel shows station-wide specs with no path line, because this is the top. Select a module and it unfolds, and the panel header takes its name. Select a sensor and the path grows a third level.',
-      'Folding is housekeeping, not navigation: folding a parent never moves the selection. A folded parent that still holds the selected row says so with a navy name and a dot.',
+    label: '04. What a Click Does',
+    title: 'The navigator and the panel header use the same words',
+    lede: [
+      'Set side by side, the two let you check the system against itself. Folding is housekeeping: it never moves the selection.',
+    ],
+    steps: [
+      { t: 'Select the station', d: 'The panel shows station-wide specs. No path line, because this is the top.' },
+      { t: 'Select a module', d: 'It unfolds, and the panel header takes its name.' },
+      { t: 'Select a sensor', d: 'The path grows a third level. A folded parent holding the selection shows a dot.' },
     ],
     img: 'click-does',
     alt: 'Three states side by side, station selected then module selected then sensor selected with MetStation folded, each with the panel header it produces underneath.',
   },
 
   // -------------------------------------------------------------------------
-  // 05
-  // -------------------------------------------------------------------------
   states: {
-    n: '05',
-    title: 'Row states, and the geometry underneath them',
-    body: [
-      'Six states, one row. Every row in the tree, whether station, module or sensor, is the same 48 px full-width target with the same hover fill and the same hit area, so everything clickable looks the same and nothing shrinks as you go deeper.',
-      'Hierarchy comes from position rather than fill: indent steps of 20 px with guide lines, and text starting at +42.',
+    label: '05. Row Anatomy',
+    title: 'One row, six states, no exceptions',
+    lede: [
+      'Every row is the same target with the same hover fill and the same hit area, so nothing shrinks as you go deeper. Hierarchy comes from position, not from fill.',
     ],
+    // A redline list, not a bar chart. These are specification values, not
+    // magnitudes worth comparing against each other.
     specs: [
-      { k: 'Row', v: '48' },
-      { k: 'Radius', v: '6' },
-      { k: 'Selection bar', v: '3 × 28' },
-      { k: 'Icon', v: '16' },
-      { k: 'Chevron slot', v: '16' },
-      { k: 'Indent step', v: '20' },
+      { k: 'Row height', v: '48 px', note: 'The same at every level' },
+      { k: 'Indent step', v: '20 px', note: 'Text starts at +42' },
+      { k: 'Selection bar', v: '3 × 28', note: 'Carries selection without colour' },
+      { k: 'Icon', v: '16 px', note: 'Icon shape carries the level' },
+      { k: 'Chevron slot', v: '16 px', note: 'Reserved even when empty' },
+      { k: 'Corner radius', v: '6 px', note: 'Shared with the panel card' },
     ],
     note: 'Hover is #F3F4F6, an existing token rather than a new one. Focus is a 2 px navy ring, so keyboard users can see where the arrow keys are.',
     img: 'row-states',
@@ -139,54 +142,49 @@ export const smarterNav = {
   },
 
   // -------------------------------------------------------------------------
-  // 06. The interaction contract
-  // -------------------------------------------------------------------------
   rules: {
-    n: '06',
-    title: 'The interaction contract',
-    body: [
-      'Tree behaviour follows the WAI-ARIA tree view pattern, so the keyboard map is the one people already have. Writing it out as a table was the point: it is the part a developer implements, and the part that decides whether the component is one thing or several.',
+    label: '06. The Interaction Contract',
+    title: 'What decides whether this is one component or several',
+    lede: [
+      'Tree behaviour follows the WAI-ARIA tree view pattern, so the keyboard map is the one people already have.',
     ],
-    // Transcribed from §4 of "05 Navigation Redesign.svg".
     table: [
       ['Click a row', 'Selects it. A parent also unfolds.'],
       ['Click a chevron', 'Folds or unfolds only. The selection does not move.'],
-      ['Fold a parent that holds the selection', 'Selection stays. The parent’s name turns navy and shows a dot.'],
-      ['↑ / ↓', 'Moves focus between visible rows.'],
-      ['→', 'Unfolds a parent, or steps into its first child.'],
-      ['←', 'Folds a parent, or steps out to the parent.'],
+      ['Fold a parent holding the selection', 'Selection stays. The parent turns navy and shows a dot.'],
+      ['Up / Down', 'Moves focus between visible rows.'],
+      ['Right', 'Unfolds a parent, or steps into its first child.'],
+      ['Left', 'Folds a parent, or steps out to the parent.'],
       ['Enter / Space', 'Selects the focused row.'],
-      ['Reload, share a link, press Back', 'The selection lives in the URL (?component=aq-module-300), so all three keep it.'],
-      ['Window narrower than 1024 px', 'The navigator becomes a “Showing: AQ-Module 300” dropdown above the panel.'],
+      ['Reload, share a link, press Back', 'The selection lives in the URL, so all three keep it.'],
+      ['Below 1024 px', 'The navigator becomes a “Showing” dropdown above the panel.'],
     ],
   },
 
   // -------------------------------------------------------------------------
-  // 07. The scope question. This is the part of the work I would want read.
-  // -------------------------------------------------------------------------
   scope: {
-    n: '07',
-    title: 'The question the design could not answer on its own',
-    body: [
-      'Partway through it became clear the navigator was not needed everywhere. Technical Specifications vary by sensor. Deployment, Data and Network describe the whole instrument and do not change from one sensor to the next, so on those tabs a component picker would be a control with nothing to pick.',
-      'That produced two design moves and one question I could not settle by drawing.',
+    label: '07. Scope',
+    title: 'The navigator was not needed everywhere',
+    lede: [
+      'Technical Specifications vary by sensor. Deployment, Data and Network describe the whole instrument, so on those tabs a component picker is a control with nothing to pick.',
     ],
     moves: [
       {
-        t: 'Scope the navigator to the tab that needs it',
-        d: 'It appears on Technical Specifications and collapses automatically when you scroll to Deployment, the point at which it stops being able to change anything. Card width narrows only inside that tab; everything below Deployment keeps its full width.',
+        t: 'Scope it to the tab that needs it',
+        sub: 'Collapses at Deployment',
+        label: 'Behaviour',
+        body: 'It appears on Technical Specifications and collapses when you scroll to Deployment, the point at which it stops being able to change anything. Card width narrows only inside that tab.',
       },
       {
-        t: 'Make it a skip-to-section control, never a filter',
-        d: 'All the information stays visible at all times. The navigator moves you through the page; it does not decide what the page contains. A dropdown was built and rejected for exactly this reason: it hid the structure it was supposed to explain.',
+        t: 'Skip to section, never filter',
+        sub: 'All information stays visible',
+        label: 'Rejected alternative',
+        body: 'A dropdown was built and rejected: it hid the structure it was meant to explain. The navigator moves you through the page; it does not decide what the page contains.',
       },
     ],
-    // The escalation is the honest centre of this section and is quoted as a
-    // question, not as a finding: at the point the record ends it was still
-    // open.
     question: {
       label: 'Escalated to the team, still open',
-      body: 'Deployment & Operation holds Calibration Guideline, Maintenance Method and Maintenance Frequency. On real stations a particle sensor and a gas sensor are serviced differently. If any of those three vary per sensor, they belong in Technical Specifications. If they do not, that tab is correctly out of the navigator’s reach.',
+      body: 'Deployment & Operation holds Calibration Guideline, Maintenance Method and Maintenance Frequency. A particle sensor and a gas sensor are serviced differently. If any of those three vary per sensor, they belong in Technical Specifications.',
       after: 'The answer changes the information architecture, not the component, which is why it went to the people who run the stations rather than being resolved in Figma.',
     },
     img: 'scope-dropdown',
@@ -194,86 +192,44 @@ export const smarterNav = {
   },
 
   // -------------------------------------------------------------------------
-  // 08
-  // -------------------------------------------------------------------------
   situ: {
-    n: '08',
-    title: 'In place',
-    body: [
-      'The navigator had to survive the page it sits in rather than the sheet it was drawn on: a station overview with its own sub-cards, and specification rows whose values run long enough to wrap or stack.',
+    label: '08. In Place',
+    title: 'Against the page, not the sheet',
+    lede: [
+      'The component had to survive a station overview with its own sub-cards, and specification values long enough to wrap or stack.',
     ],
     shots: [
-      {
-        img: 'station-overview',
-        alt: 'The station overview: shared specifications for the whole station, with a sub-card for each module underneath.',
-        cap: 'Station overview: the state you land on, and the only one with no path line.',
-      },
-      {
-        img: 'detail-in-situ',
-        alt: 'The full sensor detail page with the Station Navigator in the left column and technical specifications beside it.',
-        cap: 'The navigator in the detail page it was drawn to match.',
-      },
-      {
-        img: 'long-content',
-        alt: 'The same detail page with long specification values, showing value wrap, the stacked spec row and title truncation.',
-        cap: 'Long content: values wrap, spec rows stack, and names truncate at a fixed point rather than reflowing the tree.',
-      },
+      { img: 'station-overview', alt: 'The station overview: shared specifications for the whole station, with a sub-card for each module underneath.', cap: 'Station overview: the state you land on, and the only one with no path line.' },
+      { img: 'detail-in-situ', alt: 'The full sensor detail page with the Station Navigator in the left column and technical specifications beside it.', cap: 'The navigator in the detail page it was drawn to match.' },
+      { img: 'long-content', alt: 'The same detail page with long specification values, showing value wrap, the stacked spec row and title truncation.', cap: 'Long content: values wrap, spec rows stack, names truncate rather than reflowing the tree.' },
     ],
   },
 
-  // -------------------------------------------------------------------------
-  // 09. The reasoning, stated plainly. Each of these is on the spec sheet.
   // -------------------------------------------------------------------------
   why: {
-    n: '09',
-    title: 'Why these choices',
+    label: '09. Why These Choices',
+    title: 'Each one answers a named principle',
     items: [
-      {
-        t: 'Visibility of system status',
-        d: 'The panel header repeats the exact name you clicked, so the result of every click is visible where you were already looking.',
-        src: 'Nielsen heuristic 1',
-      },
-      {
-        t: 'Recognition rather than recall',
-        d: '“OX-B431” means nothing on its own; “O₃ · NO₂” underneath it does. Every subtitle says what that part measures.',
-        src: 'Nielsen heuristic 6',
-      },
-      {
-        t: 'Never colour alone',
-        d: 'Selection is a bar and a weight change as well as a tint; levels are carried by icon shape. Both survive greyscale.',
-        src: 'WCAG 1.4.1',
-      },
-      {
-        t: 'Big, uniform targets',
-        d: 'Full-width rows give every node the same generous hit area, instead of pills that shrink as you go deeper.',
-        src: 'Fitts’s law',
-      },
-      {
-        t: 'Split select from fold',
-        d: 'Folding is navigation housekeeping; it must never change what the panel shows.',
-        src: 'WAI-ARIA tree view',
-      },
-      {
-        t: 'If it needs a legend, fix the control',
-        d: 'The old card needed a Tree Key to be understood. The new one does not, so the key is gone.',
-        src: null,
-      },
+      { icon: 'eye', t: 'Visibility of system status', note: 'Nielsen 1', d: 'The panel header repeats the exact name you clicked, where you were already looking.' },
+      { icon: 'question', t: 'Recognition, not recall', note: 'Nielsen 6', d: '“OX-B431” means nothing alone. “O₃ · NO₂” underneath it does.' },
+      { icon: 'compare', t: 'Never colour alone', note: 'WCAG 1.4.1', d: 'Selection is a bar and a weight change as well as a tint; levels are icon shapes.' },
+      { icon: 'states', t: 'Big, uniform targets', note: 'Fitts’s law', d: 'Full-width rows give every node the same hit area, instead of pills that shrink with depth.' },
+      { icon: 'keyboard', t: 'Split select from fold', note: 'WAI-ARIA', d: 'Folding is housekeeping. It must never change what the panel shows.' },
+      { icon: 'rule', t: 'If it needs a legend, fix the control', note: null, d: 'The old card needed a Tree Key to be understood. The new one does not, so the key is gone.' },
     ],
   },
 
   // -------------------------------------------------------------------------
-  // 10. What the work left open. Written as open questions on purpose.
-  // -------------------------------------------------------------------------
   open: {
-    n: '10',
-    title: 'What is still open',
-    body: [
-      'This shipped as a specification and two clickable prototypes, not as a tested product. Three things are unresolved, and none of them are drawing problems.',
+    label: '10. Still Open',
+    title: 'What this shipped without',
+    lede: [
+      'A specification and two prototypes, not a tested product. None of the three below is a drawing problem.',
     ],
     items: [
-      'Whether calibration and maintenance fields vary per sensor. That is the scope question in §07, and it decides how far the navigator reaches.',
-      'What happens below 1024 px in practice. The dropdown fallback is specified but has not been drawn or built.',
-      'Whether the three-level model holds for instruments that are one instrument with sensors inside, rather than a station of modules. The component was adapted for that case; it has not been checked against a real one.',
+      'Whether calibration and maintenance fields vary per sensor, which decides how far the navigator reaches.',
+      'What happens below 1024 px in practice. The dropdown fallback is specified but not drawn or built.',
+      'Whether the three-level model holds for instruments that are one instrument with sensors inside.',
     ],
   },
 }

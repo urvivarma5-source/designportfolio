@@ -29,6 +29,9 @@ import iconQuestion from '../assets/smarter/icon-question.svg'
 import iconDiagram from '../assets/smarter/icon-diagram.svg'
 import iconFilter from '../assets/smarter/icon-filter.svg'
 import iconCompare from '../assets/smarter/icon-compare.svg'
+import iconEye from '../assets/smarter/icon-eye.svg'
+import iconClock from '../assets/smarter/icon-clock.svg'
+import iconGears from '../assets/smarter/icon-gears.svg'
 
 import artNav from '../assets/smarter/art-nav.svg'
 import artLib from '../assets/smarter/art-lib.svg'
@@ -47,6 +50,9 @@ export const icons = {
   diagram: iconDiagram,
   filter: iconFilter,
   compare: iconCompare,
+  eye: iconEye,
+  clock: iconClock,
+  gears: iconGears,
 }
 
 export const art = {
@@ -55,7 +61,3 @@ export const art = {
   ehie: artEhie,
 }
 
-// The four hero meta cards are the same four on every SMARTER page, in the
-// same order, so their icons are named once here rather than in three data
-// files.
-export const metaIcons = ['role', 'context', 'dates', 'shipped']

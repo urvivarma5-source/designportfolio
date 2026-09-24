@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
+import Banner from './components/Banner'
 import CursorFollower from './components/CursorFollower'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -29,6 +30,7 @@ export default function App() {
     <>
       <ScrollManager />
       <CursorFollower />
+      <Banner />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
