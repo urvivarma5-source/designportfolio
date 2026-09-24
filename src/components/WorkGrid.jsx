@@ -130,7 +130,9 @@ function Card({ project }) {
 }
 
 export default function WorkGrid() {
-  const [active, setActive] = useState('all')
+  // Opens on the first real category rather than "All": Product Design is the
+  // work Urvi wants seen first (2026-09-24). "All" stays as a tab.
+  const [active, setActive] = useState(categories[0].id)
   const tabRefs = useRef([])
 
   // Arrow keys move and select in one step, which is the expected behaviour

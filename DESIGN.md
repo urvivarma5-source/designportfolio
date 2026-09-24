@@ -371,7 +371,9 @@ lives in `content.js` as `workTitle`, not in `Home.jsx`.
 
 #### Tabs — `.work-tabs` / `.work-tab`
 
-`All · Product Design · Visual Design · UX Research`, opening on **All**. The
+`All · Product Design · Visual Design · UX Research`, opening on **Product
+Design**, the first category rather than All (Urvi, 2026-09-24). The default is
+`categories[0].id`, so reordering the categories moves it. The
 tab set is built from `categories` in `projects.js`, so a new category becomes a
 tab with no other change.
 
@@ -398,9 +400,9 @@ Words on the left, the case study's art on the right, on a pale rounded panel.
 
 | Element | Property | Value |
 | --- | --- | --- |
-| `.work-list` | layout | flex column, gap `clamp(24px, 3vw, 40px)` |
-| `.work-card` | layout | grid `1fr 1fr`, centred, gap `clamp(28px, 4.4vw, 80px)` |
-| | panel | `--card-ground`, radius `28px`, padding `clamp(28px, 4.6vw, 76px)`. **No border, no shadow, no solid fill behind the art** |
+| `.work-list` | layout | grid, **two columns**, gap `clamp(20px, 2.4vw, 34px)`; each `li` is `display: flex` so cards in a row end level |
+| `.work-card` | layout | grid `minmax(0, 1fr)` + `clamp(130px, 15vw, 190px)`, centred, gap `clamp(18px, 1.6vw, 26px)` |
+| | panel | `--card-ground`, radius `22px`, padding `clamp(22px, 2vw, 32px)`. **No border, no shadow, no solid fill behind the art** |
 | `.work-card--text` | layout | one column — a project with no art |
 | `.work-card__eyebrow` | type | `--sans` `13px` / `600`, `0.18em`, `uppercase`, **`--muted`, solid**. Not `--blue` at an opacity: translucent type read as washed out on the card's pale ground (Urvi, 2026-09-20) |
 | `.work-card__context` | type | the product or domain ("Guide App", "NGMA Mumbai", "Hospital patient management") in `--accent`, after a solid `--muted` `·`. It is the part of the line that names the actual project |
@@ -433,7 +435,14 @@ once, not twice.
 promise a case study that does not exist, and publishing one flips its card
 with no edit to `projects.js`.
 
-Below `900px` the card is one column with the art first; below `700px` the
+**The art column is a cap, not a share.** It was `1fr` of a `1fr 1fr` card
+while the cards ran full width, so halving the card would have halved the
+picture and the words together. Capping it at `190px` shrinks the picture and
+leaves the rest to the text: at `1440px` that is a `190px` picture against a
+`386px` text column, where the full-width card's art was about `500px`.
+
+Below `900px` the list drops to one column **and the card stacks** with the art
+first, because two columns that narrow are unreadable. Below `700px` the
 radius drops to `20px` and the padding to `24px`.
 
 #### Where the copy comes from
@@ -1756,6 +1765,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Work cards are half width, two to a row, with the art column capped so the picture shrinks rather than the words; the grid opens on Product Design (§4.5) |
 | _pending_ | A site-wide "under construction" notice above every page (§4.14), and the browser tab title is English only |
 | _pending_ | Card eyebrows are solid rather than translucent, and the project name in them takes the accent (§4.5) |
 | _pending_ | Work-card eyebrows carry the product or domain: "Product Design · Guide App · Part 1", with the Guide titles losing the prefix the eyebrow now holds (§4.5, §8.2) |
