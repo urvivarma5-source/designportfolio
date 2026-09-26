@@ -181,10 +181,10 @@ export const smarterNav = {
   // -------------------------------------------------------------------------
   scope: {
     label: '07. Scope',
-    title: 'Halfway through, I realised it was not needed everywhere',
+    title: 'Scoping the navigator to the tab that needs it',
     lede: [
       'Somewhere around the third round of screens it stopped being a drawing problem. Technical Specifications change from one sensor to the next, but Deployment, Data and Network describe the whole instrument and stay put whichever sensor you pick.',
-      'Which means that on three of the four tabs, the thing I had just spent weeks on is a control with nothing to control.',
+      'So on three of the four tabs the navigator has nothing left to control, and the right move is to let it stand down.',
     ],
     moves: [
       {
@@ -197,13 +197,13 @@ export const smarterNav = {
         t: 'Skip to a section, never filter one out',
         sub: 'Everything stays on the page',
         label: 'What I tried first',
-        body: 'I built a dropdown version and threw it away. It hid the structure it was supposed to be explaining. The navigator moves you through the page; it does not get to decide what the page contains.',
+        body: 'A dropdown version came first and did not survive review: it hid the structure it was there to explain. The navigator moves you through the page; it does not get to decide what the page contains.',
       },
     ],
     question: {
-      label: 'A question I could not answer by drawing',
+      label: 'A question drawing could not settle',
       body: 'Deployment & Operation holds Calibration Guideline, Maintenance Method and Maintenance Frequency. On a real station a particle sensor and a gas sensor are serviced quite differently, so if any of those three do vary per sensor, they belong over in Technical Specifications where the navigator can reach them.',
-      after: 'That changes the information architecture rather than the component, so it went to the people who actually run the stations instead of being quietly settled in Figma. It was still open when I handed this over.',
+      after: 'That changes the information architecture rather than the component, so it went to the people who run the stations rather than being settled in Figma. It was still open when I handed this over.',
     },
     img: 'scope-dropdown',
     alt: 'The specs scope dropdown: the collapsed navigator sitting above the technical specifications panel as a single “Showing” control.',

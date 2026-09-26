@@ -4319,6 +4319,15 @@ a.work-card__media:hover .card-art img {
   --sm-radius: calc(12px * var(--sm-k));
   --sm-pad: calc(26px * var(--sm-k));
 
+  /* The gap between two blocks inside one section, and the wider one a pull
+     quote gets on both sides. Every block in a section uses these two and
+     nothing else. Before them the same relationship was written five ways
+     (0, 27, 34, 38 and 42px), because a block's own margin-top was 34px
+     scaled while `.sm-lede`'s margin-bottom was a literal 34px, so the first
+     block after the lede cleared more than every block after it. See §4.13. */
+  --sm-block: calc(48px * var(--sm-k));
+  --sm-block-lg: calc(66px * var(--sm-k));
+
   max-width: 1180px;
   margin: clamp(30px, 5vh, 64px) auto 0;
   font-family: var(--sans-copy);
@@ -4341,7 +4350,10 @@ a.work-card__media:hover .card-art img {
   letter-spacing: normal;
 }
 
-.sm p {
+/* `:where()` so this carries no specificity at all. As `.sm p` it was (0,1,1)
+   and beat every single-class rule on a <p>, which silently killed the margins
+   on .sm-label, .sm-note, .sm-card__label and .sm-hero__sub. See §9.21. */
+:where(.sm p) {
   margin: 0;
   text-wrap: pretty;
 }
@@ -4440,7 +4452,7 @@ a.work-card__media:hover .card-art img {
 /* TCTD's `.cs-lead` clears 34px before the section's own content. */
 .sm-lede {
   max-width: calc(980px * var(--sm-k));
-  margin-bottom: 34px;
+  margin-bottom: var(--sm-block);
 }
 
 .sm-lede p + p {
@@ -4448,7 +4460,7 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-note {
-  margin-top: calc(20px * var(--sm-k));
+  margin-top: var(--sm-block);
   font-size: calc(19px * var(--sm-k));
   line-height: 1.35;
   color: var(--sm-blue);
@@ -4463,7 +4475,7 @@ a.work-card__media:hover .card-art img {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(210px * var(--sm-k)), 1fr));
   gap: calc(27px * var(--sm-k));
-  margin: calc(34px * var(--sm-k)) 0 0;
+  margin: var(--sm-block) 0 0;
   padding: 0;
   overflow: clip;
   overflow-clip-margin: 56px; /* a literal, see §9.15 */
@@ -4560,7 +4572,7 @@ a.work-card__media:hover .card-art img {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(300px * var(--sm-k)), 1fr));
   gap: calc(51px * var(--sm-k));
-  margin-top: calc(34px * var(--sm-k));
+  margin-top: var(--sm-block);
   overflow: clip;
   overflow-clip-margin: 56px; /* a literal, see §9.15 */
 }
@@ -4616,7 +4628,7 @@ a.work-card__media:hover .card-art img {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(430px * var(--sm-k)), 1fr));
   gap: calc(67px * var(--sm-k));
-  margin-top: calc(34px * var(--sm-k));
+  margin-top: var(--sm-block);
 }
 
 .sm-card {
@@ -4657,6 +4669,18 @@ a.work-card__media:hover .card-art img {
   line-height: 1.4;
 }
 
+/* Used as a section's own child rather than inside a card, it introduces the
+   block below it, so it clears the section's block gap above. */
+.sm-sec > .sm-card__label {
+  margin-top: var(--sm-block);
+}
+
+/* ...and the block it introduces stays with it, rather than clearing that gap
+   a second time. */
+.sm .sm-card__label + * {
+  margin-top: calc(12px * var(--sm-k));
+}
+
 /* ---------- chips and bullets --------------------------------------------- */
 /* The flow chips TCTD uses for a patient journey, and the bullet list under
    "Key issues identified". Both exist so a sequence is never set as prose. */
@@ -4693,7 +4717,7 @@ a.work-card__media:hover .card-art img {
 
 .sm-bullets {
   list-style: none;
-  margin: 0;
+  margin: var(--sm-block) 0 0;
   padding: 0;
   display: grid;
   gap: calc(11px * var(--sm-k));
@@ -4724,7 +4748,7 @@ a.work-card__media:hover .card-art img {
 .sm-specs {
   position: relative;
   padding: calc(10px * var(--sm-k)) calc(24px * var(--sm-k));
-  margin-top: calc(34px * var(--sm-k));
+  margin-top: var(--sm-block);
   display: grid;
   gap: 0;
 }
@@ -4777,7 +4801,8 @@ a.work-card__media:hover .card-art img {
 /* Centred, with its orange label above it, the way TCTD sets the
    non-negotiable constraint. The measure is the artwork's longest line. */
 .sm-pull-wrap {
-  margin-top: calc(48px * var(--sm-k));
+  margin-top: var(--sm-block-lg);
+  margin-bottom: var(--sm-block-lg);
   text-align: center;
 }
 
@@ -4798,7 +4823,7 @@ a.work-card__media:hover .card-art img {
 /* ---------- the open-question aside --------------------------------------- */
 .sm-ask {
   position: relative;
-  margin-top: calc(34px * var(--sm-k));
+  margin-top: var(--sm-block);
   max-width: calc(1270px * var(--sm-k));
   padding: var(--sm-pad);
 }
@@ -4826,7 +4851,7 @@ a.work-card__media:hover .card-art img {
 
 /* ---------- figures ------------------------------------------------------- */
 .sm-fig {
-  margin: calc(34px * var(--sm-k)) 0 0;
+  margin: var(--sm-block) 0 0;
 }
 
 .sm-fig img {
@@ -4864,7 +4889,7 @@ a.work-card__media:hover .card-art img {
   grid-template-columns: 1.55fr 1fr;
   gap: calc(30px * var(--sm-k));
   align-items: start;
-  margin-top: calc(34px * var(--sm-k));
+  margin-top: var(--sm-block);
 }
 
 .sm-pair .sm-fig {
@@ -4952,7 +4977,7 @@ a.work-card__media:hover .card-art img {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(430px * var(--sm-k)), 1fr));
   gap: calc(40px * var(--sm-k));
-  margin-top: calc(34px * var(--sm-k));
+  margin-top: var(--sm-block);
   list-style: none;
   padding: 0;
   counter-reset: n;
@@ -5014,7 +5039,7 @@ a.work-card__media:hover .card-art img {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(280px * var(--sm-k)), 1fr));
   gap: calc(35px * var(--sm-k));
-  margin: calc(34px * var(--sm-k)) 0 0;
+  margin: var(--sm-block) 0 0;
   padding: 0;
   counter-reset: s;
 }
@@ -5060,7 +5085,7 @@ a.work-card__media:hover .card-art img {
    and the rules between rows are the band colour rather than a new grey. */
 .sm-tablewrap {
   position: relative;
-  margin-top: calc(34px * var(--sm-k));
+  margin-top: var(--sm-block);
 }
 
 .sm-table {
@@ -5102,7 +5127,7 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-flow {
-  margin-top: calc(30px * var(--sm-k));
+  margin-top: var(--sm-block);
 }
 
 @media (max-width: 640px) {

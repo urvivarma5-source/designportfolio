@@ -932,16 +932,40 @@ three pages follow `.cs` to the pixel at the section head:
 | label → title | `6px` | `.cs-num` margin-bottom |
 | title | Roboto Serif **bold** italic, `28pt * k`, lh `1.25` | `.cs-h2` |
 | title → lede | `20px` | `.cs-body` margin-top |
-| lede → content | `34px` | `.cs-lead` margin-bottom |
+| lede → content | `--sm-block` | `.cs-lead` margin-bottom |
+| block → block | `--sm-block` | `.cs-sec`'s internal rhythm |
+| around a pull quote | `--sm-block-lg` | `.cs-pull` |
 | section rhythm | `clamp(64px, 9vw, 128px)` | `.cs-sec` |
 
-Two bugs surfaced while matching them, both invisible until measured:
+**There are exactly two gaps inside a section, and they are tokens.**
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `--sm-block` | `48px * k` | Between any two blocks in a section, including lede → first block. `.sm-lede`'s margin-bottom is this, so the two collapse to one value |
+| `--sm-block-lg` | `66px * k` | Above **and** below `.sm-pull-wrap`, which is centred and needs to sit apart from the column |
+
+Before these, the same relationship was written five ways and measured
+**0, 27, 34, 38 and 42px** on one page. The cause was that a block's own
+`margin-top` was `34px` *scaled* (26.8px) while `.sm-lede`'s `margin-bottom`
+was a **literal** `34px`, so the first block after a lede cleared more air than
+every block after it, which is backwards. Urvi called the result "so many css
+and spacing errors" (2026-09-26). **A new block gets `var(--sm-block)` and
+nothing else.** The live test is that a section's internal gaps print exactly
+`38`, `52` and `42` at 1440px, where 42 is the hero's own stats → metas.
+
+A label that introduces the block below it is the one exception: `.sm-card__label`
+keeps the card's tighter `26px * k` inside a card, takes `--sm-block` as a
+section's own child, and `.sm .sm-card__label + *` pulls the block it
+introduces back to `12px * k` so the pair reads as one unit.
+
+Three bugs surfaced while matching them, all invisible until measured:
 
 - **`--sm-slab` was referenced but never defined**, so every section label had
   been falling back to the block's sans instead of Roboto Slab.
 - **`.sm p { margin: 0 }` (0,1,1) outranks `.sm-label` (0,1,0)**, so the gap
-  under every label was being cancelled. The rule is `.sm .sm-label` now. Any
-  other `p`-based class in this block needs the same care.
+  under every label was being cancelled. It is `:where(.sm p)` now, which is
+  the general fix: see [§9.21](#921-a-descendant-reset-outranks-every-class-it-resets).
+- **Five different block gaps**, above.
 
 **Why it changed.** Orange used to be on every heading, label, number and icon
 while all running text was blue. The page read as an orange page with text on
@@ -1753,6 +1777,30 @@ both SVG and PNG and both are broken, with overlapping boxes and content
 running past the right edge, so neither is on the EHIE page. Render a sheet and look at it
 before writing copy around it.
 
+### 9.21 A descendant reset outranks every class it resets
+
+`.sm p { margin: 0 }` reads like a reset and is not one. Its specificity is
+(0,1,1), so it beat **every** single-class rule on a `<p>` in the block, and it
+did so silently: the class rule is still in the stylesheet, still looks
+correct, and computes to nothing.
+
+Four rules were dead this way before anyone measured: `.sm-label`,
+`.sm-note`, `.sm-card__label` and `.sm-hero__sub` all set margins that never
+applied. `.sm-label` was fixed once by raising it to `.sm .sm-label`, which
+treats the symptom one rule at a time and leaves the next one to be found by
+eye.
+
+The fix is to take the specificity off the reset instead:
+
+```css
+:where(.sm p) { margin: 0; text-wrap: pretty; }
+```
+
+`:where()` contributes **zero** specificity, so the rule still resets a bare
+`<p>` and loses to any class that has an opinion. **Write a descendant reset
+inside `:where()`.** If you find a margin that computes to `0` for no visible
+reason, check for a reset like this one before rewriting the rule.
+
 ---
 
 ## 10. Verification protocol
@@ -1831,6 +1879,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | SMARTER copy drops every self-deprecating frame; one `--sm-block` gap replaces five, and `:where()` un-kills four dead margin rules (§4.13, §9.21, §11e) |
 | _pending_ | SMARTER section titles take the system's CTA Blue; the h1 and card titles stay black (§4.13) |
 | _pending_ | SMARTER pages take TCTD's type and spacing at the section head; `--sm-slab` defined at last, and the label margin raised above `.sm p` (§4.13) |
 | _pending_ | SMARTER case studies rebalance to black text, orange highlights and blue tertiary; the Sensor Library card drops its SUS metrics (§4.13, §8.2) |
@@ -2223,10 +2272,24 @@ means in practice, taken off `guide1.js`:
   naming its parts. The earlier copy opened on "SMARTER catalogues
   environmental sensors" and went straight into hierarchy; it now says who
   turns up at the page and what they are trying to decide.
-- **First person, active.** "I built a dropdown version and threw it away",
-  not "a dropdown was built and rejected". The Guide uses "we" because it was a
-  team; these use "I" for design decisions and name the team where the record
-  shows one.
+- **First person, active.** "A dropdown version came first and did not survive
+  review", not "a dropdown was built and rejected". The Guide uses "we" because
+  it was a team; these use "I" for design decisions and name the team where the
+  record shows one.
+- **Never at Urvi's own expense.** This is her instruction (2026-09-26), on a
+  pull quote calling a Grade A SUS score "the least useful number I got that
+  day": *"dont be negative and say least useful, you're forcing it. remove such
+  connotations from everywhere in all three case studies."* Self-deprecation
+  reads as forced, and on a portfolio it argues against the work. A section
+  head leads with what the work achieved, so "Two rounds in the lab, and a
+  Grade A from the panel" rather than "a number I did not entirely trust", and
+  "Three tasks at 100%, and one the testing sent back" rather than "one that
+  nobody completed". The **findings stay exactly as measured**, including the
+  0% on Contribute: honesty about a result is not negativity, and the rule is
+  about how her own judgement is framed, not about softening data. Watch for
+  the tell, which is a clause added only to undercut the sentence before it
+  ("which sounds like an excuse and is not", "the least comfortable part of the
+  whole thing").
 - **Emphasis lives in the data**, as `{ em }` runs that `rich.jsx` turns into
   markup, exactly as the Guide files do it. Bold italic in running prose, bold
   inside a card. One level only.

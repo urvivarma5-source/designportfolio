@@ -60,7 +60,7 @@ export const smarterLib = {
     label: '01. The Challenge',
     title: 'Three different jobs, not one catalogue',
     lede: [
-      'We started out calling this "the catalogue", which hid the problem for a couple of weeks. Somebody planning an environmental study does three quite different things here, and only one of them is browsing.',
+      'Calling this "the catalogue" made it sound like one screen. Somebody planning an environmental study does three quite different things here, and only one of them is browsing.',
       [
         'Built as a single catalogue, the first job would have been easy and the other two ',
         { em: 'impossible' },
@@ -97,14 +97,14 @@ export const smarterLib = {
     label: '03. Selection',
     title: 'The same card has to do two different things',
     lede: [
-      'Arrive at a card from the library and it opens the sensor. Arrive at the same card from the empty comparison page and it only selects. That sounded like a footnote when I wrote it down, and it became the fiddliest fortnight of the project.',
+      'Arrive at a card from the library and it opens the sensor. Arrive at the same card from the empty comparison page and it only selects. It reads like a footnote and it set the most intricate two weeks of the build.',
       'The card cannot announce which mode it is in without a badge on every tile, so everything below is about making the mode obvious from what happens when you touch it.',
     ],
     rules: [
       ['The tray shows up on the first pick', 'Not once you press Compare. You should watch the thing filling up while you fill it.'],
       ['A fifth sensor gets an error', 'Rather than quietly dropping one of your four, or building a comparison the grid cannot draw.'],
       ['There is a dead zone round the checkbox', ['A 64 px safety area that toggles selection and ', { em: 'never' }, ' opens the card. Clicking near a checkbox means the checkbox.']],
-      ['Anything you remove can come back', 'Every removal puts an Undo in the toast, because losing a shortlist to a mis-click is miserable.'],
+      ['Anything you remove can come back', 'Every removal puts an Undo in the toast, so a mis-click never costs you the shortlist you just built.'],
       ['Clear selection is a link, not a button', 'Two filled buttons sitting in one row would have read as two equally good ideas.'],
     ],
   },
@@ -166,9 +166,9 @@ export const smarterLib = {
   // -------------------------------------------------------------------------
   access: {
     label: '07. Accessibility',
-    title: 'Checked last, on purpose',
+    title: 'Checked against finished flows, on purpose',
     lede: [
-      'I left this until the end on purpose, which sounds like an excuse and is not. An accessibility pass done early only checks what you planned for. Done last, against finished flows, it catches what you actually built.',
+      'The accessibility pass ran at the end by design. Done early, it only checks what you planned for. Done against finished flows, it checks what you actually built.',
     ],
     items: [
       'Every clickable card and control is reachable by keyboard, with a focus ring you can see.',
@@ -186,9 +186,9 @@ export const smarterLib = {
   // -------------------------------------------------------------------------
   testing: {
     label: '08. Testing',
-    title: 'Two rounds in the lab, and a number I did not entirely trust',
+    title: 'Two rounds in the lab, and a Grade A from the panel',
     lede: [
-      'Everything above is an argument until somebody who did not build it tries to use it. The internal team went first, because that round is cheap and catches the embarrassing things before an expert has to sit through them.',
+      'Everything above is an argument until somebody who did not build it tries to use it. The internal team went first, because that round is cheap and clears the obvious things before an expert has to sit through them.',
       'Then six subject matter experts, forty-five minutes each: fifteen on open exploration, twenty on four set tasks, ten on feedback and a System Usability Scale questionnaire.',
     ],
     rounds: [
@@ -202,15 +202,15 @@ export const smarterLib = {
       { icon: 'clock', v: '45', k: 'Minutes per session' },
     ],
     pullLabel: 'Where that sits',
-    pull: '“Anything above 80.3 is a Grade A. The average system scores 68, so 90.4 was a good result, and it was also the least useful number I got that day.”',
+    pull: '“Anything above 80.3 is a Grade A. The average system scores 68, so 90.4 puts the library well clear of the benchmark.”',
   },
 
   // -------------------------------------------------------------------------
   found: {
     label: '09. What Testing Found',
-    title: 'Three tasks out of four, and one that nobody completed',
+    title: 'Three tasks at 100%, and one the testing sent back',
     lede: [
-      'The SUS score says people liked it. The task results say where it actually broke, which is a different question and a more useful one.',
+      'The SUS score says people liked it. The task results say where the next sprint goes, which is the question that changes the build.',
     ],
     tasks: [
       ['Find a sensor', ['100%', ' · Filtering to indoor relative humidity, under $500, minimal participant interaction. ', { em: '“The filters are really good. I really like this.”' }]],
@@ -219,7 +219,7 @@ export const smarterLib = {
       ['Contribute missing data', ['0%', ' · Adding a transmission frequency to an existing entry. ', { em: '“I never saw that until you told me. Make it more prominent.”' }]],
     ],
     issues: [
-      { t: 'The Contribute button was invisible', d: 'Not hard to find. Invisible, to every single participant. The whole contribution loop the catalogue depends on was sitting behind a control nobody saw.' },
+      { t: 'Contribute belongs in the primary flow', d: 'Every participant went past the control. The contribution loop the catalogue runs on needs to sit in the path people already take, not beside it.' },
       { t: 'Banner blindness on the main nav', d: 'People scrolled straight past the top navigation, which is the same instinct that makes us ignore adverts.' },
       { t: 'Terminology needed definitions in place', d: 'Not a glossary somewhere else. Tooltips where the term is, for the words researchers each read differently.' },
       { t: 'Technical attributes were missing', d: 'Experts went looking for specifications the catalogue did not hold at all, which is a data model problem rather than an interface one.' },
@@ -243,7 +243,7 @@ export const smarterLib = {
   // different questions.
   booth: {
     label: '10. Taking It to the Manufacturers',
-    title: 'The round that was not about usability at all',
+    title: 'Asking the people who would fill it in',
     lede: [
       'A catalogue is only as good as what people put into it, and everyone tested so far was a person who would read it. Nobody had asked the people whose instruments it describes whether they would fill it in.',
       'So the last round was thirty minutes at a conference booth, prototype open on a laptop, talking to sensor developers and hardware engineers between sessions.',
@@ -261,9 +261,9 @@ export const smarterLib = {
   // -------------------------------------------------------------------------
   open: {
     label: '11. Still Open',
-    title: 'What the testing did not settle',
+    title: 'What the next round has to answer',
     lede: [
-      'A 90.4 is a pleasant number to receive and it did not tell me much. The 0% did. Everything below is either a question the rounds raised or one they never got to.',
+      'The 90.4 confirms the interface works. The 0% on Contribute is what sets the next round. Everything below is either a question the rounds raised or one they never got to.',
     ],
     items: [
       'Whether making Contribute prominent actually fixes it, or whether people simply do not expect a catalogue to be editable. That is a mental model problem, and it needs its own round.',

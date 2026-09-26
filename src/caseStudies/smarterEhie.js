@@ -120,9 +120,9 @@ export const smarterEhie = {
   // -------------------------------------------------------------------------
   calls: {
     label: '05. Editorial Decisions',
-    title: 'Most of the work was deciding what belonged in the picture',
+    title: 'What earned a place in the picture',
     lede: [
-      'Drawing was the quick part. Deciding what deserved to be in the picture took far longer, and the first review sent several of these back the other way.',
+      'Drawing was the quick part. Deciding what deserved to be in the picture took far longer, and the first review changed several of these calls.',
     ],
     items: [
       { t: 'Cut the granularity', d: 'A whole pass went on removing boxes. A map for a discussion should carry the steps people will argue about, and nothing else.' },
@@ -154,9 +154,9 @@ export const smarterEhie = {
   // -------------------------------------------------------------------------
   open: {
     label: '07. Still Open',
-    title: 'The six questions the diagrams do not answer',
+    title: 'The six questions the diagrams hand on',
     lede: [
-      'I handed these over alongside the diagrams rather than quietly keeping them, which was the least comfortable part of the whole thing. A map that hides what it is unsure about is worse than no map at all, because sooner or later somebody builds it.',
+      'These went over with the diagrams rather than staying with me. A map that hides what it is unsure about is worse than no map, because sooner or later somebody builds it.',
     ],
     items: [
       'How a researcher gets back to EHIE after choosing sensors. Analysts want an API, researchers want the interface, and the team wants both.',
