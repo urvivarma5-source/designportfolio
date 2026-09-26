@@ -1079,7 +1079,11 @@ a.work-card__media:hover .card-art img {
 }
 
 .cs-sec {
-  margin-top: clamp(64px, 9vw, 128px);
+  /* Measured off the published artwork, not chosen. Each exported section
+     slice carries ~110px of its own whitespace above the label and ~106px
+     below its last ink, at this page's scale, so the artwork's section
+     rhythm is ~216px. The site was rendering 133px. See §9.22. */
+  margin-top: clamp(104px, 15vw, 212px);
 }
 
 /* Every dashed frame on the page. Their sizes vary by row and are set on each
@@ -1148,7 +1152,9 @@ a.work-card__media:hover .card-art img {
   font-size: calc(20px * var(--cs-k));
   line-height: 1.4;
   color: var(--cs-coral);
-  margin-bottom: 6px;
+  /* 14px, not 6px: the artwork puts 18px of clear space between the label's
+     ink and the title's, and 6px rendered 10px. See §9.22. */
+  margin-bottom: 14px;
 }
 
 .cs-num--center {
@@ -1161,7 +1167,9 @@ a.work-card__media:hover .card-art img {
      paragraph ran three lines where the artwork runs two. `ch` tracks the
      font's zero-width, not the artwork. */
   max-width: calc(980px * var(--cs-k));
-  margin-top: 20px;
+  /* 28px, not 20px: the artwork runs ~31px of ink gap here and 20px rendered
+     23px. See §9.22. */
+  margin-top: 28px;
 }
 
 .cs-body--stack p + p {
@@ -4365,7 +4373,7 @@ a.work-card__media:hover .card-art img {
 
 .sm-sec {
   /* TCTD's `.cs-sec` rhythm exactly */
-  margin-top: clamp(64px, 9vw, 128px);
+  margin-top: clamp(104px, 15vw, 212px);
 }
 
 /* ---------- hero ---------------------------------------------------------- */
@@ -4430,7 +4438,7 @@ a.work-card__media:hover .card-art img {
   font-weight: 700;
   line-height: 1.4;
   color: var(--sm-orange);
-  margin: 0 0 6px;
+  margin: 0 0 14px;
 }
 
 /* TCTD's `.cs-h2`: Roboto Serif bold italic at 28pt, lh 1.25, with its body
@@ -4443,7 +4451,7 @@ a.work-card__media:hover .card-art img {
   /* Section titles are CTA Blue, the system's dark blue (Urvi, 2026-09-25).
      Only this level: the h1 above and the card titles below stay black. */
   color: var(--sm-blue);
-  margin: 0 0 20px;
+  margin: 0 0 28px;
   text-wrap: balance;
 }
 

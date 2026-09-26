@@ -929,13 +929,13 @@ three pages follow `.cs` to the pixel at the section head:
 | | Value | Matches |
 | --- | --- | --- |
 | label | Roboto Slab `700`, `20pt * k`, lh `1.4`, the block's `0.05em` | `.cs-num` |
-| label → title | `6px` | `.cs-num` margin-bottom |
+| label → title | `14px` | `.cs-num` margin-bottom |
 | title | Roboto Serif **bold** italic, `28pt * k`, lh `1.25` | `.cs-h2` |
-| title → lede | `20px` | `.cs-body` margin-top |
+| title → lede | `28px` | `.cs-body` margin-top |
 | lede → content | `--sm-block` | `.cs-lead` margin-bottom |
 | block → block | `--sm-block` | `.cs-sec`'s internal rhythm |
 | around a pull quote | `--sm-block-lg` | `.cs-pull` |
-| section rhythm | `clamp(64px, 9vw, 128px)` | `.cs-sec` |
+| section rhythm | `clamp(104px, 15vw, 212px)` | `.cs-sec` |
 
 **There are exactly two gaps inside a section, and they are tokens.**
 
@@ -1831,6 +1831,55 @@ The fix is to take the specificity off the reset instead:
 inside `:where()`.** If you find a margin that computes to `0` for no visible
 reason, check for a reset like this one before rewriting the rule.
 
+### 9.22 The published artwork is the spec, and it is measurable
+
+The TCTD case study is published at
+`urvidesigns.myportfolio.com/filling-cabinets-to-fingertips`, and it is
+**twelve flattened PNG slices with no live text at all** (`innerText` on that
+page is "Powered by Adobe Portfolio"). That makes it awkward to read and
+authoritative to measure: it is the artwork as Urvi signed it off, not an
+approximation of it.
+
+Three values in `.cs` and `.sm` were short against it, and all three had been
+written into this document as if they matched:
+
+| | was | artwork | now |
+| --- | --- | --- | --- |
+| label → title | 6px (rendered 10px of ink) | 18px of ink | 14px |
+| title → lede | 20px (rendered 23px) | 31px | 28px |
+| section rhythm | 128px (rendered 133px) | 216px | 212px |
+
+The section rhythm was the big one: the site was running at **62%** of the
+artwork's. Urvi's note was "see the spacing and margins properly"
+(2026-09-26).
+
+**Measure ink, not margins.** A CSS margin and an artwork gap are not the same
+quantity: the margin excludes the font's ascender and descender slack and the
+artwork gap includes it. Comparing `margin-bottom: 6px` against "18px of white
+in the PNG" is comparing two different things, which is how the mismatch
+survived being written down. Measure **both sides as ink**: decode the pixels,
+find the rows that carry any, and report the blank runs between them.
+`tools/measure_ink_gaps.mjs` does this, and `tools/png_read.mjs` is the small
+PNG reader under it (8-bit, non-interlaced, colour types 0/2/3/4/6) because
+the repo has no image library.
+
+Two traps in that measurement, both of which produced wrong numbers first:
+
+- **Normalise by the content column, never the image.** A site capture's
+  widest ink is the full-bleed banner, so auto-detecting the column gives the
+  viewport and scales every gap by 1180/1440. Pass `--measured=1180` for a
+  site capture. The artwork slices have no full-bleed element and auto-detect
+  correctly.
+- **A coral run is not always a section label.** The pull-quote label uses the
+  same colour at nearly the same size, so slices whose pull quote is detected
+  as a second "section" report a rhythm that is really a block gap. Check the
+  slice before trusting a rhythm number from it.
+
+**What not to change on this evidence.** `lede → first block` measures 27 to
+55px across the slices depending on what the block is, and the site's 37px
+sits mid-range. It was left alone. Only change a value the artwork is
+*consistent* about.
+
 ---
 
 ## 10. Verification protocol
@@ -1909,6 +1958,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Section rhythm, label → title and title → lede measured off the published artwork and corrected in both `.cs` and `.sm`; the site was at 62% of the artwork's section rhythm (§4.9, §4.13, §9.22) |
 | _pending_ | SMARTER tint bands stop at their dashed frame instead of bleeding into the gutter, and a framed table stops touching its dashes (§4.13) |
 | _pending_ | SMARTER copy drops every self-deprecating frame; one `--sm-block` gap replaces five, and `:where()` un-kills four dead margin rules (§4.13, §9.21, §11e) |
 | _pending_ | SMARTER section titles take the system's CTA Blue; the h1 and card titles stay black (§4.13) |
