@@ -943,13 +943,21 @@ and 640px fall to two columns and then one, resetting the span as they go.
 `.g-panels` and `.g-changes` on the Guide pages do the same thing in CSS alone,
 with `:last-child:nth-child(odd)`, which is true exactly when the count is odd.
 
-**Cutting a card is the other fix, and sometimes it is the right one.** It is
-the wrong one when the count is load bearing. Nav §02 has seven problem cards
-because §03's before-and-after figure numbers **seven problems against seven
-answers**, anchored to specific rows in both screenshots, and the lede says
-"seven notes". Cutting the weakest card would leave the figure showing a 7 the
-text no longer has. **Check the section's figures before dropping an item to
-round the count.**
+**Six is the ceiling for a card grid** (Urvi, 2026-09-26). Three columns by two
+rows is the presentation shape; a seventh card starts a third row that a
+`--last-span` can fill but cannot make look intended.
+
+Nav §02 was the one grid over it, and cutting from it was not free. Three
+things counted the cards: §02's lede said "seven notes", §03's lede said "all
+seven turned out to be one problem", and §03's figure **numbers seven problems
+against seven answers**, anchored to specific rows in both screenshots. The
+figure is a rendered asset and cannot be re-cut here.
+
+So the card went, and the prose stopped counting rather than counting
+differently: "a page of notes", "all of them". The figure still shows seven,
+and it now carries a caption saying what the seventh was, which is where the
+naming point survives. **Before dropping an item to round a count, grep the
+section for the number and look at its figures.**
 
 Two earlier versions of this block were wrong and both are worth naming so they
 are not tried again. The first invented a layout in Inter on fluid `clamp()`
@@ -2020,6 +2028,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Nav §02 drops to six problem cards; the prose stops counting and the §03 figure gains a caption carrying the seventh note (§4.13) |
 | _pending_ | Hero pill carries the current title, Product Designer II at the University of Utah (§4.4) |
 | _pending_ | No card grid leaves a lone card in its last row: `gridFit` sizes `.sm-ncards` and `.sm-probs` by their count, and the Guide's panel grids stretch an odd last card (§4.13) |
 | _pending_ | All three SMARTER tables become drawn shapes: a grouped key map, task-result bars, and numbered cards. The `Table` part and its CSS are removed (§4.13) |

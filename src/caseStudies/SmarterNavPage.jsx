@@ -46,7 +46,7 @@ export default function SmarterNav() {
       <section className="sm-sec">
         <Section {...rule} />
         <Pull label={rule.pullLabel}>{rule.pull}</Pull>
-        <Fig name={rule.img} alt={rule.alt} />
+        <Fig name={rule.img} alt={rule.alt} cap={rule.cap} />
       </section>
 
       <section className="sm-sec">

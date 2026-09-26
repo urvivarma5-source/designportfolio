@@ -78,7 +78,7 @@ export const smarterNav = {
     title: 'It showed you the structure, but never what a click would do',
     lede: [
       [
-        'My first pass was a card called Instrument Tree, styled to match the page it sat beside. I liked it for about a day. Then I walked a colleague through it, watched him hesitate over which rows he was allowed to click, and went back to the drawing board with seven notes. Reading them back, ',
+        'My first pass was a card called Instrument Tree, styled to match the page it sat beside. I liked it for about a day. Then I walked a colleague through it, watched him hesitate over which rows he was allowed to click, and went back to the drawing board with a page of notes. Reading them back, ',
         { em: 'they were all the same failure wearing different clothes' },
         '.',
       ],
@@ -90,7 +90,6 @@ export const smarterNav = {
       { t: 'One column doing three jobs', d: 'The right-hand column held a level, a category and a manufacturer, with nothing to tell you which one you were looking at.' },
       { t: 'No way to fold anything', d: 'Modules contained sensors, but there was no chevron and no way to collapse them. On a big station that is a very long list.' },
       { t: 'No idea what was clickable', d: 'Filled rows looked like buttons and sensor rows looked like plain text, so the things you most wanted to click looked the least clickable.' },
-      { t: 'A name from the database', d: '“Instrument tree” describes the data structure. Nobody arrives at this page looking for a tree.' },
     ],
     img: 'tree-old',
     alt: 'The first Instrument Tree component sheet: the assembled card, its states, redlines, overflow behaviour and the tokens it used.',
@@ -102,7 +101,7 @@ export const smarterNav = {
     title: 'Giving the two controls different jobs',
     lede: [
       [
-        'All seven turned out to be ',
+        'All of them turned out to be ',
         { em: 'one problem' },
         ': the navigator and the tabs were both trying to tell you where you were, and neither of them was winning.',
       ],
@@ -112,6 +111,7 @@ export const smarterNav = {
     pull: '“Selection is a bar and a weight change as well as a tint, and levels are carried by icon shape. Both of those survive greyscale, so neither depends on anyone seeing colour.”',
     img: 'before-after',
     alt: 'Before and after, side by side: the old Instrument Tree card with its seven numbered problems, and the Station Navigator with the seven numbered answers.',
+    cap: 'Before and after, annotation by annotation. The seventh note was the name itself, which is why the panel is no longer called a tree.',
   },
 
   // -------------------------------------------------------------------------
