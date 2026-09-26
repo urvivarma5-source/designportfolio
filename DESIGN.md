@@ -918,6 +918,39 @@ very small bar reads as a rounding error instead of the finding it is.
 expert panel round and nothing else. Do not add a bar to anything the research
 did not count.
 
+**No card is ever left alone in a row.** Urvi's rule, 2026-09-26: "never have
+overflow items like this. all case studies should be presentation ready." A
+grid sized with `auto-fit` picks its columns from the width available and
+ignores how many cards there are, which is how `.sm-ncards` put seven cards in
+3 + 3 + 1 and `.sm-probs` put six in 4 + 2.
+
+`gridFit(n)` in `smarterParts.jsx` decides both grids. Columns divide the count
+where they can; where they cannot, the **last card spans the leftover cells**,
+which reads as deliberate rather than stranded:
+
+| cards | columns | last card |
+| --- | --- | --- |
+| 2 | 2 | |
+| 3 | 3 | |
+| 4 | 2 | |
+| 5 | 2 | spans 2 |
+| 6 | 3 | |
+| 7 | 3 | spans 3 |
+
+It sets `--cols`, `--last-span` and `--last-span-narrow` as inline custom
+properties; the stylesheet reads them, and the two breakpoints below 1040px
+and 640px fall to two columns and then one, resetting the span as they go.
+`.g-panels` and `.g-changes` on the Guide pages do the same thing in CSS alone,
+with `:last-child:nth-child(odd)`, which is true exactly when the count is odd.
+
+**Cutting a card is the other fix, and sometimes it is the right one.** It is
+the wrong one when the count is load bearing. Nav §02 has seven problem cards
+because §03's before-and-after figure numbers **seven problems against seven
+answers**, anchored to specific rows in both screenshots, and the lede says
+"seven notes". Cutting the weakest card would leave the figure showing a 7 the
+text no longer has. **Check the section's figures before dropping an item to
+round the count.**
+
 Two earlier versions of this block were wrong and both are worth naming so they
 are not tried again. The first invented a layout in Inter on fluid `clamp()`
 sizes. The second copied `.g`. Read "TCTD CASE STUDY.pdf" before changing
@@ -1987,6 +2020,8 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Hero pill carries the current title, Product Designer II at the University of Utah (§4.4) |
+| _pending_ | No card grid leaves a lone card in its last row: `gridFit` sizes `.sm-ncards` and `.sm-probs` by their count, and the Guide's panel grids stretch an odd last card (§4.13) |
 | _pending_ | All three SMARTER tables become drawn shapes: a grouped key map, task-result bars, and numbered cards. The `Table` part and its CSS are removed (§4.13) |
 | _pending_ | Section rhythm, label → title and title → lede measured off the published artwork and corrected in both `.cs` and `.sm`; the site was at 62% of the artwork's section rhythm (§4.9, §4.13, §9.22) |
 | _pending_ | SMARTER tint bands stop at their dashed frame instead of bleeding into the gutter, and a framed table stops touching its dashes (§4.13) |

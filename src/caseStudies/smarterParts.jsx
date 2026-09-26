@@ -89,9 +89,41 @@ export const Section = ({ label, title, lede }) => (
   </>
 )
 
+/**
+ * How many columns a card grid takes, and how far its last card stretches, so
+ * a row is never left with one card sitting alone in it.
+ *
+ * Urvi's rule, 2026-09-26: "never have overflow items like this." A grid sized
+ * by `auto-fit` picks its column count from the available width and ignores
+ * how many cards there are, which is how seven cards ended up as 3 + 3 + 1.
+ *
+ * Columns divide the count where they can. Where they cannot, the last card
+ * spans the empty cells, which reads as deliberate rather than left over:
+ *
+ *   2 -> 2 cols        3 -> 3 cols        4 -> 2 x 2
+ *   5 -> 2 cols, last spans 2             6 -> 3 x 2
+ *   7 -> 3 cols, last spans 3
+ *
+ * Cutting a card to reach a round number is the other fix, and it is the right
+ * one when the card is weak. It is the wrong one when the count is load
+ * bearing: nav §02 has seven because the §03 figure numbers seven problems
+ * against seven answers. See DESIGN.md §4.13.
+ */
+const gridFit = (n) => {
+  const cols = n % 3 === 0 ? 3 : n % 2 === 0 ? 2 : n >= 6 ? 3 : 2
+  const rem = n % cols
+  return {
+    '--cols': cols,
+    '--last-span': rem ? cols - rem + 1 : 1,
+    // The narrow breakpoint is always two columns, so the last card stretches
+    // there whenever the count is odd.
+    '--last-span-narrow': n % 2 ? 2 : 1,
+  }
+}
+
 /** Numbered solid cards. The number is a counter, so order is the numbering. */
 export const NCards = ({ items }) => (
-  <ol className="sm-ncards">
+  <ol className="sm-ncards" style={gridFit(items.length)}>
     {items.map((c) => (
       <li className="sm-ncard" key={c.t}>
         <div className="sm-ncard__head">
@@ -107,7 +139,7 @@ export const NCards = ({ items }) => (
 
 /** Dashed cards: icon, serif title, an orange note, prose on the tint band. */
 export const Probs = ({ items }) => (
-  <div className="sm-probs">
+  <div className="sm-probs" style={gridFit(items.length)}>
     {items.map((p) => (
       <div className="sm-prob" key={p.t}>
         <DashFrame />

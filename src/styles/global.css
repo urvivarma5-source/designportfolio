@@ -3178,6 +3178,14 @@ a.work-card__media:hover .card-art img {
   margin-top: calc(56px * var(--g-k));
 }
 
+/* An odd count leaves the last panel alone in its row. These are transcribed
+   from the Figma case study, so the count is not mine to change: the last
+   panel takes the whole row instead, which reads as deliberate. Urvi's rule
+   on orphans, 2026-09-26. See DESIGN.md §4.13. */
+.g-panels > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 .g-panel {
   margin: 0;
   min-width: 0;
@@ -3687,6 +3695,11 @@ a.work-card__media:hover .card-art img {
   gap: calc(48px * var(--g-k)) calc(38px * var(--g-k));
   margin-top: calc(30px * var(--g-k));
   align-items: start;
+}
+
+/* As `.g-panels`: an odd count stretches rather than stranding a card. */
+.g-changes > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .g-change {
@@ -4589,11 +4602,18 @@ a.work-card__media:hover .card-art img {
    bands sat at three different heights inside three equal boxes. */
 .sm-probs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(300px * var(--sm-k)), 1fr));
+  /* Columns come from the card count, not the width: see `gridFit` in
+     smarterParts.jsx and DESIGN.md §4.13. `auto-fit` sized this by the space
+     available and put six cards in four columns. */
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
   gap: calc(51px * var(--sm-k));
   margin-top: var(--sm-block);
   overflow: clip;
   overflow-clip-margin: 56px; /* a literal, see §9.15 */
+}
+
+.sm-probs > :last-child {
+  grid-column: span var(--last-span, 1);
 }
 
 .sm-prob {
@@ -4999,12 +5019,45 @@ a.work-card__media:hover .card-art img {
    equal by construction. See §4.9. */
 .sm-ncards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(430px * var(--sm-k)), 1fr));
+  /* As `.sm-probs`: the count picks the columns, and the last card spans any
+     cells the count leaves over rather than sitting alone in a row. */
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
   gap: calc(40px * var(--sm-k));
   margin-top: var(--sm-block);
   list-style: none;
   padding: 0;
   counter-reset: n;
+}
+
+.sm-ncards > :last-child {
+  grid-column: span var(--last-span, 1);
+}
+
+/* Both card grids drop to two columns and then to one. The spans follow: at
+   two columns an odd count is what leaves the orphan, and at one column
+   nothing can. */
+@media (max-width: 1040px) {
+  .sm-ncards,
+  .sm-probs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sm-ncards > :last-child,
+  .sm-probs > :last-child {
+    grid-column: span var(--last-span-narrow, 1);
+  }
+}
+
+@media (max-width: 640px) {
+  .sm-ncards,
+  .sm-probs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sm-ncards > :last-child,
+  .sm-probs > :last-child {
+    grid-column: auto;
+  }
 }
 
 .sm-ncard {

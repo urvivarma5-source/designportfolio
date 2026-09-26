@@ -52,7 +52,7 @@ export const content = {
 
   // Dotted pills inside the copy column, under the sub copy.
   credentials: [
-    'Currently at University of Utah Health',
+    'Product Designer II, University of Utah',
     'Previously at Intuit',
     'MS HCI, University of Maryland',
   ],
