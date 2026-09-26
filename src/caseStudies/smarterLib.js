@@ -3,20 +3,30 @@
 // Layout is in SmarterLibPage.jsx; nothing below is styling. See DESIGN.md
 // §4.13 and §11e.
 //
-// Same shape rule as smarterNav.js: a label, a title, at most two short
-// paragraphs, then cards, steps, bars, chips or bullets. Never a wall.
+// Same voice rules as smarterNav.js: the Guide's register, first person,
+// context before decisions, emphasis as { em } runs. Same shape rules too: a
+// label, a title, at most two short paragraphs, then structure.
 //
-// Written from the high-fidelity screens in `Desktop/High Fidelity Screens/`,
-// the component sheet `Instrument Tree/04 New Components.svg`, and the build
-// record of the prototype in `Desktop/UU/CLAUDE PROTOTYPE/html/`.
+// THIS IS THE ONE SMARTER CASE STUDY WITH REAL USER TESTING BEHIND IT.
+// Three rounds on the library (internal team, then a six-person expert panel
+// with SUS, then in-person interviews with sensor manufacturers at a
+// conference booth), plus a separate internal round on the intake form with
+// four domain experts. Sources: "Testing Protocol_gdoc-2.docx", "User
+// Feedback_gdoc.docx" and "SMARTER- Testing , Qual Research with Sensor
+// Developers _ Manufacturers.docx", supplied 2026-09-25.
 //
-// The figures in `stats` are the prototype's own data and code, not estimates.
-// They count the build, not its effect, which is why the work card carries no
-// `metrics` key.
+// Because that testing exists, this study's work card is the only SMARTER one
+// that carries `metrics`, and §10 no longer says nothing has been tested. The
+// navigation and EHIE studies still have none, and theirs must stay empty.
 //
-// TODO (Urvi): `metas` holds the placeholders. Also, the comparison screen in
-// §04 is the grid's specification, so its cells read "Value"; swap in a filled
-// export if you have one.
+// EVERY FIGURE BELOW IS FROM THE RESEARCH. The SUS score, the per-participant
+// scores, the four task results and the quotes are transcribed, not rounded or
+// improved. The 0% on task four is real and stays.
+//
+// `metas` is filled from Urvi's own account (2026-09-25), same as the other
+// two. Still outstanding: the comparison screen in §04 is the grid's
+// specification, so its cells read "Value". Swap in a filled export if one
+// turns up.
 // ---------------------------------------------------------------------------
 
 export const smarterLib = {
@@ -24,7 +34,11 @@ export const smarterLib = {
 
   hero: {
     title: 'A Library You Can Compare Sensors In',
-    sub: 'Ninety environmental sensors, and a researcher who has to pick four of them. Browse, filter and comparison, on one component library.',
+    sub: [
+      'Ninety environmental sensors, and a researcher who has to walk away with ',
+      { em: 'four' },
+      '. Browse, filter and comparison, on one component library.',
+    ],
   },
 
   stats: [
@@ -35,24 +49,28 @@ export const smarterLib = {
   ],
 
   metas: [
-    { icon: 'role', title: 'Role', v: 'TODO: your title on the project' },
-    { icon: 'context', title: 'Context', v: 'TODO: team, client, funder' },
-    { icon: 'clock', title: 'Duration', v: 'TODO: e.g. Jan to Sep 2026' },
+    { icon: 'role', title: 'My Role', v: ['Lead Product Designer,\n', { em: 'plus some of the PM work' }] },
+    { icon: 'context', title: 'Team', v: 'Seven of us: two PIs, a PM,\nthree engineers, and me' },
+    { icon: 'clock', title: 'Duration', v: '4 months' },
     { icon: 'gears', title: 'Methods', v: 'Component library, prototyping, accessibility pass' },
   ],
 
   // -------------------------------------------------------------------------
   challenge: {
     label: '01. The Challenge',
-    title: 'Three jobs that look like one catalogue',
+    title: 'Three different jobs, not one catalogue',
     lede: [
-      'Somebody planning a study has to do three different things with a sensor registry, and they are not the same job.',
-      'Building it as a single catalogue would have made the first easy and the other two impossible.',
+      'We started out calling this "the catalogue", which hid the problem for a couple of weeks. Somebody planning an environmental study does three quite different things here, and only one of them is browsing.',
+      [
+        'Built as a single catalogue, the first job would have been easy and the other two ',
+        { em: 'impossible' },
+        '. Comparison is not browsing with extra columns, and submitting is not the detail page with the text boxes switched on.',
+      ],
     ],
     jobs: [
-      { icon: 'filter', t: 'Find', note: 'Browse and filter', d: 'Narrow ninety sensors to a shortlist without hitting a dead end.' },
-      { icon: 'compare', t: 'Judge', note: 'Compare four', d: 'Set candidates side by side on the specifications that decide between them.' },
-      { icon: 'problem', t: 'Add', note: 'Submit a sensor', d: 'Contribute one the catalogue is missing, with every field the detail page shows.' },
+      { icon: 'filter', t: 'Find', note: 'Browse and filter', d: 'Get ninety sensors down to a shortlist without ever hitting a dead end.' },
+      { icon: 'compare', t: 'Judge', note: 'Compare four', d: 'Put the candidates side by side on the specifications that actually decide between them.' },
+      { icon: 'problem', t: 'Add', note: 'Submit a sensor', d: 'Contribute one the catalogue is missing, with every field the detail page is going to show.' },
     ],
   },
 
@@ -61,77 +79,84 @@ export const smarterLib = {
     label: '02. Browse and Filter',
     title: 'A filter that cannot dead-end',
     lede: [
-      'The first drawer greyed out options that would return nothing. It was rejected: a greyed option still occupies the list, still has to be read, and still invites the click it is refusing.',
-      'So an option with no matches does not appear, one with matches carries its count, and an empty group disappears.',
+      'The first drawer greyed out any option that would have returned nothing, which felt tidy and helpful right up until someone in a review clicked one anyway and asked why it was there.',
+      'It is a fair question. A greyed option still takes up room, still has to be read, and still invites the click it is about to refuse. So now an option with no matches simply is not drawn, one with matches carries its count, and a group with nothing left in it disappears.',
     ],
     decisions: [
-      { t: 'The listing remembers where you were', d: 'Sort, category, query and every drawer filter live in the URL. Scroll position and loaded cards return with you from a detail page.' },
-      { t: 'Nothing reloads', d: 'Clicking a filter used to blink. The listing now morphs in place against a keyed diff, scrolls only when it needs to, and preloads images first.' },
+      { t: 'It remembers where you were', d: ['Sort, category, query and every drawer filter live in the URL, and your scroll position and loaded cards come back with you from a detail page. Looking at one sensor should not cost you ', { em: 'the shortlist you just built' }, '.'] },
+      { t: 'Nothing reloads', d: 'Clicking a filter used to blink, which felt like the page reloading every time you changed your mind. It now morphs in place against a keyed diff, scrolls only when it has to, and loads the images before it swaps anything in.' },
     ],
     shots: [
-      { img: 'browse', alt: 'The sensor library: a left sidebar of browse-by categories, a search field, and a column of sensor cards with property tags and a Compare button on each.', cap: 'The library, filtered to air quality. Properties are tags, so the list is scannable before anything is opened.' },
-      { img: 'filter', alt: 'The filter drawer: grouped filter options, each with a count of matching sensors.', cap: 'Counts on every option. Options with none are not drawn at all.' },
+      { img: 'browse', alt: 'The sensor library: a left sidebar of browse-by categories, a search field, and a column of sensor cards with property tags and a Compare button on each.', cap: 'The library, filtered down to air quality. Properties sit on the card as tags, so you can scan the list without opening anything.' },
+      { img: 'filter', alt: 'The filter drawer: grouped filter options, each with a count of matching sensors.', cap: 'Counts on every option, and the ones with nothing behind them are not drawn at all.' },
     ],
   },
 
   // -------------------------------------------------------------------------
   select: {
     label: '03. Selection',
-    title: 'One card, two modes, no mode indicator',
+    title: 'The same card has to do two different things',
     lede: [
-      'Reached from the library, a card opens the sensor. Reached from Browse Sensors on the empty comparison page, the same card only selects.',
+      'Arrive at a card from the library and it opens the sensor. Arrive at the same card from the empty comparison page and it only selects. That sounded like a footnote when I wrote it down, and it became the fiddliest fortnight of the project.',
+      'The card cannot announce which mode it is in without a badge on every tile, so everything below is about making the mode obvious from what happens when you touch it.',
     ],
     rules: [
-      ['The tray appears on the first selection', 'Not after Compare is pressed. You should see the thing filling up while you fill it.'],
-      ['A fifth sensor raises an error', 'Rather than silently swapping one out, or building a comparison the grid cannot draw.'],
-      ['A dead zone around the checkbox', 'A 64 px safety area that toggles selection and never opens the card.'],
-      ['Removals are undoable', 'Every removal puts an Undo in the toast.'],
-      ['Clear selection is a link', 'Two filled buttons in one row would read as two equal choices.'],
+      ['The tray shows up on the first pick', 'Not once you press Compare. You should watch the thing filling up while you fill it.'],
+      ['A fifth sensor gets an error', 'Rather than quietly dropping one of your four, or building a comparison the grid cannot draw.'],
+      ['There is a dead zone round the checkbox', ['A 64 px safety area that toggles selection and ', { em: 'never' }, ' opens the card. Clicking near a checkbox means the checkbox.']],
+      ['Anything you remove can come back', 'Every removal puts an Undo in the toast, because losing a shortlist to a mis-click is miserable.'],
+      ['Clear selection is a link, not a button', 'Two filled buttons sitting in one row would have read as two equally good ideas.'],
     ],
   },
 
   // -------------------------------------------------------------------------
   compare: {
     label: '04. Comparison',
-    title: 'Four across, grouped by what is measured',
+    title: 'Four across, grouped by what is being measured',
     lede: [
-      'Sensor headers stick, a switch marks the cells that disagree, and a shortlist saves under a name.',
-      'One feature was built and removed: Hide identical rows. It made the table shorter and the comparison worse.',
+      'This is the screen the whole library exists to get you to, so it gets the most furniture: sticky sensor headers, a switch that marks the cells that disagree, and a save so a shortlist outlives the browser tab.',
+      'I built one feature here, demoed it, and then took it out again. Hide identical rows made the table considerably shorter and the comparison noticeably worse.',
     ],
-    pullLabel: 'Why it came out',
-    pull: '“The rows where four sensors agree are the reason you can trust the rows where they do not.”',
+    pullLabel: 'Why it came out again',
+    pull: '“The rows where all four sensors agree are the reason you can trust the rows where they do not.”',
     img: 'compare',
     alt: 'The comparison dashboard: four sensor cards in a tray above a grouped table of measurement entities, with cells marked where values differ.',
-    cap: 'The comparison template. Cells read “Value” because this is the grid’s specification, not a filled export, including the case it exists to prove: a value that runs to two lines.',
+    cap: 'The comparison template. The cells read “Value” because this is the specification for the grid rather than a filled export, including the case it exists to prove: a value that runs to two lines.',
   },
 
   // -------------------------------------------------------------------------
   system: {
     label: '05. The Component Library',
-    title: 'States live in the component name, not in a sheet of near-copies',
+    title: 'Naming components so a developer can find them',
     lede: [
-      'Every new component had to land where a developer would look for it, so the naming is a path, then a variant, then the states it carries.',
-      'Writing states into the name is what keeps the library from doubling each time a row gains a behaviour.',
+      'None of the above survives handover if a developer cannot find the piece they need, so I put every new component where somebody would think to look for it. The name gives the path first, then the variant, then the states it can be in.',
+      [
+        'Putting states in the name matters more than it sounds. Drawn as separate components instead, the library ',
+        { em: 'doubles in size' },
+        ' every time a row learns one new behaviour.',
+      ],
     ],
     shots: [
-      { img: 'comp-rows', alt: 'The navigator row component at three levels, station, module and sensor, each with its default, hover, selected and keyboard focus states.', cap: 'One row, three levels, four states each. The level is a variant, not a separate component.' },
-      { img: 'comp-spec', alt: 'Data display components: a spec row whose value wraps, a stacked spec row, and an entity card whose title wraps.', cap: 'The three cases long content produces, drawn rather than left to the implementation.' },
-      { img: 'comp-scope', alt: 'The scope header component at station, module and sensor level, each showing the breadcrumb path above the name.', cap: 'The scope header: the panel’s answer to the navigator, at each level.' },
-      { img: 'comp-accordion', alt: 'The section accordion component in its collapsed and expanded states.', cap: 'Section accordion, collapsed and expanded.' },
+      { img: 'comp-rows', alt: 'The navigator row component at three levels, station, module and sensor, each with its default, hover, selected and keyboard focus states.', cap: 'One row, three levels, four states each. The level is a variant rather than a component of its own.' },
+      { img: 'comp-spec', alt: 'Data display components: a spec row whose value wraps, a stacked spec row, and an entity card whose title wraps.', cap: 'The three things long content does, drawn out rather than left for the build to discover.' },
+      { img: 'comp-scope', alt: 'The scope header component at station, module and sensor level, each showing the breadcrumb path above the name.', cap: 'The scope header: the panel answering back, at each of the three levels.' },
+      { img: 'comp-accordion', alt: 'The section accordion component in its collapsed and expanded states.', cap: 'Section accordion, closed and open.' },
     ],
   },
 
   // -------------------------------------------------------------------------
   submit: {
     label: '06. Adding a Sensor',
-    title: 'Every field it collects is a field the detail page shows',
+    title: 'The form and the detail page ask for the same things',
     lede: [
-      'A form that gathers something the catalogue cannot display produces data nobody reads. A page with a field the form never asks for produces a permanent blank.',
+      'I built the form with the detail page open beside it, section by section, because the two drift apart the moment you stop looking. A form that collects something the catalogue cannot display produces data nobody reads, and a page with a field the form never asks about produces a blank that never fills in.',
     ],
+    testedLabel: 'Tested separately, with four domain experts',
+    tested: 'A walkthrough and think-aloud round on the form alone produced eighteen recommendations in six themes. The three biggest: people wanted a progress bar because they could not tell how much was left, they wanted open text fields turned into dropdowns so the data arrives clean, and they wanted the subjective terms defined. “Low cost” and “harsh conditions” mean different things to different researchers.',
     decisions: [
-      { t: 'Save by section', sub: 'Not all at the end', label: 'Why', body: 'Each section validates and saves on its own, with a progress bar across the form. A long intake that can only be submitted whole is one people abandon.' },
-      { t: 'Leaving asks first', sub: 'Route and unload both guarded', label: 'Why', body: 'Navigating away from a dirty form raises “Leave without saving?”, on the route change as well as on the browser’s own unload.' },
-      { t: 'Dropdowns are components', sub: 'Full keyboard support', label: 'Why', body: 'A custom dropdown that traps a keyboard user is worse than the native control it replaced.' },
+      { t: 'Save as you go', sub: 'Not all at the end', label: 'Why', body: 'Each section validates and saves on its own, with a progress bar across the whole form. A long intake you can only submit in one piece is a long intake people abandon.' },
+      { t: 'Leaving asks first', sub: 'On the route and on unload', label: 'Why', body: '“Leave without saving?” catches a half-finished form whether you navigate away inside the app or close the tab on it.' },
+      { t: 'The dropdowns are real components', sub: 'Keyboard and all', label: 'Why', body: 'A custom dropdown that traps a keyboard user is worse than the plain select it replaced, so this one takes arrow keys, Enter and Escape.' },
     ],
     img: 'intake',
     alt: 'The submit-a-sensor intake form: a breadcrumb, a progress indicator, and grouped fields with custom dropdowns and file upload slots.',
@@ -141,34 +166,110 @@ export const smarterLib = {
   // -------------------------------------------------------------------------
   access: {
     label: '07. Accessibility',
-    title: 'A pass over finished flows, not a feature',
+    title: 'Checked last, on purpose',
     lede: [
-      'Done last on purpose: it is the only way to catch what is actually broken rather than what was planned for.',
+      'I left this until the end on purpose, which sounds like an excuse and is not. An accessibility pass done early only checks what you planned for. Done last, against finished flows, it catches what you actually built.',
     ],
     items: [
-      'Every clickable card and control is keyboard reachable with a visible focus ring.',
-      'Focus is trapped inside the drawer, the sort popover and every dialog, and returns where it came from.',
-      'Toasts are announced; errors carry role="alert" and mark their field invalid.',
-      'A skip link, and prefers-reduced-motion honoured throughout.',
-      'Below 1024 px the browse-by sidebar becomes a drawer, because a sidebar sitting on top of the content is not a sidebar.',
-      'On phones each comparison row stacks and carries its sensor name, so a long row cannot lose its label.',
+      'Every clickable card and control is reachable by keyboard, with a focus ring you can see.',
+      'Focus is trapped inside the drawer, the sort popover and every dialog, and goes back where it came from on close.',
+      'Toasts are announced, and errors carry role="alert" and mark their own field invalid.',
+      'There is a skip link, and prefers-reduced-motion is honoured throughout.',
+      'Below 1024 px the browse-by sidebar becomes a drawer, because a sidebar sitting on top of the content has stopped being a sidebar.',
+      'On phones each comparison row stacks and carries its sensor name, so a long row cannot lose track of what it belongs to.',
     ],
     img: 'detail',
     alt: 'The sensor detail page: a header with the sensor name and manufacturer, a sticky row of tabs, and the technical specifications beneath.',
-    cap: 'The detail page every other surface points at.',
+    cap: 'The detail page that every other surface here is pointing at.',
+  },
+
+  // -------------------------------------------------------------------------
+  testing: {
+    label: '08. Testing',
+    title: 'Two rounds in the lab, and a number I did not entirely trust',
+    lede: [
+      'Everything above is an argument until somebody who did not build it tries to use it. The internal team went first, because that round is cheap and catches the embarrassing things before an expert has to sit through them.',
+      'Then six subject matter experts, forty-five minutes each: fifteen on open exploration, twenty on four set tasks, ten on feedback and a System Usability Scale questionnaire.',
+    ],
+    rounds: [
+      { t: 'The internal team', d: 'Run first, so the experts were not spending their time on typos and broken links.' },
+      { t: 'Six expert panelists', d: 'Moderated and task-based, with SUS at the end. Scores ran from 85 to a perfect 100.' },
+    ],
+    stats: [
+      { icon: 'eye', v: '90.4', k: 'Average SUS score, Grade A' },
+      { icon: 'compare', v: '68', k: 'Industry average, for comparison' },
+      { icon: 'context', v: '6', k: 'Expert panelists, scoring 85 to 100' },
+      { icon: 'clock', v: '45', k: 'Minutes per session' },
+    ],
+    pullLabel: 'Where that sits',
+    pull: '“Anything above 80.3 is a Grade A. The average system scores 68, so 90.4 was a good result, and it was also the least useful number I got that day.”',
+  },
+
+  // -------------------------------------------------------------------------
+  found: {
+    label: '09. What Testing Found',
+    title: 'Three tasks out of four, and one that nobody completed',
+    lede: [
+      'The SUS score says people liked it. The task results say where it actually broke, which is a different question and a more useful one.',
+    ],
+    tasks: [
+      ['Find a sensor', ['100%', ' · Filtering to indoor relative humidity, under $500, minimal participant interaction. ', { em: '“The filters are really good. I really like this.”' }]],
+      ['Vet it in detail', ['100%', ' · Maintenance needs, quality grade, indoor suitability. Minor friction: people looked for “indoor” in the tabs, not the header.']],
+      ['Compare three sensors', ['100%', ' · Side by side in the comparison tool. They asked for sensor images and clickable links in that view.']],
+      ['Contribute missing data', ['0%', ' · Adding a transmission frequency to an existing entry. ', { em: '“I never saw that until you told me. Make it more prominent.”' }]],
+    ],
+    issues: [
+      { t: 'The Contribute button was invisible', d: 'Not hard to find. Invisible, to every single participant. The whole contribution loop the catalogue depends on was sitting behind a control nobody saw.' },
+      { t: 'Banner blindness on the main nav', d: 'People scrolled straight past the top navigation, which is the same instinct that makes us ignore adverts.' },
+      { t: 'Terminology needed definitions in place', d: 'Not a glossary somewhere else. Tooltips where the term is, for the words researchers each read differently.' },
+      { t: 'Technical attributes were missing', d: 'Experts went looking for specifications the catalogue did not hold at all, which is a data model problem rather than an interface one.' },
+    ],
+    strengthsLabel: 'What held up',
+    strengths: [
+      'Every participant praised the visual design without being asked about it.',
+      'Filtering was intuitive enough that nobody needed it explained.',
+      'The side-by-side comparison worked, which was the riskiest thing in the build.',
+      'Nobody needed technical support to operate the system.',
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // The conference round. NOTE: the protocol for this one is written up in
+  // "SMARTER- Testing , Qual Research with Sensor Developers _ Manufacturers.docx",
+  // but its note-taking template and Notable Quotes section are still blank, so
+  // there are no findings to report yet. This section therefore describes the
+  // method and why the round existed, and says plainly that the results are not
+  // in. Do not fill them in from the other rounds; different population,
+  // different questions.
+  booth: {
+    label: '10. Taking It to the Manufacturers',
+    title: 'The round that was not about usability at all',
+    lede: [
+      'A catalogue is only as good as what people put into it, and everyone tested so far was a person who would read it. Nobody had asked the people whose instruments it describes whether they would fill it in.',
+      'So the last round was thirty minutes at a conference booth, prototype open on a laptop, talking to sensor developers and hardware engineers between sessions.',
+    ],
+    asks: [
+      { icon: 'question', t: 'What do you do today?', note: 'Current practice', d: 'How a new sensor gets documented now, and the most frustrating part of that. You cannot design a replacement for a process you have not heard described.' },
+      { icon: 'compare', t: 'What would you hold back?', note: 'Sharing boundaries', d: 'Which fields they would publish openly, which they would keep private, and what draws that line. The honest answer decides what the catalogue can ever contain.' },
+      { icon: 'context', t: 'What would earn your trust?', note: 'Barriers and skepticism', d: 'What would have to be true about who runs the platform and who controls the data, and how likely they are to contribute on a scale of one to five.' },
+    ],
+    note: 'Sessions were consented and anonymised, with a standing promise that no proprietary product information leaves the study. Compensation was a branded notebook, which is conference currency.',
+    statusLabel: 'Where this round stands',
+    status: 'The interviews have been run, but the notes are not written up yet, so there are no findings on this page. When they are, they belong here and nowhere else: this was a different population answering different questions, and folding the results into the panel numbers above would misrepresent both.',
   },
 
   // -------------------------------------------------------------------------
   open: {
-    label: '08. Still Open',
-    title: 'Reasoning is not evidence',
+    label: '11. Still Open',
+    title: 'What the testing did not settle',
     lede: [
-      'A designed and built prototype, not a tested product. Its open questions are about evidence rather than execution.',
+      'A 90.4 is a pleasant number to receive and it did not tell me much. The 0% did. Everything below is either a question the rounds raised or one they never got to.',
     ],
     items: [
-      'None of it has been through usability testing.',
-      'Whether four is the right cap for a comparison. It is the number the grid draws well, not a number anybody has checked.',
-      'Whether an “already has a transform” flag should show while browsing, a question inherited from the process mapping.',
+      'Whether making Contribute prominent actually fixes it, or whether people simply do not expect a catalogue to be editable. That is a mental model problem, and it needs its own round.',
+      'Whether four is the right cap for a comparison. It is the number the grid draws well, which is not the same as the number researchers want.',
+      'What manufacturers will actually share. The booth round in §10 was built to answer exactly this, and its notes are still to be written up.',
+      'Whether an “already has a transform” flag should show while you browse. That one came out of the process mapping and is still open there too.',
     ],
   },
 }

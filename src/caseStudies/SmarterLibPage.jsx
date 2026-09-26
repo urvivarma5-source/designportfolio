@@ -7,18 +7,20 @@
 
 import { smarterLib } from './smarterLib'
 import { shots } from './smarterLibArt'
-import { Bullets, Cards, Hero, Metas, NCards, Probs, Pull, Section, Stats, Table } from './smarterParts'
+import {
+  Ask, Bullets, Cards, Hero, Metas, NCards, Probs, Pull, Section, Stats, Steps, Table,
+} from './smarterParts'
 
 const Fig = ({ name, alt, cap, wide = true }) => (
-  <figure className={wide ? 'sm-fig sm-fig--wide sm-fig--framed' : 'sm-fig sm-fig--framed'}>
+  <figure className={wide ? 'sm-fig sm-fig--framed' : 'sm-fig sm-fig--framed'}>
     <img src={shots[name]} alt={alt} loading="lazy" />
     {cap && <figcaption>{cap}</figcaption>}
   </figure>
 )
 
 export default function SmarterLib() {
-  const { hero, stats, metas, challenge, browse, select, compare, system, submit, access, open } =
-    smarterLib
+  const { hero, stats, metas, challenge, browse, select, compare, system, submit, access,
+    testing, found, booth, open } = smarterLib
 
   return (
     <article className="sm">
@@ -64,6 +66,9 @@ export default function SmarterLib() {
 
       <section className="sm-sec">
         <Section {...submit} />
+        {/* The form had its own round of testing, so its findings sit with it
+            rather than in §08, which is the library's. */}
+        <Pull label={submit.testedLabel}>{submit.tested}</Pull>
         <Cards items={submit.decisions} />
         <Fig name={submit.img} alt={submit.alt} cap={submit.cap} />
       </section>
@@ -72,6 +77,31 @@ export default function SmarterLib() {
         <Section {...access} />
         <Bullets items={access.items} />
         <Fig name={access.img} alt={access.alt} cap={access.cap} />
+      </section>
+
+      <section className="sm-sec">
+        <Section {...testing} />
+        <Steps items={testing.rounds} />
+        <Stats items={testing.stats} />
+        <Pull label={testing.pullLabel}>{testing.pull}</Pull>
+      </section>
+
+      <section className="sm-sec">
+        <Section {...found} />
+        <Table head={['The task', 'What happened']} rows={found.tasks} />
+        <NCards items={found.issues} />
+        <p className="sm-card__label">{found.strengthsLabel}</p>
+        <Bullets items={found.strengths} />
+      </section>
+
+      {/* Its own section on purpose: a different population answering
+          different questions, so its results must not be folded into the
+          panel numbers in §08. */}
+      <section className="sm-sec">
+        <Section {...booth} />
+        <Probs items={booth.asks} />
+        <p className="sm-note">{booth.note}</p>
+        <Ask label={booth.statusLabel} body={booth.status} />
       </section>
 
       <section className="sm-sec">

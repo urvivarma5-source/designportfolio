@@ -17,14 +17,14 @@ agents. Both must be updated in the same commit as any change they describe.
 
 ```bash
 npm install
-npm run dev
+npm run dev        # http://localhost:5273
 ```
 
 ## Build
 
 ```bash
 npm run build      # -> dist/
-npm run preview    # serve the production build locally, at the real base path
+npm run preview    # http://localhost:4273, the production build at the real base path
 ```
 
 ## Editing copy

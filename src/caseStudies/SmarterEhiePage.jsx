@@ -16,7 +16,7 @@ import { Ask, Bullets, Hero, Metas, NCards, Probs, Pull, Section, Stats, Steps }
  * reachable by keyboard.
  */
 const Diagram = ({ shot }) => (
-  <figure className="sm-fig sm-fig--wide sm-fig--pan">
+  <figure className="sm-fig sm-fig--pan">
     <div className="sm-pan" tabIndex="0" role="group" aria-label={shot.cap}>
       <img src={shots[shot.img]} alt={shot.alt} loading="lazy" />
     </div>
@@ -50,7 +50,7 @@ export default function SmarterEhie() {
       <section className="sm-sec">
         <Section {...guide} />
         <Steps items={guide.steps} />
-        <figure className="sm-fig sm-fig--wide sm-fig--framed">
+        <figure className="sm-fig sm-fig--framed">
           <img src={shots[guide.img]} alt={guide.alt} loading="lazy" />
           <figcaption>{guide.cap}</figcaption>
         </figure>

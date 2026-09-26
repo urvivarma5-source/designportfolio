@@ -9,7 +9,20 @@
 // than the reference.
 // See DESIGN.md §4.13.
 
+import Rich from '../lib/rich'
 import { icons, art } from './smarterArt'
+
+/**
+ * The dashed frame, drawn rather than bordered. CSS `border-style: dashed`
+ * lets the browser pick the dash length; Urvi's stroke is an exact one (dash
+ * 10, gap 10, flat cap, miter join), so it is an SVG rect whose user units are
+ * CSS pixels. Infographics only: never round an image with this.
+ */
+export const DashFrame = ({ radius = 9 }) => (
+  <svg className="sm-dashframe" aria-hidden="true" preserveAspectRatio="none">
+    <rect rx={radius} />
+  </svg>
+)
 
 export const Icon = ({ name, className }) =>
   icons[name] ? (
@@ -21,8 +34,11 @@ export const Hero = ({ drawing, hero }) => (
   <header className="sm-hero">
     <img className="sm-hero__art" src={art[drawing]} alt="" aria-hidden="true" />
     <div className="sm-hero__frame">
+      <DashFrame radius={10} />
       <h1 className="sm-h1">{hero.title}</h1>
-      <p className="sm-hero__sub">{hero.sub}</p>
+      <p className="sm-hero__sub">
+        <Rich value={hero.sub} />
+      </p>
     </div>
   </header>
 )
@@ -32,6 +48,7 @@ export const Stats = ({ items }) => (
   <ul className="sm-stats">
     {items.map((s) => (
       <li className="sm-stat" key={s.k}>
+        <DashFrame />
         <Icon name={s.icon} className="sm-stat__icon" />
         <span className="sm-stat__v">{s.v}</span>
         <span className="sm-stat__k">{s.k}</span>
@@ -47,7 +64,9 @@ export const Metas = ({ items }) => (
       <li key={m.title}>
         <Icon name={m.icon} className="sm-meta__icon" />
         <p className="sm-meta__title">{m.title}</p>
-        <p className="sm-meta__v">{m.v}</p>
+        <p className="sm-meta__v">
+          <Rich value={m.v} />
+        </p>
       </li>
     ))}
   </ul>
@@ -60,8 +79,10 @@ export const Section = ({ label, title, lede }) => (
     <h2 className="sm-title">{title}</h2>
     {lede && (
       <div className="sm-lede">
-        {lede.map((p) => (
-          <p key={p}>{p}</p>
+        {lede.map((p, i) => (
+          <p key={i}>
+            <Rich value={p} />
+          </p>
         ))}
       </div>
     )}
@@ -76,7 +97,9 @@ export const NCards = ({ items }) => (
         <div className="sm-ncard__head">
           <h3 className="sm-ncard__title">{c.t}</h3>
         </div>
-        <p className="sm-ncard__body">{c.d}</p>
+        <p className="sm-ncard__body">
+          <Rich value={c.d} />
+        </p>
       </li>
     ))}
   </ol>
@@ -87,10 +110,13 @@ export const Probs = ({ items }) => (
   <div className="sm-probs">
     {items.map((p) => (
       <div className="sm-prob" key={p.t}>
+        <DashFrame />
         <Icon name={p.icon} className="sm-prob__icon" />
         <h3 className="sm-prob__title">{p.t}</h3>
         <p className="sm-prob__note">{p.note || ' '}</p>
-        <p className="sm-prob__text">{p.d}</p>
+        <p className="sm-prob__text">
+          <Rich value={p.d} />
+        </p>
       </div>
     ))}
   </div>
@@ -103,7 +129,9 @@ export const Steps = ({ items }) => (
       <li className="sm-step" key={s.t}>
         <span className="sm-step__n">{String(i + 1).padStart(2, '0')}</span>
         <h3 className="sm-step__t">{s.t}</h3>
-        <p className="sm-step__d">{s.d}</p>
+        <p className="sm-step__d">
+          <Rich value={s.d} />
+        </p>
       </li>
     ))}
   </ol>
@@ -116,6 +144,7 @@ export const Steps = ({ items }) => (
  */
 export const Specs = ({ items }) => (
   <div className="sm-specs">
+    <DashFrame />
     {items.map((b) => (
       <div className="sm-spec" key={b.k}>
         <span className="sm-spec__k">{b.k}</span>
@@ -143,7 +172,9 @@ export const Chips = ({ label, items }) => (
 export const Bullets = ({ items }) => (
   <ul className="sm-bullets">
     {items.map((i) => (
-      <li key={i}>{i}</li>
+      <li key={i}>
+        <Rich value={i} />
+      </li>
     ))}
   </ul>
 )
@@ -156,7 +187,9 @@ export const Cards = ({ items }) => (
         <h3 className="sm-card__title">{c.t}</h3>
         {c.sub && <p className="sm-card__sub">{c.sub}</p>}
         {c.label && <p className="sm-card__label">{c.label}</p>}
-        <p className="sm-card__body">{c.body}</p>
+        <p className="sm-card__body">
+          <Rich value={c.body} />
+        </p>
       </div>
     ))}
   </div>
@@ -172,27 +205,35 @@ export const Pull = ({ label, children }) => (
 /** The one question per page that was still open at handover. */
 export const Ask = ({ label, body, after }) => (
   <aside className="sm-ask">
+    <DashFrame />
     <p className="sm-ask__label">{label}</p>
-    <p>{body}</p>
+    <p>
+      <Rich value={body} />
+    </p>
     {after && <p className="sm-ask__after">{after}</p>}
   </aside>
 )
 
 export const Table = ({ head, rows }) => (
-  <table className="sm-table">
-    <thead>
-      <tr>
-        <th scope="col">{head[0]}</th>
-        <th scope="col">{head[1]}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {rows.map(([a, b]) => (
-        <tr key={a}>
-          <th scope="row">{a}</th>
-          <td>{b}</td>
+  <div className="sm-tablewrap">
+    <DashFrame />
+    <table className="sm-table">
+      <thead>
+        <tr>
+          <th scope="col">{head[0]}</th>
+          <th scope="col">{head[1]}</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {rows.map(([a, b]) => (
+          <tr key={a}>
+            <th scope="row">{a}</th>
+            <td>
+              <Rich value={b} />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 )

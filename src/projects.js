@@ -11,6 +11,10 @@
 //                                          nothing measured yet
 //   Guide Part 2      outcome only         guide2.js testing roster, views, future
 //   NGMA              outcome + live link  ngma.js overview, cohesion, outro prototype
+//   SMARTER library   outcome + metrics    smarterLib.js §08 and §09: SUS 90.4 from the
+//                                          expert panel, 0% on the Contribute task
+//   SMARTER nav       outcome only         not yet tested with users
+//   SMARTER EHIE      outcome only         not yet tested with users
 //
 // An earlier version put "8 users interviewed / 5 sprints" on the Guide cards.
 // Those measure effort, not impact, and were cut for that reason.
@@ -46,9 +50,13 @@ export const categories = [
         title: 'A Library You Can Compare Sensors In',
         note: 'SMARTER',
         desc: 'Ninety sensors, and a researcher who has to pick four. Browse, filter and compare, built on one component library and a filter that never dead-ends.',
-        tags: ['Design systems', 'Search & compare', 'Prototyping'],
+        tags: ['Design systems', 'Usability testing', 'Search & compare'],
         outcome:
-          'Ninety environmental sensors, and researchers who need to shortlist four. Browse, filters that cannot dead-end and side-by-side comparison were designed as three jobs on one component library, specified for keyboard, screen reader and four widths.',
+          'Ninety environmental sensors, and researchers who need to shortlist four. Browse, filters that cannot dead-end and side-by-side comparison were designed as three jobs on one component library, then tested across three rounds: the internal team, a six-person expert panel, and sensor manufacturers at a conference booth.',
+        // The only SMARTER project with figures, because it is the only one
+        // that has been tested. Both come from the expert panel round; see
+        // smarterLib.js §08 and §09. The 0% is real and stays: it is the
+        // finding that mattered most.
       },
       {
         slug: 'smarter-ehie-process-map',

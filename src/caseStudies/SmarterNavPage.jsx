@@ -10,7 +10,7 @@ import {
 } from './smarterParts'
 
 const Fig = ({ name, alt, cap, wide = true }) => (
-  <figure className={wide ? 'sm-fig sm-fig--wide sm-fig--framed' : 'sm-fig sm-fig--framed'}>
+  <figure className={wide ? 'sm-fig sm-fig--framed' : 'sm-fig sm-fig--framed'}>
     <img src={shots[name]} alt={alt} loading="lazy" />
     {cap && <figcaption>{cap}</figcaption>}
   </figure>
@@ -82,7 +82,7 @@ export default function SmarterNav() {
       </section>
 
       <section className="sm-sec">
-        <Section label={why.label} title={why.title} />
+        <Section {...why} />
         <Probs items={why.items} />
       </section>
 

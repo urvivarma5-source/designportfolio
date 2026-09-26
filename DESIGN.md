@@ -901,20 +901,20 @@ if every token is right. The data files enforce this by shape: a section is
 `label`, `title`, a `lede` of at most two strings, and then structured content.
 
 **Colour is Urvi's own instruction and it departs from the artwork.** TCTD sets
-its titles in dark green and its labels in coral. These pages set **every
-heading in Orange and every piece of running text in CTA Blue**:
+its titles in dark green and its labels in coral. These pages run **black text,
+orange highlights, blue tertiary** (Urvi, 2026-09-25):
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--sm-orange` | `#dc6b01` | Orange: **headings only**, plus the numerals attached to one (the numbered disc, a step number) and the drawn icons |
-| `--sm-blue` | `#2c3957` | CTA Blue: **every** piece of running text, and the stat figures |
+| `--sm-orange` | `#dc6b01` | Orange: **highlights only**. The eyebrow label, the numbered disc, a step number, inline emphasis and the drawn icons. It is **not** the heading colour |
+| `--sm-blue` | `#2c3957` | CTA Blue: **section titles** (`.sm-title`, that level only), plus tertiary text: notes, captions, sub-labels, chips, spec and table text |
 | `--sm-rule` | `#939598` | 50% Gray: **every** dashed frame, rule, bullet and chip arrow |
 | `--sm-grey` | `#939598` | 50% Gray again, as type: captions, notes, card sub-lines |
 | `--sm-line` | `#e2e4e6` | Salt Flat Gray: the solid card border |
 | `--sm-red` | `#be0000` | Utah Red: the open-question aside, nothing else |
 | `--sm-band` | `#f4f5f6` | Salt Flat Gray at a quarter strength: the tint band |
 | `--sm-sheet` | `#fcfcfc` | The ground the SMARTER spec sheets are drawn on |
-| `--sm-dark` | `#0f1419` | Primary Dark: reserved, currently unused |
+| `--sm-dark` | `#0f1419` | Primary Dark: **body copy, the h1, card titles**, the stat figures and the pull quote. Section titles are blue, not black |
 
 **The dashes are grey, and that is load-bearing.** TCTD dashes its frames in
 its coral accent, and doing the same here put orange on every frame, rule, bar
@@ -923,12 +923,67 @@ dotted lines and that only headings should carry it. So `--sm-rule` takes all
 the line work and the accent is spent on headings alone. `--sm-rule` and
 `--sm-grey` are the same value with different jobs: one is line, one is type.
 Keep them separate, so the lines can be re-toned without touching the captions.
+**Type and spacing are TCTD's, not this block's own** (Urvi, 2026-09-25). The
+three pages follow `.cs` to the pixel at the section head:
+
+| | Value | Matches |
+| --- | --- | --- |
+| label | Roboto Slab `700`, `20pt * k`, lh `1.4`, the block's `0.05em` | `.cs-num` |
+| label → title | `6px` | `.cs-num` margin-bottom |
+| title | Roboto Serif **bold** italic, `28pt * k`, lh `1.25` | `.cs-h2` |
+| title → lede | `20px` | `.cs-body` margin-top |
+| lede → content | `34px` | `.cs-lead` margin-bottom |
+| section rhythm | `clamp(64px, 9vw, 128px)` | `.cs-sec` |
+
+Two bugs surfaced while matching them, both invisible until measured:
+
+- **`--sm-slab` was referenced but never defined**, so every section label had
+  been falling back to the block's sans instead of Roboto Slab.
+- **`.sm p { margin: 0 }` (0,1,1) outranks `.sm-label` (0,1,0)**, so the gap
+  under every label was being cancelled. The rule is `.sm .sm-label` now. Any
+  other `p`-based class in this block needs the same care.
+
+**Why it changed.** Orange used to be on every heading, label, number and icon
+while all running text was blue. The page read as an orange page with text on
+it. Black now carries the content, orange is spent on small marks, and blue
+drops to the quiet third level. **If a new element needs a colour, it is black
+unless it is a mark, and never orange because it is a heading.**
+
 CTA Blue is the louder alternative for `--sm-rule` if the frames ever need more
 presence, and it is a one-token change.
 
 **Before adding orange to anything, check it is a heading.** The live test:
 every element computing to `rgb(220, 107, 1)` should be `.sm-h1`, `.sm-label`,
 `.sm-title`, or a `__title` / step numeral. Nothing else.
+
+**The type is specified, not chosen.** Urvi annotated a render on 2026-09-25
+and these are her sizes; they are not the site's and not TCTD's:
+
+| Role | Face | Size |
+| --- | --- | --- |
+| section label (`01. Browse and Filter`) | Roboto Slab Bold | 20 |
+| section title, italic | Roboto Serif SemiBold | 28 |
+| every card title | Roboto Serif SemiBold | 28 |
+| all running text | Source Sans | 24 |
+
+All four are `calc(<pt> * var(--sm-k))`, so the page retunes from one number.
+
+**The dashed frame is drawn, not bordered.** `border-style: dashed` lets the
+browser pick the dash length, and Urvi's stroke is exact: **dash 10, gap 10,
+flat dash cap, miter join**. So `DashFrame` in `smarterParts.jsx` renders an
+SVG `<rect>` with `stroke-dasharray: 10 10` and `stroke-linecap: butt`. The SVG
+carries **no viewBox**, so its user units are CSS pixels and the dash is
+literally 10px. The rect insets 1px a side so a 2px stroke sits inside the box.
+This is the technique the retired `DashFrame` used ([§4.6b](#46b-dashed-frame--dash-frame--dashframejsx)),
+brought back for the same reason.
+
+**Dashes are for infographics only. Never for an image.** The dashed frame
+marks something this page drew: a stat card, a problem card, the redline list,
+the table, the hero frame, the open-question aside. Putting it round a
+screenshot claims the screenshot is one of those. Images take a 1px solid
+`--sm-line` instead. Urvi's note, 2026-09-25. The live test: no `.sm img`
+should compute to `border-style: dashed`, and every `.sm-dashframe` should have
+an infographic for a parent.
 
 **The component vocabulary**, all in `smarterParts.jsx`, each mirroring one of
 TCTD's:
@@ -963,12 +1018,23 @@ viewport, a clipping `getBoundingClientRect` cannot see: the box measures its
 full width whether or not its content paints. `.project` clips at the viewport
 already ([§4.6](#46-project-detail--project)).
 
-**Three figure treatments.** `.sm-fig--framed` puts the page's dash round the
-picture; `.sm-fig--wide` runs out to the viewport gutters, because the spec
-sheets are 1400 to 1480pt of drawing; `.sm-fig--pan` gives the EHIE block's
-BPMN diagrams a fixed height and lets them scroll sideways, because fitted to
-the column their labels fall below 5px. That scroller carries `tabIndex="0"`,
-`role="group"` and an `aria-label`.
+**Everything stays inside the 1180px column. There is no full-bleed figure.**
+An earlier version ran the spec sheets out to the viewport gutters while the
+prose stayed in the column, which gave the page two different left margins and
+read as though the figures were zoomed in. TCTD keeps everything in one column
+and so does this. A sheet illegible at column width needs cropping, or a
+`.sm-pan` scroller: `.sm-fig--pan` gives the EHIE diagrams a fixed height and
+lets them scroll sideways inside the column, with `tabIndex="0"`,
+`role="group"` and an `aria-label` so the scroller is reachable by keyboard.
+
+**Assets are rendered for a 2x display, and that is a measurement, not a
+guess.** A figure at column width is about 1180 CSS px, so it needs 2360 device
+pixels. The sheets were shipping at 2200 and were being upscaled on every
+retina screen, which is what "poor quality" meant. The render scripts now run
+at `SCALE=3 MAXW=2600`, and the small sheets (`comp-scope` at 960pt,
+`tree-old` at 1040pt) need the 3 rather than the 2 to clear the bar at all.
+The live test is `naturalWidth / (displayedWidth * 2)`, which must be at least
+1 for every figure on all three pages.
 
 ---
 
@@ -1765,6 +1831,9 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | SMARTER section titles take the system's CTA Blue; the h1 and card titles stay black (§4.13) |
+| _pending_ | SMARTER pages take TCTD's type and spacing at the section head; `--sm-slab` defined at last, and the label margin raised above `.sm p` (§4.13) |
+| _pending_ | SMARTER case studies rebalance to black text, orange highlights and blue tertiary; the Sensor Library card drops its SUS metrics (§4.13, §8.2) |
 | _pending_ | Work cards are half width, two to a row, with the art column capped so the picture shrinks rather than the words; the grid opens on Product Design (§4.5) |
 | _pending_ | A site-wide "under construction" notice above every page (§4.14), and the browser tab title is English only |
 | _pending_ | Card eyebrows are solid rather than translucent, and the project name in them takes the accent (§4.5) |
@@ -2144,6 +2213,37 @@ SMARTER. The sources are the design work itself:
 Each is read together with the decision record in the design sessions those
 folders came out of.
 
+### The voice is the Guide's
+
+Urvi's note on 2026-09-25 was that the SMARTER copy read contextless, rigid and
+inorganic, and to match the tone of the Guide case studies instead. What that
+means in practice, taken off `guide1.js`:
+
+- **Context before decisions.** Say what SMARTER is and who uses it before
+  naming its parts. The earlier copy opened on "SMARTER catalogues
+  environmental sensors" and went straight into hierarchy; it now says who
+  turns up at the page and what they are trying to decide.
+- **First person, active.** "I built a dropdown version and threw it away",
+  not "a dropdown was built and rejected". The Guide uses "we" because it was a
+  team; these use "I" for design decisions and name the team where the record
+  shows one.
+- **Emphasis lives in the data**, as `{ em }` runs that `rich.jsx` turns into
+  markup, exactly as the Guide files do it. Bold italic in running prose, bold
+  inside a card. One level only.
+- **A little warmth is allowed.** The Guide's own copy has jokes in it. "I
+  liked it for about a day" is in range; a spec sheet's register is not.
+- **No aphorisms standing in for explanation.** "Folding is housekeeping" meant
+  nothing to a reader who had not seen the component, and "states live in the
+  component name, not in a sheet of near-copies" is a sentence that only parses
+  once you already know the answer. Say the thing, then say why it matters.
+- **Each page is a story, not a set of labelled sections.** Every section
+  should open by moving the reader on from the last one, and the turns want a
+  scene rather than an assertion: a colleague hesitating over which rows are
+  clickable, someone in a review clicking a greyed-out filter and asking why it
+  is there, the week it stopped being a drawing problem. The EHIE page is the
+  model, because it has a real peak in §06 and the sections before it are
+  building to that. Urvi's note, 2026-09-25.
+
 ### The fidelity rule, restated for written copy
 
 Because the copy is authored, "fidelity" cannot mean transcription. It means:
@@ -2152,19 +2252,45 @@ Because the copy is authored, "fidelity" cannot mean transcription. It means:
 measurement, a rejected option, a heuristic cited, a question escalated: each
 is traceable. Nothing is added to round out a story.
 
-**No invented figures, anywhere.** None of this work has been tested with
-users, so there are no outcome numbers and the three work cards carry **no
-`metrics` key**, which is the rule `projects.js` states at the top of its own
-file. The
-only figures on any of the three pages measure the *build* (90 sensors, 9
-categories, nine diagrams, a 48px row) and are labelled as such.
+**No invented figures, anywhere, and only one of the three has earned real
+ones.** The sensor library went through three rounds of user testing (the
+internal team, a six-person expert panel with SUS, then sensor manufacturers
+interviewed at a conference booth), plus a separate internal round on the
+intake form. So that study carries a `metrics` row on its work card and two
+sections of results, and every number in them is transcribed from the research
+rather than rounded or improved. **The 0% on the Contribute task is real and
+stays**: it is the finding that mattered most, and softening it would be the
+one edit that makes the page dishonest.
 
-**Gaps are marked, not filled.** Each data file opens with a `TODO (Urvi)`
-block listing what could not be sourced: in all three cases the hero's role,
-context and dates, and in all three cases the absence of testing. Fill those
-in; do not guess them.
+The navigation and EHIE studies have had no user testing, so their cards carry
+**no `metrics` key** and their closing sections say so on the page. Do not give
+them figures until the testing exists. The other numbers on all three pages
+measure the *build* (90 sensors, nine diagrams, a 48px row) and say so.
 
-### One rule the EHIE page has that the others do not
+**Gaps are marked, not filled.** Anything that cannot be sourced gets a
+`TODO (Urvi)` note at the top of the data file rather than a plausible guess.
+The role, team and duration were carried that way until Urvi supplied them on
+2026-09-25 (lead product designer, plus some PM work on the SMARTER product
+side, a team of seven, four months each). Those values come from her and are
+not derivable from this repo, so do not reconcile them against anything in it.
+What is still open is the absence of user testing, which is why no work card
+carries `metrics`.
+
+### Two rules the EHIE page has that the others do not
+
+**Never say "transcript", and vary what you do say.** The 6 and 20 August
+meetings exist in this repo's working notes as transcript files, but to
+everyone who was there they were workshops: people at a whiteboard arguing
+about how a study should run. The page is written from the human side of that,
+and it uses the words that side would use, which are not all the same word.
+Across the three pages: workshops, whiteboarding sessions, working sessions,
+the room, standing at a whiteboard, back to the drawing board, walking a
+colleague through it, sitting with a researcher. Repeating one phrase eight
+times is the tell that a writer is find-and-replacing rather than
+remembering. Urvi's notes, 2026-09-25.
+
+It generalises: no word on any of these pages should name the source material a
+writer read instead of the thing she actually did.
 
 **No names.** That work involved a real disagreement with real colleagues, and
 the resolution of it is on the page. Everyone is referred to by role, and dates
@@ -2176,20 +2302,23 @@ is why §06 reads as a method rather than as a verdict.
 
 Two kinds, and they are made differently.
 
-**Drawn for this project**: the fifteen icons and the three hero drawings in
-`src/assets/smarter/`, mapped in `smarterArt.js`. They follow TCTD's idiom:
-fine single-weight line art, round caps and joins, enough internal detail to
-read at 74px. Each hero drawing is a before-and-after pair with an orange arrow
-between, which is the device TCTD's own hero uses (a filing cabinet, an arrow,
-a board). There is no dashed blob behind them; that is the Guide's device, not
-TCTD's.
+**Urvi's own licensed sets**: the fifteen icons and the three hero
+illustrations in `src/assets/smarter/`, mapped in `smarterArt.js`. They come
+from `Desktop/UU/CLAUDE PROTOTYPE/jehq/ICON SVGS/`, supplied 2026-09-25: the
+icons are Streamline Freehand, the same hand-drawn family the Guide case
+studies use, and the illustrations are that set's own ILLUSTRATIONS folder.
 
-The colour is baked into each file rather than inherited, because the icons
-render through an `<img>` and an `<img>` cannot reach `currentColor`. If the
-palette changes, these files change with it, since there is no token in them to
-update. **Add a new icon to the `icons` map in `smarterArt.js` as well as to
-the folder**: a name missing from the map renders nothing at all, silently, and
-that has happened once already.
+An earlier version of this block held icons I drew to match. They were close
+but not the real thing, and there is no reason to imitate a set she owns. **If
+a slot needs a new icon, take it from that folder rather than drawing one.**
+`smarterArt.js` records which source file fills each slot, so the mapping
+survives a re-copy.
+
+Both sets ship as monochrome `fill="black"`, and they render through an `<img>`
+which cannot reach `currentColor`, so **colour is baked in on copy**: icons
+become Orange `#DC6B01`, illustrations Primary Dark `#0F1419`. If the palette
+changes, re-copy from source with the new values. A name missing from the
+`icons` map renders nothing at all, silently, and that has happened once.
 
 A section's icon is chosen in the page component, never in the data file, for
 the same reason work-card art lives in `CardThumb.jsx` rather than in
@@ -2231,11 +2360,16 @@ guide's side-by-side layout is described in the copy instead.
   Fingertips", the two Guide parts, the NGMA redesign and the three SMARTER
   studies are the case studies; the rest render a title until their content
   exists. See [§8.3](#83-srccasestudies) for how to add one.
-- **All three SMARTER pages have a `TODO (Urvi)` block at the top of their data
-  file**: the hero's role, context and dates in each, and in each the fact
-  that nothing has been tested with users. Until that testing happens the three
-  work cards correctly carry no `metrics`. See
+- **The navigation and EHIE studies have had no user testing**, so their work
+  cards correctly carry no `metrics` and their closing sections say so. The
+  sensor library has been tested three times and does carry figures. See
   [§11e](#11e-the-smarter-case-studies).
+- **The library study's comparison screen shows "Value" in its cells**, because
+  it is the grid's specification rather than a filled export. Swap in a filled
+  one if it turns up.
+- **Testing raised a question the library study cannot answer yet**: whether
+  making Contribute prominent fixes it, or whether people simply do not expect
+  a catalogue to be editable. That needs its own round.
 - **`Aim4_Outline_View` is unusable in both its SVG and PNG exports** and is
   therefore missing from the EHIE page's §04. If it is regenerated, it belongs
   there. See [§9.20](#920-a-live-text-svg-in-an-img-loses-the-pages-webfonts).

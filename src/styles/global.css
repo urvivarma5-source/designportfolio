@@ -4283,9 +4283,14 @@ a.work-card__media:hover .card-art img {
 --------------------------------------------------------------------------- */
 .sm {
   /* SMARTER's palette, local to this block. */
-  --sm-orange: #dc6b01; /* Orange: EVERY heading, label, number and icon */
-  --sm-blue: #2c3957;   /* CTA Blue: EVERY piece of running text */
-  --sm-dark: #0f1419;   /* Primary Dark: the hero title only */
+  /* Three levels, in this order (Urvi, 2026-09-25). The page used to put
+     orange on every heading, label, number and icon, which read as an orange
+     page with text on it rather than a balanced one. */
+  --sm-dark: #0f1419;   /* Primary Dark: body copy AND every heading */
+  --sm-orange: #dc6b01; /* Orange: highlights only. The eyebrow label, the
+                           step number, the numbered badge, inline emphasis */
+  --sm-blue: #2c3957;   /* CTA Blue: tertiary. Notes, captions, sub-labels,
+                           spec and table text */
   --sm-grey: #939598;   /* 50% Gray: captions and figure notes */
   --sm-line: #e2e4e6;   /* Salt Flat Gray: the solid card border */
   /* 50% Gray. Every dashed frame, bar, bullet and chip arrow. It is the
@@ -4303,11 +4308,14 @@ a.work-card__media:hover .card-art img {
   --sm-sheet: #fcfcfc;
 
   --sm-serif: 'Roboto Serif', Georgia, 'Times New Roman', serif;
+  /* The section label's face, the same slab TCTD's `.cs-num` uses. It was
+     referenced by `.sm-label` but never defined, so every section label had
+     been falling back to the block's sans. */
+  --sm-slab: 'Roboto Slab', 'Roboto Serif', Georgia, serif;
 
   /* TCTD's own scale: 1500pt of artwork content against this page's 1180px.
      Change the max-width and this must change with it. See §4.9. */
   --sm-k: 0.787;
-  --sm-dash: 2px dashed var(--sm-rule);
   --sm-radius: calc(12px * var(--sm-k));
   --sm-pad: calc(26px * var(--sm-k));
 
@@ -4318,7 +4326,7 @@ a.work-card__media:hover .card-art img {
   font-size: calc(24px * var(--sm-k));
   line-height: 1.25;
   letter-spacing: 0.05em;
-  color: var(--sm-blue);
+  color: var(--sm-dark);
 }
 
 /* The serif is set solid, so every serif element resets the tracking. */
@@ -4344,7 +4352,8 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-sec {
-  margin-top: clamp(64px, 9vw, 132px);
+  /* TCTD's `.cs-sec` rhythm exactly */
+  margin-top: clamp(64px, 9vw, 128px);
 }
 
 /* ---------- hero ---------------------------------------------------------- */
@@ -4364,8 +4373,7 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-hero__frame {
-  border: var(--sm-dash);
-  border-radius: calc(10px * var(--sm-k));
+  position: relative;
   padding: calc(37px * var(--sm-k));
 }
 
@@ -4373,7 +4381,7 @@ a.work-card__media:hover .card-art img {
   font-weight: 700;
   font-size: calc(46px * var(--sm-k));
   line-height: 1.12;
-  color: var(--sm-orange);
+  color: var(--sm-dark);
   margin: 0;
 }
 
@@ -4399,28 +4407,40 @@ a.work-card__media:hover .card-art img {
 /* ---------- section label and title --------------------------------------- */
 /* "01. The Challenge" in orange, then the bold italic serif title under it.
    Both are headings, so both are orange. */
-.sm-label {
-  font-size: calc(19px * var(--sm-k));
+/* Matched to TCTD's `.cs-num`, which is the reference these pages follow:
+   Roboto Slab 700 at 20pt, the block's own 0.05em tracking rather than none,
+   and a literal 6px to the title. See DESIGN.md §4.13. */
+/* `.sm .sm-label`, not `.sm-label`: `.sm p` (0,1,1) outranks a bare class
+   (0,1,0), so its `margin: 0` was cancelling the gap below every label. */
+.sm .sm-label {
+  font-family: var(--sm-slab);
+  font-size: calc(20px * var(--sm-k));
   font-weight: 700;
-  letter-spacing: 0.06em;
+  line-height: 1.4;
   color: var(--sm-orange);
-  margin: 0 0 calc(10px * var(--sm-k));
+  margin: 0 0 6px;
 }
 
+/* TCTD's `.cs-h2`: Roboto Serif bold italic at 28pt, lh 1.25, with its body
+   20px beneath. This was 600 at 1.24 with an 18.9px gap. */
 .sm-title {
   font-weight: 700;
   font-style: italic;
-  font-size: calc(32px * var(--sm-k));
-  line-height: 1.24;
-  color: var(--sm-orange);
-  margin: 0 0 calc(24px * var(--sm-k));
+  font-size: calc(28px * var(--sm-k));
+  line-height: 1.25;
+  /* Section titles are CTA Blue, the system's dark blue (Urvi, 2026-09-25).
+     Only this level: the h1 above and the card titles below stay black. */
+  color: var(--sm-blue);
+  margin: 0 0 20px;
   text-wrap: balance;
 }
 
 /* The measure is the artwork's: ~980pt of a 1492pt content column. Set in the
    artwork's points, never in `ch`, which drifts with the face. See §4.9. */
+/* TCTD's `.cs-lead` clears 34px before the section's own content. */
 .sm-lede {
   max-width: calc(980px * var(--sm-k));
+  margin-bottom: 34px;
 }
 
 .sm-lede p + p {
@@ -4431,7 +4451,7 @@ a.work-card__media:hover .card-art img {
   margin-top: calc(20px * var(--sm-k));
   font-size: calc(19px * var(--sm-k));
   line-height: 1.35;
-  color: var(--sm-grey);
+  color: var(--sm-blue);
   max-width: calc(980px * var(--sm-k));
 }
 
@@ -4453,10 +4473,9 @@ a.work-card__media:hover .card-art img {
    same length, and without this their bands sit at four different heights and
    the bleed reads as a ragged strip rather than one band. */
 .sm-stat {
+  position: relative;
   display: flex;
   flex-direction: column;
-  border: var(--sm-dash);
-  border-radius: calc(9px * var(--sm-k));
   padding: calc(24px * var(--sm-k)) 0 0;
   text-align: center;
 }
@@ -4477,7 +4496,7 @@ a.work-card__media:hover .card-art img {
   font-size: calc(38px * var(--sm-k));
   font-weight: 700;
   line-height: 1;
-  color: var(--sm-blue);
+  color: var(--sm-dark);
   margin-bottom: calc(14px * var(--sm-k));
 }
 
@@ -4520,9 +4539,9 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-meta__title {
-  font-size: calc(26px * var(--sm-k));
-  font-weight: 700;
-  color: var(--sm-orange);
+  font-size: calc(28px * var(--sm-k));
+  font-weight: 600;
+  color: var(--sm-dark);
   margin-bottom: calc(10px * var(--sm-k));
 }
 
@@ -4547,8 +4566,7 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-prob {
-  border: var(--sm-dash);
-  border-radius: calc(9px * var(--sm-k));
+  position: relative;
   padding: calc(37px * var(--sm-k)) 0 calc(34px * var(--sm-k));
   text-align: center;
 }
@@ -4561,10 +4579,10 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-prob__title {
-  font-size: calc(24px * var(--sm-k));
-  font-weight: 700;
+  font-size: calc(28px * var(--sm-k));
+  font-weight: 600;
   line-height: 1.2;
-  color: var(--sm-orange);
+  color: var(--sm-dark);
   padding: 0 calc(3px * var(--sm-k));
   margin: 0;
 }
@@ -4572,7 +4590,7 @@ a.work-card__media:hover .card-art img {
 .sm-prob__note {
   margin: calc(6px * var(--sm-k)) 0 calc(30px * var(--sm-k));
   font-size: calc(20px * var(--sm-k));
-  color: var(--sm-grey);
+  color: var(--sm-blue);
 }
 
 .sm-prob__text {
@@ -4609,10 +4627,10 @@ a.work-card__media:hover .card-art img {
 }
 
 .sm-card__title {
-  font-size: calc(24px * var(--sm-k));
-  font-weight: 700;
+  font-size: calc(28px * var(--sm-k));
+  font-weight: 600;
   line-height: 1.2;
-  color: var(--sm-orange);
+  color: var(--sm-dark);
   text-align: center;
   margin: 0;
 }
@@ -4621,7 +4639,7 @@ a.work-card__media:hover .card-art img {
   margin-top: calc(6px * var(--sm-k));
   text-align: center;
   font-size: calc(19px * var(--sm-k));
-  color: var(--sm-grey);
+  color: var(--sm-blue);
 }
 
 /* The small caps label above a block inside a card. */
@@ -4704,8 +4722,7 @@ a.work-card__media:hover .card-art img {
    a row height against an icon size is not that. The visual language is
    shared; the form follows what the content actually is. */
 .sm-specs {
-  border: var(--sm-dash);
-  border-radius: calc(9px * var(--sm-k));
+  position: relative;
   padding: calc(10px * var(--sm-k)) calc(24px * var(--sm-k));
   margin-top: calc(34px * var(--sm-k));
   display: grid;
@@ -4742,7 +4759,7 @@ a.work-card__media:hover .card-art img {
 .sm-spec__note {
   font-size: calc(18px * var(--sm-k));
   line-height: 1.35;
-  color: var(--sm-grey);
+  color: var(--sm-blue);
 }
 
 @media (max-width: 640px) {
@@ -4773,18 +4790,23 @@ a.work-card__media:hover .card-art img {
   font-style: italic;
   font-weight: 700;
   line-height: 1.34;
-  color: var(--sm-blue);
+  color: var(--sm-dark);
   max-width: calc(1270px * var(--sm-k));
   margin: 0 auto;
 }
 
 /* ---------- the open-question aside --------------------------------------- */
 .sm-ask {
+  position: relative;
   margin-top: calc(34px * var(--sm-k));
   max-width: calc(1270px * var(--sm-k));
-  border: 2px dashed var(--sm-red);
-  border-radius: calc(9px * var(--sm-k));
   padding: var(--sm-pad);
+}
+
+/* The one frame that is not --sm-rule: this is a question, and the colour is
+   what says so. */
+.sm-ask .sm-dashframe rect {
+  stroke: var(--sm-red);
 }
 
 .sm-ask__label {
@@ -4799,7 +4821,7 @@ a.work-card__media:hover .card-art img {
 .sm-ask__after {
   margin-top: calc(12px * var(--sm-k)) !important;
   font-size: calc(18px * var(--sm-k));
-  color: var(--sm-grey);
+  color: var(--sm-blue);
 }
 
 /* ---------- figures ------------------------------------------------------- */
@@ -4815,28 +4837,27 @@ a.work-card__media:hover .card-art img {
   background: var(--sm-sheet);
 }
 
+/* Images take a quiet solid edge, never the dash. The dashed frame marks an
+   infographic this page drew; putting it round a screenshot claims the
+   screenshot is one. Urvi's note, 2026-09-25. */
 .sm-fig--framed img {
-  border: var(--sm-dash);
+  border: 1px solid var(--sm-line);
   border-radius: calc(9px * var(--sm-k));
-  padding: calc(10px * var(--sm-k));
 }
 
 .sm-fig figcaption {
   margin-top: calc(12px * var(--sm-k));
   font-size: calc(18px * var(--sm-k));
   line-height: 1.35;
-  color: var(--sm-grey);
+  color: var(--sm-blue);
 }
 
-/* Runs out to the viewport gutters: the spec sheets are 1400 to 1480pt of
-   drawing and shrink to illegibility inside a text measure. `.sm` must never
-   carry `overflow-x: clip` or this is cut off at the column edge instead of at
-   the viewport; `.project` clips at the viewport already. */
-.sm-fig--wide {
-  width: min(calc(100vw - 2 * clamp(20px, 3.4vw, 46px)), 1440px);
-  margin-left: 50%;
-  transform: translateX(-50%);
-}
+/* THERE IS NO FULL-BLEED FIGURE. An earlier version ran the spec sheets out to
+   the viewport gutters while the prose stayed in the 1180px column, which left
+   the page with two different left margins and read as though the figures were
+   zoomed in. TCTD keeps everything inside one column and so does this. A sheet
+   that is illegible at column width is a sheet that needs cropping, or a
+   `.sm-pan` scroller. Urvi's note, 2026-09-25. */
 
 .sm-pair {
   display: grid;
@@ -4863,7 +4884,7 @@ a.work-card__media:hover .card-art img {
 .sm-pan {
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  border: var(--sm-dash);
+  border: 1px solid var(--sm-line);
   border-radius: calc(9px * var(--sm-k));
   background: var(--sm-sheet);
   padding: calc(10px * var(--sm-k));
@@ -4955,10 +4976,10 @@ a.work-card__media:hover .card-art img {
 .sm-ncard__title {
   font-family: var(--sm-serif);
   letter-spacing: normal;
-  font-size: calc(24px * var(--sm-k));
-  font-weight: 700;
+  font-size: calc(28px * var(--sm-k));
+  font-weight: 600;
   line-height: 1.2;
-  color: var(--sm-orange);
+  color: var(--sm-dark);
   margin: 0;
 }
 
@@ -5017,9 +5038,9 @@ a.work-card__media:hover .card-art img {
 .sm-step__t {
   font-family: var(--sm-serif);
   letter-spacing: normal;
-  font-size: calc(22px * var(--sm-k));
-  font-weight: 700;
-  color: var(--sm-orange);
+  font-size: calc(28px * var(--sm-k));
+  font-weight: 600;
+  color: var(--sm-dark);
   margin: 0 0 calc(8px * var(--sm-k));
 }
 
@@ -5037,14 +5058,17 @@ a.work-card__media:hover .card-art img {
 /* ---------- the interaction table ----------------------------------------- */
 /* TCTD frames a table in the same dash as its diagrams, so this one does too,
    and the rules between rows are the band colour rather than a new grey. */
+.sm-tablewrap {
+  position: relative;
+  margin-top: calc(34px * var(--sm-k));
+}
+
 .sm-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: var(--sm-dash);
   border-radius: calc(9px * var(--sm-k));
   overflow: hidden;
-  margin-top: calc(34px * var(--sm-k));
   font-size: calc(19px * var(--sm-k));
   text-align: left;
 }
@@ -5111,4 +5135,54 @@ a.work-card__media:hover .card-art img {
     padding-top: calc(4px * var(--sm-k));
     padding-bottom: calc(13px * var(--sm-k));
   }
+}
+
+/* ---------- the dashed frame ---------------------------------------------- */
+/* Drawn as an SVG rect, not as `border-style: dashed`, because CSS lets the
+   browser pick the dash length and Urvi's stroke is an exact one: dash 10, gap
+   10, flat dash cap, miter join. The SVG carries no viewBox, so its user units
+   are CSS pixels and `stroke-dasharray: 10 10` is literally that. This is the
+   technique the retired `DashFrame` used, brought back for the same reason.
+   See §4.6b and §4.13.
+
+   It is for INFOGRAPHICS ONLY: stat cards, problem cards, the redline list,
+   the table, the hero frame and the open-question aside. Never round an image.
+
+   The rect insets by 1px on each side so a 2px stroke sits fully inside the
+   box, and `preserveAspectRatio: none` keeps the corners from scaling. */
+.sm-dashframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.sm-dashframe rect {
+  x: 1px;
+  y: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  fill: none;
+  stroke: var(--sm-rule);
+  stroke-width: 2;
+  stroke-dasharray: 10 10;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+/* Emphasis runs, the same device the Guide copy uses: bold italic in running
+   prose, bold inside a card where the surrounding text is already set apart.
+   See rich.jsx. */
+.sm em {
+  font-style: italic;
+  font-weight: 700;
+}
+
+.sm-prob__text em,
+.sm-ncard__body em,
+.sm-card__body em,
+.sm-step__d em {
+  font-style: normal;
 }
