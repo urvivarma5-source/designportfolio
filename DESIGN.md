@@ -889,6 +889,35 @@ comparing, when a row height against an icon size is nothing of the kind. It
 is now `Specs`, a redline list with no TCTD twin. When the content does not fit
 a shape on the list below, add a shape.
 
+**A two-column table is where content goes to be ignored.** Urvi's note on the
+nav page's interaction contract was "there is a lot of text, I need more
+graphic representation of things" (2026-09-26). All three tables are gone, and
+each went to a different shape, because they were three different kinds of
+content wearing one costume:
+
+| was | is | why |
+| --- | --- | --- |
+| nav §06, nine interaction rules | `Keymap` | Four of the nine are arrow keys. An arrow drawn as a key cap is recognised as a shape; "Right" in bold has to be read |
+| lib §09, four task results | `Results` | Three at 100% and one at 0% is the finding. A row of bars says it before the sentences do |
+| lib §03, five selection rules | `NCards` | Rules with reasons, which is what the numbered card already was |
+
+`Keymap` groups by what you are touching, and the grouping carries a
+distinction the table could not: a key cap (`<kbd>`, tint face, heavier bottom
+edge) is something you **press**, and a condition ("Under 1024 px") is a flat
+dashed chip and a `<span>`. `<kbd>` means keyboard input, so putting a
+breakpoint in one would be wrong markup as well as a wrong picture. The key
+column is a fixed width so every behaviour starts on one line down the page,
+which is most of why it scans faster.
+
+`Results` draws its bar `aria-hidden` with the figure beside it as real text,
+so the number is never carried by a length alone. A zero is drawn as an
+outlined empty track rather than a short bar, because a 0% that looks like a
+very small bar reads as a rounding error instead of the finding it is.
+
+**The bar is only honest because the figure is measured.** `pct` comes from the
+expert panel round and nothing else. Do not add a bar to anything the research
+did not count.
+
 Two earlier versions of this block were wrong and both are worth naming so they
 are not tried again. The first invented a layout in Inter on fluid `clamp()`
 sizes. The second copied `.g`. Read "TCTD CASE STUDY.pdf" before changing
@@ -1958,6 +1987,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | All three SMARTER tables become drawn shapes: a grouped key map, task-result bars, and numbered cards. The `Table` part and its CSS are removed (§4.13) |
 | _pending_ | Section rhythm, label → title and title → lede measured off the published artwork and corrected in both `.cs` and `.sm`; the site was at 62% of the artwork's section rhythm (§4.9, §4.13, §9.22) |
 | _pending_ | SMARTER tint bands stop at their dashed frame instead of bleeding into the gutter, and a framed table stops touching its dashes (§4.13) |
 | _pending_ | SMARTER copy drops every self-deprecating frame; one `--sm-block` gap replaces five, and `:where()` un-kills four dead margin rules (§4.13, §9.21, §11e) |

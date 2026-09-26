@@ -5,8 +5,8 @@
 import { smarterNav } from './smarterNav'
 import { shots } from './smarterNavArt'
 import {
-  Ask, Bullets, Chips, Cards, Hero, Metas, NCards, Probs,
-  Pull, Section, Specs, Stats, Steps, Table,
+  Ask, Bullets, Chips, Cards, Hero, Keymap, Metas, NCards, Probs,
+  Pull, Section, Specs, Stats, Steps,
 } from './smarterParts'
 
 const Fig = ({ name, alt, cap, wide = true }) => (
@@ -64,7 +64,7 @@ export default function SmarterNav() {
 
       <section className="sm-sec">
         <Section {...rules} />
-        <Table head={['When you', 'The navigator']} rows={rules.table} />
+        <Keymap groups={rules.keymap} />
       </section>
 
       <section className="sm-sec">

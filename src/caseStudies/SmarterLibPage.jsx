@@ -8,7 +8,7 @@
 import { smarterLib } from './smarterLib'
 import { shots } from './smarterLibArt'
 import {
-  Ask, Bullets, Cards, Hero, Metas, NCards, Probs, Pull, Section, Stats, Steps, Table,
+  Ask, Bullets, Cards, Hero, Metas, NCards, Probs, Pull, Results, Section, Stats, Steps,
 } from './smarterParts'
 
 const Fig = ({ name, alt, cap, wide = true }) => (
@@ -48,7 +48,7 @@ export default function SmarterLib() {
 
       <section className="sm-sec">
         <Section {...select} />
-        <Table head={['The rule', 'Why']} rows={select.rules} />
+        <NCards items={select.rules} />
       </section>
 
       <section className="sm-sec">
@@ -88,7 +88,7 @@ export default function SmarterLib() {
 
       <section className="sm-sec">
         <Section {...found} />
-        <Table head={['The task', 'What happened']} rows={found.tasks} />
+        <Results items={found.tasks} />
         <NCards items={found.issues} />
         <p className="sm-card__label">{found.strengthsLabel}</p>
         <Bullets items={found.strengths} />

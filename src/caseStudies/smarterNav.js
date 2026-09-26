@@ -165,16 +165,40 @@ export const smarterNav = {
       'A tree that behaves almost like every other tree is worse than one that behaves exactly like them, so this follows the WAI-ARIA tree view pattern and the keyboard map is the one people already have in their fingers.',
       'Writing it out in full was the point. Everything above is a picture of the component; this is the table I actually handed the developer.',
     ],
-    table: [
-      ['Click a row', 'Selects it. If it has children, it unfolds too.'],
-      ['Click a chevron', 'Folds or unfolds, and nothing else. Your selection stays put.'],
-      ['Fold a parent you are inside', ['The selection survives. The parent turns navy and grows a dot, so you can see ', { em: 'where you left it' }, '.']],
-      ['Up and down', 'Move focus between the rows you can currently see.'],
-      ['Right', 'Unfolds a parent, or steps into its first child.'],
-      ['Left', 'Folds a parent, or steps back out to it.'],
-      ['Enter or space', 'Selects whatever has focus.'],
-      ['Reload, share the link, hit Back', 'All three keep your place, because the selection lives in the URL.'],
-      ['Narrower than 1024 px', 'The navigator collapses into a “Showing” dropdown above the panel.'],
+    // Grouped by what you are touching, and the trigger is drawn as a key
+    // rather than set as bold text. The same nine rules read as a wall in a
+    // two-column table: an arrow key is a shape people recognise faster than
+    // the word "Right". See DESIGN.md §4.13.
+    keymap: [
+      {
+        icon: 'hierarchy',
+        label: 'With a pointer',
+        rows: [
+          { keys: ['Click a row'], d: 'Selects it. If it has children, it unfolds too.' },
+          { keys: ['Click a chevron'], d: 'Folds or unfolds, and nothing else. Your selection stays put.' },
+        ],
+      },
+      {
+        icon: 'keyboard',
+        label: 'From the keyboard',
+        rows: [
+          { keys: ['↑', '↓'], d: 'Move focus between the rows you can currently see.' },
+          { keys: ['→'], d: 'Unfolds a parent, or steps into its first child.' },
+          { keys: ['←'], d: 'Folds a parent, or steps back out to it.' },
+          { keys: ['Enter', 'Space'], d: 'Selects whatever has focus.' },
+        ],
+      },
+      {
+        icon: 'states',
+        label: 'What survives',
+        // Conditions rather than keystrokes, so these draw as flat chips.
+        kind: 'state',
+        rows: [
+          { keys: ['Fold a parent you are inside'], d: ['The selection survives. The parent turns navy and grows a dot, so you can see ', { em: 'where you left it' }, '.'] },
+          { keys: ['Reload', 'Share the link', 'Back'], d: 'All three keep your place, because the selection lives in the URL.' },
+          { keys: ['Under 1024 px'], d: 'The navigator collapses into a “Showing” dropdown above the panel.' },
+        ],
+      },
     ],
   },
 

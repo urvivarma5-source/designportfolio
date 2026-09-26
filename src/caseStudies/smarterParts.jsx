@@ -214,26 +214,79 @@ export const Ask = ({ label, body, after }) => (
   </aside>
 )
 
-export const Table = ({ head, rows }) => (
-  <div className="sm-tablewrap">
-    <DashFrame />
-    <table className="sm-table">
-      <thead>
-        <tr>
-          <th scope="col">{head[0]}</th>
-          <th scope="col">{head[1]}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map(([a, b]) => (
-          <tr key={a}>
-            <th scope="row">{a}</th>
-            <td>
-              <Rich value={b} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+/**
+ * An input map: what you press or click, and what the component does. Grouped
+ * by what you are touching, with the trigger drawn as a key rather than set as
+ * bold text.
+ *
+ * This replaced a two-column table. The table was correct and unreadable: nine
+ * rows of bold phrase against sentence, where four of the nine are arrow keys
+ * that a reader recognises as a shape far faster than as the word "Right".
+ * A `<kbd>` is also the right element for it, which the table's `<th>` was not.
+ */
+export const Keymap = ({ groups }) => (
+  <div className="sm-keymap">
+    {groups.map((g) => (
+      <section className="sm-keygroup" key={g.label}>
+        <h3 className="sm-keygroup__head">
+          <Icon name={g.icon} className="sm-keygroup__icon" />
+          {g.label}
+        </h3>
+        <dl className="sm-keyrows">
+          {g.rows.map((r) => (
+            <div className="sm-keyrow" key={r.keys.join('+')}>
+              <dt className="sm-keyrow__keys">
+                {r.keys.map((k) =>
+                  // A condition is not something you press, so it is a plain
+                  // chip and a <span>. `<kbd>` means keyboard input, and
+                  // "Under 1024 px" is not that.
+                  g.kind === 'state' ? (
+                    <span className="sm-cond" key={k}>
+                      {k}
+                    </span>
+                  ) : (
+                    // A single glyph gets a square cap; a phrase keeps its width.
+                    <kbd className={k.length === 1 ? 'sm-key sm-key--glyph' : 'sm-key'} key={k}>
+                      {k}
+                    </kbd>
+                  ),
+                )}
+              </dt>
+              <dd className="sm-keyrow__d">
+                <Rich value={r.d} />
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    ))}
   </div>
+)
+
+/**
+ * Task results with a completion rate. The bar is the point: three tasks at
+ * 100% and one at 0% is the finding of the round, and a row of bars says it
+ * before the sentences do.
+ *
+ * The bar is `aria-hidden` and the figure is real text beside it, so the
+ * number is never only a length.
+ */
+export const Results = ({ items }) => (
+  <ol className="sm-results">
+    {items.map((r) => (
+      <li className={r.pct ? 'sm-result' : 'sm-result sm-result--zero'} key={r.t}>
+        <div className="sm-result__head">
+          <h3 className="sm-result__t">{r.t}</h3>
+          <span className="sm-result__pct">{r.pct}%</span>
+        </div>
+        <div className="sm-result__track" aria-hidden="true">
+          <span className="sm-result__fill" style={{ width: `${r.pct}%` }} />
+        </div>
+        <p className="sm-result__d">
+          <Rich value={r.d} />
+        </p>
+        {r.quote && <p className="sm-result__quote">{r.quote}</p>}
+      </li>
+    ))}
+  </ol>
 )

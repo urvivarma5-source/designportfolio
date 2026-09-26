@@ -101,11 +101,11 @@ export const smarterLib = {
       'The card cannot announce which mode it is in without a badge on every tile, so everything below is about making the mode obvious from what happens when you touch it.',
     ],
     rules: [
-      ['The tray shows up on the first pick', 'Not once you press Compare. You should watch the thing filling up while you fill it.'],
-      ['A fifth sensor gets an error', 'Rather than quietly dropping one of your four, or building a comparison the grid cannot draw.'],
-      ['There is a dead zone round the checkbox', ['A 64 px safety area that toggles selection and ', { em: 'never' }, ' opens the card. Clicking near a checkbox means the checkbox.']],
-      ['Anything you remove can come back', 'Every removal puts an Undo in the toast, so a mis-click never costs you the shortlist you just built.'],
-      ['Clear selection is a link, not a button', 'Two filled buttons sitting in one row would have read as two equally good ideas.'],
+      { t: 'The tray shows up on the first pick', d: 'Not once you press Compare. You should watch the thing filling up while you fill it.' },
+      { t: 'A fifth sensor gets an error', d: 'Rather than quietly dropping one of your four, or building a comparison the grid cannot draw.' },
+      { t: 'There is a dead zone round the checkbox', d: ['A 64 px safety area that toggles selection and ', { em: 'never' }, ' opens the card. Clicking near a checkbox means the checkbox.'] },
+      { t: 'Anything you remove can come back', d: 'Every removal puts an Undo in the toast, so a mis-click never costs you the shortlist you just built.' },
+      { t: 'Clear selection is a link, not a button', d: 'Two filled buttons sitting in one row would have read as two equally good ideas.' },
     ],
   },
 
@@ -212,11 +212,32 @@ export const smarterLib = {
     lede: [
       'The SUS score says people liked it. The task results say where the next sprint goes, which is the question that changes the build.',
     ],
+    // `pct` is the completion rate, drawn as a bar rather than printed in a
+    // table cell: three at 100 and one at 0 is the finding, and a bar says it
+    // before the sentence does. Figures are from the expert panel round.
     tasks: [
-      ['Find a sensor', ['100%', ' · Filtering to indoor relative humidity, under $500, minimal participant interaction. ', { em: '“The filters are really good. I really like this.”' }]],
-      ['Vet it in detail', ['100%', ' · Maintenance needs, quality grade, indoor suitability. Minor friction: people looked for “indoor” in the tabs, not the header.']],
-      ['Compare three sensors', ['100%', ' · Side by side in the comparison tool. They asked for sensor images and clickable links in that view.']],
-      ['Contribute missing data', ['0%', ' · Adding a transmission frequency to an existing entry. ', { em: '“I never saw that until you told me. Make it more prominent.”' }]],
+      {
+        t: 'Find a sensor',
+        pct: 100,
+        d: 'Filtering to indoor relative humidity, under $500, minimal participant interaction.',
+        quote: '“The filters are really good. I really like this.”',
+      },
+      {
+        t: 'Vet it in detail',
+        pct: 100,
+        d: 'Maintenance needs, quality grade, indoor suitability. Minor friction: people looked for “indoor” in the tabs, not the header.',
+      },
+      {
+        t: 'Compare three sensors',
+        pct: 100,
+        d: 'Side by side in the comparison tool. They asked for sensor images and clickable links in that view.',
+      },
+      {
+        t: 'Contribute missing data',
+        pct: 0,
+        d: 'Adding a transmission frequency to an existing entry.',
+        quote: '“I never saw that until you told me. Make it more prominent.”',
+      },
     ],
     issues: [
       { t: 'Contribute belongs in the primary flow', d: 'Every participant went past the control. The contribution loop the catalogue runs on needs to sit in the path people already take, not beside it.' },
