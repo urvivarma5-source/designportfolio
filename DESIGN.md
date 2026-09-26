@@ -953,6 +953,36 @@ and spacing errors" (2026-09-26). **A new block gets `var(--sm-block)` and
 nothing else.** The live test is that a section's internal gaps print exactly
 `38`, `52` and `42` at 1440px, where 42 is the hero's own stats → metas.
 
+**A tint band inside a dashed frame stops at that frame.** `.sm-stat__k` and
+`.sm-prob__text` both painted their band through a `::before` at
+`inset: 0 calc(-28px * k)`, so it bled a gutter each side and the cards in a
+row joined into one continuous strip. The intent was a single band; the result
+was a grey stripe lying across four closed dashed boxes, overhanging the
+content column at both ends, and at 375px the bleed was wider than the card it
+belonged to. Urvi called it out on 2026-09-26. Both are `inset: 0` with
+`border-radius: 0 0 8px 8px` now, which is the frame's `rx="9"` rect less its
+1px inset, so the band fills the foot of the card and the dashes stay a closed
+box.
+
+`.sm-prob` is a flex column for this: the three cards in a row are equal height
+and their prose is not, so `.sm-prob__text` takes `margin-top: auto` and the
+bands share a bottom edge. `.sm-stat` already did this.
+
+The `overflow: clip` on `.sm-stats` and `.sm-probs` was there to contain that
+bleed. It no longer contains anything and is left only because it is harmless.
+
+**The hero's band still overhangs its frame, and that one is deliberate.**
+`.sm-hero__sub::before` runs 32pt past `.sm-hero__frame` on each side, which is
+the artwork's own measurement (§11e). It is one band on one frame rather than a
+strip across a row, so it reads as a device instead of a mistake. Do not
+"fix" it to match the two above without checking the artwork.
+
+**A framed table runs flush to its frame**, so a cell's padding is the only
+thing between the text and the dashes. At `13px * k` that measured 9px at the
+top against 17px at the sides and the frame looked pinched; it is
+`18px * k` by `26px * k` now, and the table's radius is the frame's `8px`
+rather than a separate `9px * k`.
+
 A label that introduces the block below it is the one exception: `.sm-card__label`
 keeps the card's tighter `26px * k` inside a card, takes `--sm-block` as a
 section's own child, and `.sm .sm-card__label + *` pulls the block it
@@ -1879,6 +1909,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | SMARTER tint bands stop at their dashed frame instead of bleeding into the gutter, and a framed table stops touching its dashes (§4.13) |
 | _pending_ | SMARTER copy drops every self-deprecating frame; one `--sm-block` gap replaces five, and `:where()` un-kills four dead margin rules (§4.13, §9.21, §11e) |
 | _pending_ | SMARTER section titles take the system's CTA Blue; the h1 and card titles stay black (§4.13) |
 | _pending_ | SMARTER pages take TCTD's type and spacing at the section head; `--sm-slab` defined at last, and the label margin raised above `.sm p` (§4.13) |

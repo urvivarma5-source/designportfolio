@@ -4469,7 +4469,12 @@ a.work-card__media:hover .card-art img {
 
 /* ---------- the stat row -------------------------------------------------- */
 /* Four dashed cards: icon, a big serif figure, then the label on a tint band
-   that bleeds past the card and joins its neighbours into one strip. */
+   filling the foot of the card.
+
+   The band used to bleed a gutter each side so the four joined into one strip.
+   It read as a grey stripe laid across four dashed boxes, and it overhung the
+   content column at both ends. Urvi called it out on 2026-09-26. A tint band
+   inside a dashed frame now stops at that frame: see §4.13. */
 .sm-stats {
   list-style: none;
   display: grid;
@@ -4512,8 +4517,9 @@ a.work-card__media:hover .card-art img {
   margin-bottom: calc(14px * var(--sm-k));
 }
 
-/* The band is opaque and bleeds one gutter each side, so the four meet into a
-   single strip. A translucent fill would darken where they overlap. */
+/* The band fills the card and takes the frame's own bottom corners, so the
+   dashes stay a closed box. The radius is the frame's 9px rect less its 1px
+   inset. */
 .sm-stat__k {
   position: relative;
   display: block;
@@ -4527,7 +4533,8 @@ a.work-card__media:hover .card-art img {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: 0 calc(-28px * var(--sm-k));
+  inset: 0;
+  border-radius: 0 0 8px 8px;
   background: var(--sm-band);
 }
 
@@ -4567,7 +4574,11 @@ a.work-card__media:hover .card-art img {
 /* Icon, serif title, an orange note line, then the prose on a tint band. The
    horizontal insets are not uniform on purpose: the title block runs nearly
    the full card while the prose is inset, which is what keeps a title on one
-   line. */
+   line.
+
+   The card is a flex column so the band can be pushed to the foot of it. The
+   three cards are equal height and their prose is not, so without that the
+   bands sat at three different heights inside three equal boxes. */
 .sm-probs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(300px * var(--sm-k)), 1fr));
@@ -4579,7 +4590,9 @@ a.work-card__media:hover .card-art img {
 
 .sm-prob {
   position: relative;
-  padding: calc(37px * var(--sm-k)) 0 calc(34px * var(--sm-k));
+  display: flex;
+  flex-direction: column;
+  padding: calc(37px * var(--sm-k)) 0 0;
   text-align: center;
 }
 
@@ -4605,9 +4618,11 @@ a.work-card__media:hover .card-art img {
   color: var(--sm-blue);
 }
 
+/* `margin-top: auto` is what bottom-aligns the band across the row. */
 .sm-prob__text {
   position: relative;
-  padding: calc(14px * var(--sm-k)) calc(24px * var(--sm-k)) calc(18px * var(--sm-k));
+  margin-top: auto;
+  padding: calc(20px * var(--sm-k)) calc(24px * var(--sm-k)) calc(24px * var(--sm-k));
   font-size: calc(20px * var(--sm-k));
   line-height: 1.4;
   color: var(--sm-blue);
@@ -4617,7 +4632,8 @@ a.work-card__media:hover .card-art img {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: 0 calc(-28px * var(--sm-k));
+  inset: 0;
+  border-radius: 0 0 8px 8px;
   background: var(--sm-band);
 }
 
@@ -5082,7 +5098,13 @@ a.work-card__media:hover .card-art img {
 
 /* ---------- the interaction table ----------------------------------------- */
 /* TCTD frames a table in the same dash as its diagrams, so this one does too,
-   and the rules between rows are the band colour rather than a new grey. */
+   and the rules between rows are the band colour rather than a new grey.
+
+   The table runs flush to the frame, so a cell's padding is the only thing
+   between its text and the dashes. At 13px * k that measured 9px at the top
+   and 10px at the foot against 17px at the sides, which is why the frame
+   looked pinched. The vertical padding is the larger one now, and the radius
+   is the frame's own. */
 .sm-tablewrap {
   position: relative;
   margin-top: var(--sm-block);
@@ -5092,7 +5114,7 @@ a.work-card__media:hover .card-art img {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: calc(9px * var(--sm-k));
+  border-radius: 8px;
   overflow: hidden;
   font-size: calc(19px * var(--sm-k));
   text-align: left;
@@ -5100,7 +5122,7 @@ a.work-card__media:hover .card-art img {
 
 .sm-table th,
 .sm-table td {
-  padding: calc(13px * var(--sm-k)) calc(22px * var(--sm-k));
+  padding: calc(18px * var(--sm-k)) calc(26px * var(--sm-k));
   vertical-align: top;
   line-height: 1.34;
   border-top: 1px solid var(--sm-band);
