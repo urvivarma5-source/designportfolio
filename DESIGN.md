@@ -2028,6 +2028,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | SMARTER copy drops the forced narrative: no paradoxes, no scene-setting openers, no asides about my own process. The §11e voice rule that asked for scenes is replaced (§11e) |
 | _pending_ | Nav §02 drops to six problem cards; the prose stops counting and the §03 figure gains a caption carrying the seventh note (§4.13) |
 | _pending_ | Hero pill carries the current title, Product Designer II at the University of Utah (§4.4) |
 | _pending_ | No card grid leaves a lone card in its last row: `gridFit` sizes `.sm-ncards` and `.sm-probs` by their count, and the Guide's panel grids stretch an odd last card (§4.13) |
@@ -2454,13 +2455,34 @@ means in practice, taken off `guide1.js`:
   nothing to a reader who had not seen the component, and "states live in the
   component name, not in a sheet of near-copies" is a sentence that only parses
   once you already know the answer. Say the thing, then say why it matters.
-- **Each page is a story, not a set of labelled sections.** Every section
-  should open by moving the reader on from the last one, and the turns want a
-  scene rather than an assertion: a colleague hesitating over which rows are
-  clickable, someone in a review clicking a greyed-out filter and asking why it
-  is there, the week it stopped being a drawing problem. The EHIE page is the
-  model, because it has a real peak in §06 and the sections before it are
-  building to that. Urvi's note, 2026-09-25.
+- **Simple, efficient, clear. Never clever.** This supersedes an earlier rule
+  here that asked each section to open with a scene rather than an assertion.
+  That rule produced exactly what Urvi then rejected (2026-09-26): *"this kind
+  of forced narrative is making the case study weak. dont try to be different
+  for the sake of it, it can just be simple, efficient and clear."* The EHIE
+  hero was the example, reading "a team who all knew how the work went, and no
+  two of them the same way. Nine diagrams so they could finally **disagree
+  about the same thing**."
+
+  Four habits to cut on sight, all of them from that earlier rule:
+
+  - **The paradox.** "Disagree about the same thing", "the same failure wearing
+    different clothes", "a map of a system that does not exist". An inversion
+    is a decoration; say the thing.
+  - **The scene-setting opener.** "So I stopped treating...", "Then I
+    remembered who had to read them", "Somewhere around the third round of
+    screens it stopped being a drawing problem". Sentences that walk up to the
+    point instead of making it. Start at the point.
+  - **The aside about my own process.** "That rule had a cost I had not
+    expected", "I liked it for about a day", "drawn as a loop because that is
+    honestly what it is". The reader is here for the work.
+  - **The dramatic stake.** "Get it wrong and she finds out eighteen months
+    later, in the data." State the consequence plainly or leave it out.
+
+  Warmth is still allowed and context still comes before decisions. What is not
+  allowed is a sentence whose job is to sound good. **If a line would survive
+  being said flatly to a colleague, keep it; if it only works as writing, cut
+  it.** Lead with the result, as ever.
 
 ### The fidelity rule, restated for written copy
 

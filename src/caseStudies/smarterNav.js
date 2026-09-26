@@ -35,9 +35,9 @@ export const smarterNav = {
   hero: {
     title: 'Making a Sensor Station Navigable',
     sub: [
-      'A page that quietly outgrew itself. It was designed for ',
-      { em: 'one sensor' },
-      ', and then the sensors started arriving five to a box.',
+      'A sensor detail page built for ',
+      { em: 'one instrument' },
+      ' had to hold stations, modules and the sensors inside them.',
     ],
   },
 
@@ -60,11 +60,11 @@ export const smarterNav = {
     label: '01. The Challenge',
     title: 'Built for one sensor, used for a whole station',
     lede: [
-      'SMARTER is a catalogue of environmental sensors. A researcher planning a study comes here to decide what she will measure the air or the weather with, and this page is where she makes up her mind. Get it wrong and she finds out eighteen months later, in the data.',
+      'SMARTER is a catalogue of environmental sensors. A researcher planning a study uses this page to decide what to measure with, and a wrong choice shows up much later, in the data.',
       [
         'I inherited a page drawn around ',
         { em: 'one instrument' },
-        ': a header, a row of tabs, a column of specifications. Then the first real deployment landed on my desk, and a real deployment is not one instrument. It is a station holding modules, and modules holding sensors, with the specifications belonging to a different level at every step.',
+        ': a header, a row of tabs, a column of specifications. A real deployment is a station holding modules, and modules holding sensors, with the specifications belonging to a different level at each step.',
       ],
     ],
     flowLabel: 'So the page had to carry three levels at once',
@@ -78,9 +78,9 @@ export const smarterNav = {
     title: 'It showed you the structure, but never what a click would do',
     lede: [
       [
-        'My first pass was a card called Instrument Tree, styled to match the page it sat beside. I liked it for about a day. Then I walked a colleague through it, watched him hesitate over which rows he was allowed to click, and went back to the drawing board with a page of notes. Reading them back, ',
-        { em: 'they were all the same failure wearing different clothes' },
-        '.',
+        'My first pass was a card called Instrument Tree, styled to match the page beside it. Walking a colleague through it, he hesitated over ',
+        { em: 'which rows he was allowed to click' },
+        '. These are the notes I took.',
       ],
     ],
     problems: [
@@ -207,7 +207,7 @@ export const smarterNav = {
     label: '07. Scope',
     title: 'Scoping the navigator to the tab that needs it',
     lede: [
-      'Somewhere around the third round of screens it stopped being a drawing problem. Technical Specifications change from one sensor to the next, but Deployment, Data and Network describe the whole instrument and stay put whichever sensor you pick.',
+      'Technical Specifications change from one sensor to the next. Deployment, Data and Network describe the whole instrument and stay put whichever sensor you pick.',
       'So on three of the four tabs the navigator has nothing left to control, and the right move is to let it stand down.',
     ],
     moves: [

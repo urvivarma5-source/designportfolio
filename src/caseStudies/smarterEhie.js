@@ -32,9 +32,9 @@ export const smarterEhie = {
   hero: {
     title: 'Mapping a Research Data Workflow',
     sub: [
-      'A team who all knew how the work went, and no two of them the same way. Nine diagrams so they could finally ',
-      { em: 'disagree about the same thing' },
-      '.',
+      'Nobody on the team described the workflow the same way. ',
+      { em: 'Nine diagrams' },
+      ', built from two working sessions, gave everyone one version to work from.',
     ],
   },
 
@@ -55,17 +55,17 @@ export const smarterEhie = {
   // -------------------------------------------------------------------------
   challenge: {
     label: '01. The Challenge',
-    title: 'The process existed. It just existed in different heads.',
+    title: 'Everyone described the workflow differently',
     lede: [
       'EHIE is the platform a research study runs on. A researcher says what they want to measure, and months later it hands back a dataset they can analyse. SMARTER, the sensor registry from my other two case studies, lives inside it.',
       [
-        'Everyone could describe how that worked. The trouble was that no two people described it the same way, and the two whiteboarding sessions held to settle it had ',
-        { em: 'quietly produced a third version' },
-        ' nobody had written down.',
+        'Everyone could describe how it worked, but no two people described it the same way. Two whiteboarding sessions had been held to settle it, and they produced ',
+        { em: 'a third version nobody wrote down' },
+        '.',
       ],
     ],
-    pullLabel: 'What was actually missing',
-    pull: '“Not a diagram. One shared description everybody could point at and disagree with precisely.”',
+    pullLabel: 'What was missing',
+    pull: '“The team did not need a diagram. It needed one description precise enough to argue with.”',
   },
 
   // -------------------------------------------------------------------------
@@ -73,8 +73,8 @@ export const smarterEhie = {
     label: '02. Approach',
     title: 'Starting from what the team actually said',
     lede: [
-      'So I stopped treating the old diagram as the baseline and started treating it as one more opinion. Every step in the new set traces back to something somebody said out loud in the August workshops, or to the afternoon I spent sitting with a researcher walking through her week.',
-      'That rule had a cost I had not expected. Where the room had never actually agreed, I was no longer allowed to smooth it over, and a few boxes had to go out with a question attached to them.',
+      'The existing diagram became one input rather than the baseline. Every step in the new set traces to something said in the August workshops, or to a session spent walking through a researcher’s week.',
+      'Where the team had never agreed, that rule left the disagreement visible, so several boxes shipped with an open question attached.',
     ],
     decisions: [
       { icon: 'diagram', t: 'Nine, not one', note: 'An overview and eight sub-processes', d: 'One diagram of the whole lifecycle is unreadable at the level of detail people were arguing about. Nine lets the argument happen at the right zoom.' },
@@ -88,8 +88,8 @@ export const smarterEhie = {
     label: '03. The Guide',
     title: 'A guide for people who do not read BPMN',
     lede: [
-      'Then I remembered who had to read them. Almost nobody on this team reads BPMN, and a notation they have to decode is a notation they will nod along to and quietly ignore.',
-      'So the diagrams shipped inside a document that teaches its own notation first: seven rules, a key, and then every step numbered and written out as a plain sentence.',
+      'Almost nobody on the team reads BPMN, and a notation people have to decode is one they will skip.',
+      'So the diagrams ship inside a document that teaches its own notation first: seven rules, a key, and every step numbered and written out as a plain sentence.',
     ],
     steps: [
       { t: 'Explanation beside the picture', d: 'On a pane that pans and zooms, so you can read a step and look at it at the same time.' },
@@ -106,13 +106,13 @@ export const smarterEhie = {
     label: '04. The Set',
     title: 'One overview, and eight diagrams inside it',
     lede: [
-      'Diagram 00 is the one I would put on a wall. It runs a study from the first idea to a delivered dataset across two pools, and every other diagram is one of its boxes, opened up.',
+      'Diagram 00 runs a study from first idea to delivered dataset across two pools. Every other diagram is one of its boxes, opened up.',
     ],
     shots: [
-      { img: 'd00-overview', alt: 'Diagram 00, the study lifecycle: a study-team pool above an EHIE pool, running from “study conceived” through planning, deployment, operations and aggregation to a delivered dataset, with a revision loop.', cap: '00 · The whole lifecycle. The study team’s lane is thin on purpose, and that lopsidedness turned out to be a finding in itself.' },
+      { img: 'd00-overview', alt: 'Diagram 00, the study lifecycle: a study-team pool above an EHIE pool, running from “study conceived” through planning, deployment, operations and aggregation to a delivered dataset, with a revision loop.', cap: '00 · The whole lifecycle. The study team’s lane is thin, which is itself a finding.' },
       { img: 'd01-planning', alt: 'Diagram 01, planning and design: the intake form, deciding which variables need sensors, browsing and comparing in SMARTER, verifying metadata, and finding or writing a transform for each sensor.', cap: '01 · Planning & Design, which is where the browse and compare flow from the other case study actually gets used.' },
       { img: 'd05-transforms', alt: 'Diagram 05, running transforms and assimilating: serving sensor metadata and transform logic, running transforms over raw readings, combining with clinical events and storing standardised events.', cap: '05 · Running transforms. Every step on this one is currently a person doing it by hand.' },
-      { img: 'd07-intake', alt: 'Diagram 07, the intake clarification loop: a back-and-forth between the researcher and the use-case navigator until the study goals are clear enough to build from.', cap: '07 · The intake loop, drawn as a loop because that is honestly what it is.' },
+      { img: 'd07-intake', alt: 'Diagram 07, the intake clarification loop: a back-and-forth between the researcher and the use-case navigator until the study goals are clear enough to build from.', cap: '07 · The intake loop: a back-and-forth until the study goals are clear enough to build from.' },
       { img: 'd08-reentry', alt: 'Diagram 08, determining the re-entry point: working out how far back a rejected dataset has to go, to transforms, to aggregation, or to the study design.', cap: '08 · Where a rejected dataset comes back in. This one proposes an answer rather than recording one.' },
     ],
   },
@@ -122,7 +122,7 @@ export const smarterEhie = {
     label: '05. Editorial Decisions',
     title: 'What earned a place in the picture',
     lede: [
-      'Drawing was the quick part. Deciding what deserved to be in the picture took far longer, and the first review changed several of these calls.',
+      'Deciding what belonged in the picture took longer than drawing it, and the first review changed several of these calls.',
     ],
     items: [
       { t: 'Cut the granularity', d: 'A whole pass went on removing boxes. A map for a discussion should carry the steps people will argue about, and nothing else.' },

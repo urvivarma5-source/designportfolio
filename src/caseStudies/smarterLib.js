@@ -35,9 +35,9 @@ export const smarterLib = {
   hero: {
     title: 'A Library You Can Compare Sensors In',
     sub: [
-      'Ninety environmental sensors, and a researcher who has to walk away with ',
+      'Ninety environmental sensors, and researchers who need to shortlist ',
       { em: 'four' },
-      '. Browse, filter and comparison, on one component library.',
+      '. Browse, filter and compare, built on one component library.',
     ],
   },
 
@@ -79,8 +79,8 @@ export const smarterLib = {
     label: '02. Browse and Filter',
     title: 'A filter that cannot dead-end',
     lede: [
-      'The first drawer greyed out any option that would have returned nothing, which felt tidy and helpful right up until someone in a review clicked one anyway and asked why it was there.',
-      'It is a fair question. A greyed option still takes up room, still has to be read, and still invites the click it is about to refuse. So now an option with no matches simply is not drawn, one with matches carries its count, and a group with nothing left in it disappears.',
+      'The first drawer greyed out any option that would return nothing. In review, someone clicked a greyed option anyway and asked why it was there.',
+      'A greyed option still takes up room, still has to be read, and still invites the click it is about to refuse. So an option with no matches is not drawn at all, one with matches carries its count, and a group with nothing left in it disappears.',
     ],
     decisions: [
       { t: 'It remembers where you were', d: ['Sort, category, query and every drawer filter live in the URL, and your scroll position and loaded cards come back with you from a detail page. Looking at one sensor should not cost you ', { em: 'the shortlist you just built' }, '.'] },
@@ -97,8 +97,8 @@ export const smarterLib = {
     label: '03. Selection',
     title: 'The same card has to do two different things',
     lede: [
-      'Arrive at a card from the library and it opens the sensor. Arrive at the same card from the empty comparison page and it only selects. It reads like a footnote and it set the most intricate two weeks of the build.',
-      'The card cannot announce which mode it is in without a badge on every tile, so everything below is about making the mode obvious from what happens when you touch it.',
+      'From the library, a card opens the sensor. From the empty comparison page, the same card only selects.',
+      'The card cannot announce which mode it is in without a badge on every tile, so everything below is about making the mode obvious from what happens when you touch it. It was the most intricate part of the build.',
     ],
     rules: [
       { t: 'The tray shows up on the first pick', d: 'Not once you press Compare. You should watch the thing filling up while you fill it.' },
@@ -166,7 +166,7 @@ export const smarterLib = {
   // -------------------------------------------------------------------------
   access: {
     label: '07. Accessibility',
-    title: 'Checked against finished flows, on purpose',
+    title: 'An accessibility pass against finished flows',
     lede: [
       'The accessibility pass ran at the end by design. Done early, it only checks what you planned for. Done against finished flows, it checks what you actually built.',
     ],
@@ -188,7 +188,7 @@ export const smarterLib = {
     label: '08. Testing',
     title: 'Two rounds in the lab, and a Grade A from the panel',
     lede: [
-      'Everything above is an argument until somebody who did not build it tries to use it. The internal team went first, because that round is cheap and clears the obvious things before an expert has to sit through them.',
+      'The internal team tested first, because that round is cheap and clears the obvious things before an expert has to sit through them.',
       'Then six subject matter experts, forty-five minutes each: fifteen on open exploration, twenty on four set tasks, ten on feedback and a System Usability Scale questionnaire.',
     ],
     rounds: [
