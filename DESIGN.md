@@ -1798,6 +1798,27 @@ Two things about it:
 
 `.work-card__note` is the same problem outside a case study: a 9px tracked
 eyebrow, fine on a desktop card, floored to 11px under 700px.
+`.work-card__tag` is a flat 11px at every width for the same reason.
+
+**`.sm` was added after this section was written and never got a floor.** Its
+`--sm-k` drops to 0.656 at 640px, which turns every `calc(18px * var(--sm-k))`
+into 11.8px, and nine classes were shipping there: `figcaption`,
+`.sm-ask__label`, `.sm-ask__after`, `.sm-card__label`, `.sm-chip`, `.sm-cond`,
+`.sm-key`, `.sm-keygroup__head` and `.sm-spec__note`. The floor is now the last
+rule in the block, so nothing can out-cascade it. **A new block needs a floor
+of its own; it is not inherited from anywhere.**
+
+**A floor can also be undone by a later declaration in the same breakpoint.**
+`.g-table` was floored at the top of the Guide's 900px block and re-declared
+fifty lines down the *same* block as plain `calc(18px * var(--g-k))`, which
+won and left the table at 11.2px. That is the second half of the rule above:
+the floor must come after the declaration it floors, and nothing may re-declare
+the size after the floor. Checking for it is mechanical, so do it that way: see
+§10's duplicate-selector check.
+
+The `.g-map` axis labels are a third shape of the same bug. They are bare
+`<p>`s with no size of their own, inheriting `.g-map`'s `18px * --g-k`, so the
+floor goes on the container rather than on the labels.
 
 ### 9.18 A headless screenshot at a phone width is a lie
 
@@ -1950,6 +1971,23 @@ Two traps in that measurement, both of which produced wrong numbers first:
 sits mid-range. It was left alone. Only change a value the artwork is
 *consistent* about.
 
+### 9.23 Two rules for one selector in one context
+
+`.work-card--text` was in the stylesheet twice, byte for byte. Harmless, but
+the same shape caused a real bug in §9.17: a second `.g-table` in the same
+media block silently cancelled a legibility floor.
+
+So this is worth checking mechanically rather than by eye. Parse the
+stylesheet, track `@media` nesting, and key every declaration block by
+*context + selector*; any key seen twice is a duplicate, and any property
+declared with two different values across those duplicates is a live conflict
+where the later one wins. A run of that check over the whole file found six
+duplicate keys and exactly one real conflict, which was `.g-table`'s floor.
+
+Duplicates are not always wrong. `.sm-stat__k` is declared twice on purpose:
+once to push itself down the flex column, once for the band it draws. The
+check is for the conflicts, not the duplicates.
+
 ---
 
 ## 10. Verification protocol
@@ -2028,6 +2066,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Whole-site audit: `.sm` gets the 12px phone floor it never had, a second `.g-table` that cancelled the Guide's floor is removed, a duplicated `.work-card--text` is removed, `.sm-cards` is sized by its count, and an odd last work card takes the whole row (§4.5, §9.17, §9.23) |
 | _pending_ | SMARTER copy drops the forced narrative: no paradoxes, no scene-setting openers, no asides about my own process. The §11e voice rule that asked for scenes is replaced (§11e) |
 | _pending_ | Nav §02 drops to six problem cards; the prose stops counting and the §03 figure gains a caption carrying the seventh note (§4.13) |
 | _pending_ | Hero pill carries the current title, Product Designer II at the University of Utah (§4.4) |

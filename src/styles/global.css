@@ -585,6 +585,19 @@ body {
   display: flex;
 }
 
+/* An odd number of projects leaves the last card alone in its row. It takes
+   the whole row instead, which reads as the list ending rather than as a gap.
+   Product Design has seven and All has thirteen, so this fires on both.
+   The art column grows with it: at full width the capped 190px thumbnail
+   beside a 930px column of text looks like a mistake rather than a card. */
+.work-list > li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.work-list > li:last-child:nth-child(odd) .work-card:not(.work-card--text) {
+  grid-template-columns: minmax(0, 1fr) clamp(200px, 24vw, 340px);
+}
+
 /* One project per row: words on the left, the case study's own art on the
    right, on a pale panel. Modelled on nicolearoberts.com's case-study cards. A
    project with no art is a one-column card of the words alone. */
@@ -601,10 +614,6 @@ body {
   border-radius: 22px;
   background: var(--card-ground);
   color: var(--blue);
-}
-
-.work-card--text {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .work-card--text {
@@ -3283,11 +3292,21 @@ a.work-card__media:hover .card-art img {
     --g-clip: 16px;
   }
 
-  /* Legibility floor — same reason as `.cs`, see the note there and §9.17. */
+  /* Legibility floor, same reason as `.cs`: see the note there and §9.17.
+     `.g-table` was floored here and then re-declared unfloored fifty lines
+     further down this same block, which quietly undid it and left the table
+     at 11.2px. The second declaration is gone. */
 
 
   .g-map__mark {
     font-size: max(12px, calc(14px * var(--g-k)));
+  }
+
+  /* The axis labels are bare <p>s inheriting `.g-map`'s own size, so the
+     floor goes on the container. `.g-map__axis` sets its own 24px and is
+     well clear of it. */
+  .g-map {
+    font-size: max(12px, calc(18px * var(--g-k)));
   }
 
 
@@ -3343,10 +3362,6 @@ a.work-card__media:hover .card-art img {
 
   .g-who__link {
     width: auto;
-  }
-
-  .g-table {
-    font-size: calc(18px * var(--g-k));
   }
 }
 
@@ -4670,9 +4685,15 @@ a.work-card__media:hover .card-art img {
    sub-line, then labelled blocks inside it. */
 .sm-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(430px * var(--sm-k)), 1fr));
+  /* Sized by the card count, as `.sm-ncards` and `.sm-probs` are. `auto-fit`
+     left three cards as 2 + 1 at the middle breakpoint. */
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
   gap: calc(67px * var(--sm-k));
   margin-top: var(--sm-block);
+}
+
+.sm-cards > :last-child {
+  grid-column: span var(--last-span, 1);
 }
 
 .sm-card {
@@ -5038,24 +5059,28 @@ a.work-card__media:hover .card-art img {
    nothing can. */
 @media (max-width: 1040px) {
   .sm-ncards,
-  .sm-probs {
+  .sm-probs,
+  .sm-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sm-ncards > :last-child,
-  .sm-probs > :last-child {
+  .sm-probs > :last-child,
+  .sm-cards > :last-child {
     grid-column: span var(--last-span-narrow, 1);
   }
 }
 
 @media (max-width: 640px) {
   .sm-ncards,
-  .sm-probs {
+  .sm-probs,
+  .sm-cards {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .sm-ncards > :last-child,
-  .sm-probs > :last-child {
+  .sm-probs > :last-child,
+  .sm-cards > :last-child {
     grid-column: auto;
   }
 }
@@ -5401,4 +5426,29 @@ a.work-card__media:hover .card-art img {
 .sm-card__body em,
 .sm-step__d em {
   font-style: normal;
+}
+
+/* ---------- the phone legibility floor ------------------------------------ */
+/* §9.17, applied to `.sm` at last. `--sm-k` drops to 0.656 at 640px, which
+   turns every `calc(18px * var(--sm-k))` into 11.8px: under the 12px floor
+   `.cs` and `.g` have had since that section was written. `.sm` was added
+   afterwards and never got one, so nine classes were shipping below it.
+   Three of them are the key map's, which is newer still.
+ *
+ * §9.17's two rules both apply here. It is scoped to the phone breakpoint, so
+ * the artwork's deliberately small sizes are untouched at full size; and it
+ * sits at the END of the block, after every declaration it floors, because a
+ * floor that loses the cascade silently does nothing. */
+@media (max-width: 640px) {
+  .sm-fig figcaption,
+  .sm .sm-ask__label,
+  .sm-ask__after,
+  .sm .sm-card__label,
+  .sm-chip,
+  .sm-cond,
+  .sm-key,
+  .sm-keygroup__head,
+  .sm-spec__note {
+    font-size: max(12px, calc(18px * var(--sm-k)));
+  }
 }

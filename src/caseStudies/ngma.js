@@ -110,7 +110,7 @@ export const ngma = {
     {
       title: 'About Us Page',
       img: 'mock-about',
-      alt: 'The About page, telling the gallery’s history in large numerals — 1996, 1456 artworks, the 1950s — against photographs of the building.',
+      alt: 'The About page, telling the gallery’s history in large numerals (1996, 1456 artworks, the 1950s) against photographs of the building.',
     },
     {
       title: 'Exhibitions Page',

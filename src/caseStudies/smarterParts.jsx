@@ -213,7 +213,7 @@ export const Bullets = ({ items }) => (
 
 /** Solid cards with a labelled block inside, TCTD's Department A / B shape. */
 export const Cards = ({ items }) => (
-  <div className="sm-cards">
+  <div className="sm-cards" style={gridFit(items.length)}>
     {items.map((c) => (
       <div className="sm-card" key={c.t}>
         <h3 className="sm-card__title">{c.t}</h3>
