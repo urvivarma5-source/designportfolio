@@ -1,59 +1,96 @@
 {
-  "tree-old": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/02 Instrument Tree - component and states.svg",
-    "crop": [
-      40,
-      130,
-      1040,
-      900
-    ]
+  "_": [
+    "Figures for 'Making a Sensor Station Navigable'. Rendered with",
+    "  node tools/render_svg_sheets.mjs src/assets/smarterNav tools/smarter-nav-regions.json",
+    "",
+    "`src` is relative to the repository root. The sheets live in art/smarter-nav/",
+    "rather than on a Desktop, because the Desktop path this file used to carry",
+    "stopped existing when the folder was reorganised, and a figure you cannot",
+    "re-render is a figure you cannot fix.",
+    "",
+    "CROP WIDTH IS THE LEGIBILITY CONTROL. The raster is fitted to the 1180px",
+    "case-study column, so one user unit renders at 1180 / crop-width CSS px.",
+    "At 1440 units a 13px label reads at 10.7px; at 700 it reads at 21.9px.",
+    "The renderer prints the figure for every crop. See DESIGN.md §9.24.",
+    "",
+    "`pins` carries only numbers. The words belong to the figure's key, which is",
+    "live HTML in the page, so it holds the 12px floor and can be selected."
+  ],
+
+
+  "before": {
+    "src": "art/smarter-nav/05-navigation-redesign.svg",
+    "crop": [38, 250, 706, 530]
   },
-  "before-after": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
-    "crop": [
-      40,
-      250,
-      1400,
-      565
-    ]
+
+  "after": {
+    "src": "art/smarter-nav/05-navigation-redesign.svg",
+    "crop": [734, 250, 706, 530]
   },
+
   "click-does": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
-    "crop": [
-      40,
-      905,
-      1400,
-      790
-    ]
+    "src": "art/smarter-nav/05-navigation-redesign.svg",
+    "crop": [48, 915, 1390, 765]
   },
+
   "row-states": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
-    "crop": [
-      40,
-      1745,
-      1400,
-      305
-    ]
+    "src": "art/smarter-nav/05-navigation-redesign.svg",
+    "crop": [48, 1752, 1035, 270]
   },
-  "detail-in-situ": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/01 Sensor Detail Page with Instrument Tree.svg"
-  },
-  "long-content": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/03 Sensor Detail Page - long content.svg"
-  },
+
   "scope-dropdown": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/NAV BAR - SPECS SCOPE DROPDOWN.svg"
-  },
-  "station-overview": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/TECH SPECS - STATION OVERVIEW.svg"
-  },
-  "thumb": {
-    "src": "/Users/urvi-admin/Desktop/High Fidelity Screens/Instrument Tree/05 Navigation Redesign.svg",
-    "crop": [
-      190,
-      980,
-      1240,
-      930
+    "src": "art/smarter-nav/scope-dropdown.svg",
+    "crop": [100, 110, 1260, 425],
+    "pins": [
+      { "n": 1, "x": 955, "y": 160 },
+      { "n": 2, "x": 952, "y": 316, "to": [992, 316] },
+      { "n": 3, "x": 952, "y": 403, "to": [1000, 403] }
     ]
+  },
+
+  "station-overview": {
+    "src": "art/smarter-nav/station-overview.svg",
+    "crop": [100, 100, 1260, 455],
+    "pins": [
+      { "n": 1, "x": 1020, "y": 160 },
+      { "n": 2, "x": 380, "y": 270 },
+      { "n": 3, "x": 558, "y": 368 }
+    ]
+  },
+
+  "nav-in-page": {
+    "src": "art/smarter-nav/01-detail-page.svg",
+    "crop": [100, 480, 1260, 825],
+    "pins": [
+      { "n": 1, "x": 1040, "y": 538 },
+      { "n": 2, "x": 436, "y": 858 },
+      { "n": 3, "x": 775, "y": 766 }
+    ]
+  },
+
+  "long-content": {
+    "src": "art/smarter-nav/03-long-content.svg",
+    "crop": [100, 690, 1260, 700],
+    "pins": [
+      { "n": 1, "x": 437, "y": 1101 },
+      { "n": 2, "x": 896, "y": 1036 },
+      { "n": 3, "x": 896, "y": 1190 },
+      { "n": 4, "x": 896, "y": 1274 }
+    ]
+  },
+
+  "_thumb": [
+    "The work card's media block is 4:3 and `object-fit: cover`, so the crop",
+    "is cut to 4:3 here rather than left to the browser to centre-crop. It was",
+    "a 1240x930 window that sliced one column of navigators down the middle at",
+    "the left edge and cut into the row-states band at the bottom. This one",
+    "holds two whole steps: two navigators with different rows selected, and",
+    "the panel header each produces, which is the case study in one picture.",
+    "At 340px wide no text in it is readable, and none of it needs to be."
+  ],
+
+  "thumb": {
+    "src": "art/smarter-nav/05-navigation-redesign.svg",
+    "crop": [30, 980, 933, 700]
   }
 }

@@ -105,9 +105,10 @@ export const Section = ({ label, title, lede }) => (
  *   7 -> 3 cols, last spans 3
  *
  * Cutting a card to reach a round number is the other fix, and it is the right
- * one when the card is weak. It is the wrong one when the count is load
- * bearing: nav §02 has seven because the §03 figure numbers seven problems
- * against seven answers. See DESIGN.md §4.13.
+ * one when the card is weak. Watch the figures when you cut: nav §02 lists six
+ * problems beside a sheet that pins seven, and the seventh — the component's
+ * name — is carried by the caption rather than left to be counted.
+ * See DESIGN.md §4.13.
  */
 const gridFit = (n) => {
   const cols = n % 3 === 0 ? 3 : n % 2 === 0 ? 2 : n >= 6 ? 3 : 2
@@ -293,6 +294,39 @@ export const Keymap = ({ groups }) => (
       </section>
     ))}
   </div>
+)
+
+/**
+ * A rendered design sheet, with an optional numbered key under it.
+ *
+ * The key is the half of an annotation that has to stay live text. The badges
+ * are drawn into the raster, where their size is fixed by the crop and nothing
+ * in CSS can raise it; the words sit in an <ol> below, where they scale with
+ * the page, hold the 12px floor on a phone, and can be selected and searched.
+ * Splitting them is also what lets a screenshot be annotated at all: a 1440pt
+ * product screen has no margin to write a sentence in. See DESIGN.md §9.24.
+ *
+ * `keys[i]` is the note for badge i + 1, so the order is the numbering.
+ */
+export const Fig = ({ src, alt, cap, keys }) => (
+  <figure className="sm-fig sm-fig--framed">
+    <img src={src} alt={alt} loading="lazy" />
+    {cap && <figcaption>{cap}</figcaption>}
+    {keys && (
+      <ol className="sm-figkey">
+        {keys.map((k, i) => (
+          <li key={i}>
+            <span className="sm-figkey__n" aria-hidden="true">
+              {i + 1}
+            </span>
+            <span className="sm-figkey__d">
+              <Rich value={k} />
+            </span>
+          </li>
+        ))}
+      </ol>
+    )}
+  </figure>
 )
 
 /**

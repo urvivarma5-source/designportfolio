@@ -91,8 +91,9 @@ export const smarterNav = {
       { t: 'No way to fold anything', d: 'Modules contained sensors, but there was no chevron and no way to collapse them. On a big station that is a very long list.' },
       { t: 'No idea what was clickable', d: 'Filled rows looked like buttons and sensor rows looked like plain text, so the things you most wanted to click looked the least clickable.' },
     ],
-    img: 'tree-old',
-    alt: 'The first Instrument Tree component sheet: the assembled card, its states, redlines, overflow behaviour and the tokens it used.',
+    img: 'before',
+    alt: 'The first Instrument Tree card with seven numbered notes beside it, one for each thing that made it hard to read.',
+    cap: 'The notes themselves, pinned to the card they are about. The seventh is the name: “instrument tree” is what the database calls it, which is why the replacement is not called a tree.',
   },
 
   // -------------------------------------------------------------------------
@@ -109,9 +110,9 @@ export const smarterNav = {
     ],
     pullLabel: 'The floor I set for it',
     pull: '“Selection is a bar and a weight change as well as a tint, and levels are carried by icon shape. Both of those survive greyscale, so neither depends on anyone seeing colour.”',
-    img: 'before-after',
-    alt: 'Before and after, side by side: the old Instrument Tree card with its seven numbered problems, and the Station Navigator with the seven numbered answers.',
-    cap: 'Before and after, annotation by annotation. The seventh note was the name itself, which is why the panel is no longer called a tree.',
+    img: 'after',
+    alt: 'The Station Navigator with seven numbered answers beside it, one for each note on the card it replaces.',
+    cap: 'The same seven numbers, answered. Each fix sits where its problem was on the sheet above it.',
   },
 
   // -------------------------------------------------------------------------
@@ -132,6 +133,7 @@ export const smarterNav = {
     ],
     img: 'click-does',
     alt: 'Three states side by side, station selected then module selected then sensor selected with MetStation folded, each with the panel header it produces underneath.',
+    cap: 'Three selections, and the panel header each one produces. The dashed line is the same name travelling from the row you clicked to the top of what you get.',
   },
 
   // -------------------------------------------------------------------------
@@ -154,7 +156,8 @@ export const smarterNav = {
     ],
     note: 'Hover is #F3F4F6, which was already in the system rather than something new. Focus is a 2 px navy ring, so anyone driving this with arrow keys can see where they are.',
     img: 'row-states',
-    alt: 'The six row states, default, hover, selected, keyboard focus, folded and contains selection, beside an anatomy diagram showing the 20 px indent steps.',
+    alt: 'The six row states: default, hover, selected, keyboard focus, folded, and folded while holding the selection.',
+    cap: 'Six states on one row. The measurements above are this sheet’s redlines, which is why they are set as text rather than printed on the drawing.',
   },
 
   // -------------------------------------------------------------------------
@@ -230,7 +233,15 @@ export const smarterNav = {
       after: 'That changes the information architecture rather than the component, so it went to the people who run the stations rather than being settled in Figma. It was still open when I handed this over.',
     },
     img: 'scope-dropdown',
-    alt: 'The specs scope dropdown: the collapsed navigator sitting above the technical specifications panel as a single “Showing” control.',
+    alt: 'The navigator collapsed into a single “Showing specs for” control above the technical specifications panel, open to show the tree inside it.',
+    cap: 'The navigator as one control instead of a column.',
+    // Numbered to the pins in tools/smarter-nav-regions.json. Three notes, not
+    // five: a key people skim is a key that is short.
+    keys: [
+      'One control in place of the whole column, reading out the full path: “AQ-Module 300 / PMS7003”.',
+      'The tree is intact inside it. Same rows, same order, same subtitles, so nothing has to be learned twice.',
+      ['Open, it covers the values it exists to scope. This row’s value is behind it, which is ', { em: 'the objection the review raised' }, '.'],
+    ],
   },
 
   // -------------------------------------------------------------------------
@@ -242,9 +253,37 @@ export const smarterNav = {
       'It carries a station overview with sub-cards of its own, and specification values long enough to wrap, stack or truncate, usually all three at once.',
     ],
     shots: [
-      { img: 'station-overview', alt: 'The station overview: shared specifications for the whole station, with a sub-card for each module underneath.', cap: 'Station overview, which is where you land, and the only state with no path line above it.' },
-      { img: 'detail-in-situ', alt: 'The full sensor detail page with the Station Navigator in the left column and technical specifications beside it.', cap: 'The navigator in the page it was drawn to match.' },
-      { img: 'long-content', alt: 'The same detail page with long specification values, showing value wrap, the stacked spec row and title truncation.', cap: 'The awkward cases: values wrap, spec rows stack, and long names truncate instead of reflowing the whole tree.' },
+      {
+        img: 'station-overview',
+        alt: 'The station overview state: a Station Components card listing both modules and their sensors, with the scope control reading “Station overview”.',
+        cap: 'Where you land. The only state with no path line above it, because there is nothing above the station.',
+        keys: [
+          'The scope control reads “Station overview”, so the top of the tree names itself the way every other level does.',
+          'The panel answers with the station’s own parts rather than an empty state.',
+          '“View module specs” selects that module in the navigator, so the two stay in step whichever one you use.',
+        ],
+      },
+      {
+        img: 'nav-in-page',
+        alt: 'The sensor detail page with the Station Navigator in the left column, the panel header beside it, and the tab bar above both.',
+        cap: 'The split the whole component rests on, in one screen.',
+        keys: [
+          ['The tabs pick ', { em: 'the aspect' }, ': specifications, deployment, data, network.'],
+          ['The navigator picks ', { em: 'the subject' }, ': the station, a module, or a sensor.'],
+          'The panel header repeats the subject you clicked, in the same words, where you were already looking.',
+        ],
+      },
+      {
+        img: 'long-content',
+        alt: 'The same page with long specification values: a truncated tree node, a wrapped value, a stacked spec row and a wrapped card title.',
+        cap: 'The four awkward cases, all of them on one screen.',
+        keys: [
+          'A tree node truncates. One row is always one line, so a long name never reflows the tree.',
+          'A long value wraps under itself and the row grows with it. Nothing is clipped.',
+          'A label wider than 120 px drops its value onto its own line, still right aligned.',
+          'Card titles wrap too, and the card grows rather than the type shrinking.',
+        ],
+      },
     ],
   },
 

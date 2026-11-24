@@ -4942,6 +4942,60 @@ a.work-card__media:hover .card-art img {
   color: var(--sm-blue);
 }
 
+/* ---------- a figure's numbered key --------------------------------------
+   The other half of an annotated screenshot. The badges are rendered into the
+   raster by tools/render_svg_sheets.mjs, where their size is fixed by the crop
+   and no rule here can raise it; the words live down here as live text, so
+   they scale with the page, take the phone floor at the end of this block,
+   and can be selected. A 1440pt product screen has no margin to write a
+   sentence in, which is why they are apart at all. See DESIGN.md §9.24. */
+.sm-figkey {
+  margin: calc(18px * var(--sm-k)) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: calc(16px * var(--sm-k)) calc(36px * var(--sm-k));
+}
+
+.sm-figkey > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: calc(12px * var(--sm-k));
+  align-items: start;
+}
+
+/* Sized and coloured to the pin drawn on the sheet, so the two read as one
+   mark: the drawn pin is a 22pt disc, which lands at 20.6px in this column. */
+.sm-figkey__n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(26px * var(--sm-k));
+  height: calc(26px * var(--sm-k));
+  border-radius: 50%;
+  background: var(--sm-orange);
+  color: var(--sm-white);
+  font-size: calc(15px * var(--sm-k));
+  font-weight: 700;
+  /* The badge is one line tall and the note beside it may be three, so it is
+     nudged onto the note's first baseline rather than its box. */
+  margin-top: calc(2px * var(--sm-k));
+}
+
+.sm-figkey__d {
+  font-size: calc(18px * var(--sm-k));
+  line-height: 1.4;
+  color: var(--sm-blue);
+  text-wrap: pretty;
+}
+
+@media (max-width: 760px) {
+  .sm-figkey {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* THERE IS NO FULL-BLEED FIGURE. An earlier version ran the spec sheets out to
    the viewport gutters while the prose stayed in the 1180px column, which left
    the page with two different left margins and read as though the figures were
@@ -5441,6 +5495,7 @@ a.work-card__media:hover .card-art img {
  * floor that loses the cascade silently does nothing. */
 @media (max-width: 640px) {
   .sm-fig figcaption,
+  .sm-figkey__d,
   .sm .sm-ask__label,
   .sm-ask__after,
   .sm .sm-card__label,
@@ -5450,5 +5505,15 @@ a.work-card__media:hover .card-art img {
   .sm-keygroup__head,
   .sm-spec__note {
     font-size: max(12px, calc(18px * var(--sm-k)));
+  }
+
+  /* The badge is `aria-hidden` and the list carries the number anyway, but a
+     numeral reversed out of orange still has to be matched against the pin on
+     the sheet above it, so it takes the same floor as everything else. These
+     only ever reach 4, so one digit sits comfortably in a 22px disc. */
+  .sm-figkey__n {
+    width: max(22px, calc(26px * var(--sm-k)));
+    height: max(22px, calc(26px * var(--sm-k)));
+    font-size: max(12px, calc(15px * var(--sm-k)));
   }
 }

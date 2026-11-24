@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2110" viewBox="0 0 1120 2110">
+ <rect id="Sheet background" x="0" y="0" width="1120" height="2110" fill="#FCFCFC"/>
+ <g id="Sheet title">
+  <text x="64" y="86" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="28" font-weight="700" fill="#2C3957" id="Instrument Tree">Instrument Tree</text>
+  <text x="64" y="112" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="400" fill="#6B7280" id="Left navigation for multi-instrument sta">Left navigation for multi-instrument stations · SMARTER design system</text>
+  <line x1="64" y1="132" x2="1056" y2="132" stroke="#DC6B01" stroke-width="1.5"/>
+ </g>
+ <g id="Component / Instrument tree (assembled)">
+  <text x="64" y="178" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.6" id="ASSEMBLED">ASSEMBLED</text>
+  <rect x="64" y="196" width="300" height="376" fill="#FFFFFF" rx="12" stroke="#E2E4E6" stroke-width="1" id="Sidebar card"/>
+  <text x="84" y="228" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.6" id="INSTRUMENT TREE">INSTRUMENT TREE</text>
+  <text x="344" y="228" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#9CA3AF" text-anchor="end" id="2 modules · 5 sensors">2 modules · 5 sensors</text>
+  <line x1="84" y1="240" x2="344" y2="240" stroke="#F3F4F6" stroke-width="1"/>
+  <rect x="76" y="256" width="276" height="40" fill="#F3F4F6" rx="8" id="Tree row / platform"/>
+  <text x="92" y="281" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="600" fill="#111827" id="EnviroStation Pro 5000">EnviroStation Pro 5000</text>
+  <text x="340" y="280" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="end" id="Platform">Platform</text>
+  <rect x="88" y="300" width="264" height="40" fill="#2C3957" rx="8" id="Tree row / module"/>
+  <text x="104" y="325" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" id="AQ-Module 300">AQ-Module 300</text>
+  <text x="336" y="324" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#AEB6C6" text-anchor="end" id="Air Quality">Air Quality</text>
+  <circle cx="116" cy="358" r="3.5" fill="#C7CBD1"/>
+  <text x="130" y="362" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="PMS7003">PMS7003</text>
+  <text x="340" y="362" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="Plantower">Plantower</text>
+  <circle cx="116" cy="390" r="3.5" fill="#C7CBD1"/>
+  <text x="130" y="394" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="OX-B431">OX-B431</text>
+  <text x="340" y="394" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="Alphasense">Alphasense</text>
+  <rect x="88" y="414" width="264" height="40" fill="#F9FAFB" rx="8" id="Tree row / module"/>
+  <text x="104" y="439" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="600" fill="#111827" id="MetStation 200">MetStation 200</text>
+  <text x="336" y="438" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="end" id="Met">Met</text>
+  <circle cx="116" cy="472" r="3.5" fill="#C7CBD1"/>
+  <text x="130" y="476" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="SHT45">SHT45</text>
+  <text x="340" y="476" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="Sensirion">Sensirion</text>
+  <circle cx="116" cy="504" r="3.5" fill="#C7CBD1"/>
+  <text x="130" y="508" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="05103 Wind Monitor">05103 Wind Monitor</text>
+  <text x="340" y="508" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="R. M. Young">R. M. Young</text>
+  <circle cx="116" cy="536" r="3.5" fill="#C7CBD1"/>
+  <text x="130" y="540" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="BMP390">BMP390</text>
+  <text x="340" y="540" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="Bosch">Bosch</text>
+  <line x1="108" y1="342" x2="108" y2="390" stroke="#E5E7EB" stroke-width="1"/>
+  <line x1="108" y1="358" x2="112.5" y2="358" stroke="#E5E7EB" stroke-width="1"/>
+  <line x1="108" y1="390" x2="112.5" y2="390" stroke="#E5E7EB" stroke-width="1"/>
+  <line x1="108" y1="456" x2="108" y2="536" stroke="#E5E7EB" stroke-width="1"/>
+  <line x1="108" y1="472" x2="112.5" y2="472" stroke="#E5E7EB" stroke-width="1"/>
+  <line x1="108" y1="504" x2="112.5" y2="504" stroke="#E5E7EB" stroke-width="1"/>
+  <line x1="108" y1="536" x2="112.5" y2="536" stroke="#E5E7EB" stroke-width="1"/>
+ </g>
+ <g id="States">
+  <text x="460" y="178" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.6" id="ROW STATES">ROW STATES</text>
+  <text x="460" y="202" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#111827" id="Platform · level 0">Platform · level 0</text>
+  <rect x="460" y="214" width="300" height="40" fill="#F3F4F6" rx="8" id="Row / Platform"/>
+  <text x="476" y="239" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="600" fill="#111827" id="EnviroStation Pro 5000">EnviroStation Pro 5000</text>
+  <text x="744" y="238" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="end" id="Platform">Platform</text>
+  <text x="460" y="276" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Fill #F3F4F6 · 40 h · radius 8 · label 1">Fill #F3F4F6 · 40 h · radius 8 · label 14 SemiBold</text>
+  <text x="460" y="314" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#111827" id="Module · level 1 default">Module · level 1 default</text>
+  <rect x="460" y="326" width="300" height="40" fill="#F9FAFB" rx="8" id="Row / Module default"/>
+  <text x="476" y="351" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="600" fill="#111827" id="MetStation 200">MetStation 200</text>
+  <text x="744" y="350" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="end" id="Met">Met</text>
+  <text x="460" y="388" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Fill #F9FAFB · 40 h · indent 12 from lev">Fill #F9FAFB · 40 h · indent 12 from level 0</text>
+  <text x="460" y="426" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#111827" id="Module · hover">Module · hover</text>
+  <rect x="460" y="438" width="300" height="40" fill="#EEF0F3" rx="8" id="Row / Module hover"/>
+  <text x="476" y="463" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="600" fill="#111827" id="MetStation 200">MetStation 200</text>
+  <text x="744" y="462" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#6B7280" text-anchor="end" id="Met">Met</text>
+  <text x="460" y="500" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Fill #EEF0F3 · no border change">Fill #EEF0F3 · no border change</text>
+  <text x="460" y="538" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#111827" id="Module · selected">Module · selected</text>
+  <rect x="460" y="550" width="300" height="40" fill="#2C3957" rx="8" id="Row / Module selected"/>
+  <text x="476" y="575" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" id="AQ-Module 300">AQ-Module 300</text>
+  <text x="744" y="574" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="500" fill="#AEB6C6" text-anchor="end" id="Air Quality">Air Quality</text>
+  <text x="460" y="612" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Fill #2C3957 · white label · tag #AEB6C6">Fill #2C3957 · white label · tag #AEB6C6</text>
+  <text x="460" y="650" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#111827" id="Sensor · level 2 default">Sensor · level 2 default</text>
+  <circle cx="476" cy="678" r="3.5" fill="#C7CBD1"/>
+  <text x="490" y="682" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="PMS7003">PMS7003</text>
+  <text x="744" y="682" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="Plantower">Plantower</text>
+  <text x="460" y="724" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="No fill · 32 h · dot 7 #C7CBD1 · label 1">No fill · 32 h · dot 7 #C7CBD1 · label 13 Regular</text>
+  <text x="460" y="762" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#111827" id="Sensor · selected">Sensor · selected</text>
+  <rect x="460" y="774" width="300" height="32" fill="#F9FAFB" rx="8" id="Row / Sensor selected"/>
+  <circle cx="476" cy="790" r="3.5" fill="#DC6B01"/>
+  <text x="490" y="794" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="600" fill="#111827" id="PMS7003">PMS7003</text>
+  <text x="744" y="794" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="Plantower">Plantower</text>
+  <text x="460" y="836" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Fill #F9FAFB · dot #DC6B01 · label SemiB">Fill #F9FAFB · dot #DC6B01 · label SemiBold</text>
+ </g>
+ <g id="Redlines">
+  <text x="64" y="900" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.6" id="SPECIFICATION">SPECIFICATION</text>
+  <text x="64" y="936" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Container">Container</text>
+  <text x="284" y="936" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="300 × auto · fill #FFFFFF · 1px #E2E4E6 ">300 × auto · fill #FFFFFF · 1px #E2E4E6 · radius 12 · padding 20</text>
+  <line x1="64" y1="952" x2="1056" y2="952" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="64" y="970" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Header label">Header label</text>
+  <text x="284" y="970" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="INSTRUMENT TREE · 11 Bold · tracking 0.6">INSTRUMENT TREE · 11 Bold · tracking 0.6 · #6B7280 · rule #F3F4F6 below</text>
+  <line x1="64" y1="986" x2="1056" y2="986" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="64" y="1004" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Indentation">Indentation</text>
+  <text x="284" y="1004" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="Level 0 x+12 · level 1 x+24 · level 2 x+">Level 0 x+12 · level 1 x+24 · level 2 x+36 (dot at x+52)</text>
+  <line x1="64" y1="1020" x2="1056" y2="1020" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="64" y="1038" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Row heights">Row heights</text>
+  <text x="284" y="1038" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="Level 0 and 1: 40 · level 2: 32 · gap 4 ">Level 0 and 1: 40 · level 2: 32 · gap 4 between levels, 2 within</text>
+  <line x1="64" y1="1054" x2="1056" y2="1054" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="64" y="1072" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Connector">Connector</text>
+  <text x="284" y="1072" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="1px #E5E7EB vertical from first to last ">1px #E5E7EB vertical from first to last child, 4.5px stub to each dot</text>
+  <line x1="64" y1="1088" x2="1056" y2="1088" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="64" y="1106" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Right-hand tag">Right-hand tag</text>
+  <text x="284" y="1106" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="11 Medium · right aligned to container p">11 Medium · right aligned to container padding · #6B7280</text>
+  <line x1="64" y1="1122" x2="1056" y2="1122" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="64" y="1140" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Selection">Selection</text>
+  <text x="284" y="1140" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="One node at a time; selection sets the S">One node at a time; selection sets the SELECTED bar and the panel below</text>
+  <line x1="64" y1="1156" x2="1056" y2="1156" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="64" y="1174" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Panel gutter">Panel gutter</text>
+  <text x="284" y="1174" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="Tree 300 · gutter 36 · right panel 880 (">Tree 300 · gutter 36 · right panel 880 (1216 content, 1440 frame)</text>
+ </g>
+ <g id="Overflow behaviour">
+  <text x="64" y="1250" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.6" id="OVERFLOW BEHAVIOUR  (rows grow, they nev">OVERFLOW BEHAVIOUR  (rows grow, they never clip)</text>
+  <rect x="64" y="1280" width="390" height="82" fill="#FFFFFF" rx="10" stroke="#E2E4E6" stroke-width="1" id="Data card / PM10"/>
+  <circle cx="430" cy="1304" r="7" fill="#32ADE6"/>
+  <text x="81" y="1309" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#DC6B01" letter-spacing="0.3" id="PM10">PM10</text>
+  <text x="81" y="1349" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Collection Type">Collection Type</text>
+  <text x="437" y="1349" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#0F1419" text-anchor="end" id="Light Scattering">Light Scattering</text>
+  <text x="64" y="1384" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="A · fits — one line, row stays 36 h">A · fits — one line, row stays 36 h</text>
+  <rect x="494" y="1280" width="390" height="172" fill="#FFFFFF" rx="10" stroke="#E2E4E6" stroke-width="1" id="Data card / TOTAL VOLATILE ORGANIC COMPOUNDS (TVOC)"/>
+  <circle cx="860" cy="1304" r="7" fill="#32ADE6"/>
+  <text x="511" y="1309" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#DC6B01" letter-spacing="0.3" id="TOTAL VOLATILE ORGANIC COMPOUNDS">TOTAL VOLATILE ORGANIC COMPOUNDS</text>
+  <text x="511" y="1327" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#DC6B01" letter-spacing="0.3" id="(TVOC)">(TVOC)</text>
+  <text x="511" y="1367" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Sensor Component">Sensor Component</text>
+  <text x="867" y="1367" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#0F1419" text-anchor="end" id="Plantower PMS7003 laser">Plantower PMS7003 laser</text>
+  <text x="867" y="1385" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#0F1419" text-anchor="end" id="scattering module, 7th generation">scattering module, 7th generation</text>
+  <line x1="511" y1="1398" x2="867" y2="1398" stroke="#F3F4F6" stroke-width="1"/>
+  <text x="511" y="1421" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Data Collection Resolution">Data Collection Resolution</text>
+  <text x="867" y="1421" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#0F1419" text-anchor="end" id="1 Second, configurable">1 Second, configurable</text>
+  <text x="867" y="1439" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#0F1419" text-anchor="end" id="1–60 s">1–60 s</text>
+  <text x="494" y="1474" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="B · value wraps beside the label, +18 pe">B · value wraps beside the label, +18 per extra line. Title wraps too.</text>
+  <rect x="64" y="1508" width="390" height="100" fill="#FFFFFF" rx="10" stroke="#E2E4E6" stroke-width="1" id="Data card / CARBON MONOXIDE (CO)"/>
+  <circle cx="430" cy="1532" r="7" fill="#32ADE6"/>
+  <text x="81" y="1537" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#DC6B01" letter-spacing="0.3" id="CARBON MONOXIDE (CO)">CARBON MONOXIDE (CO)</text>
+  <text x="81" y="1577" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="700" fill="#0F1419" id="Data Collection Resolution and Averaging">Data Collection Resolution and Averaging Window</text>
+  <text x="437" y="1595" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#0F1419" text-anchor="end" id="60 second rolling mean, reported hourly">60 second rolling mean, reported hourly</text>
+  <text x="64" y="1630" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="C · label leaves under 120 px — value dr">C · label leaves under 120 px — value drops to its own line, still right aligned</text>
+  <text x="64" y="1678" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Tree nodes truncate instead of wrapping ">Tree nodes truncate instead of wrapping — one row is always one line:</text>
+  <rect x="64" y="1692" width="300" height="32" fill="#F9FAFB" rx="8" id="Row / Sensor truncated"/>
+  <circle cx="80" cy="1708" r="3.5" fill="#C7CBD1"/>
+  <text x="94" y="1712" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="13" font-weight="400" fill="#4B5563" id="05103 Wind Monitor Ultras…">05103 Wind Monitor Ultras…</text>
+  <text x="348" y="1712" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-anchor="end" id="R. M. Young">R. M. Young</text>
+  <text x="394" y="1712" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="full label stays in the layer name and t">full label stays in the layer name and the tooltip</text>
+ </g>
+ <g id="Tokens used">
+  <text x="64" y="1810" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="11" font-weight="700" fill="#6B7280" letter-spacing="0.6" id="TOKENS USED  (all lifted from 02 Sensor ">TOKENS USED  (all lifted from 02 Sensor Detail Page)</text>
+  <rect x="64" y="1834" width="44" height="44" fill="#2C3957" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #2C3957"/>
+  <text x="120" y="1854" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#2C3957">#2C3957</text>
+  <text x="120" y="1872" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Navy / selected">Navy / selected</text>
+  <rect x="260" y="1834" width="44" height="44" fill="#F3F4F6" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #F3F4F6"/>
+  <text x="316" y="1854" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#F3F4F6">#F3F4F6</text>
+  <text x="316" y="1872" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Row fill L0">Row fill L0</text>
+  <rect x="456" y="1834" width="44" height="44" fill="#F9FAFB" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #F9FAFB"/>
+  <text x="512" y="1854" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#F9FAFB">#F9FAFB</text>
+  <text x="512" y="1872" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Row fill L1">Row fill L1</text>
+  <rect x="652" y="1834" width="44" height="44" fill="#E2E4E6" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #E2E4E6"/>
+  <text x="708" y="1854" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#E2E4E6">#E2E4E6</text>
+  <text x="708" y="1872" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Border">Border</text>
+  <rect x="848" y="1834" width="44" height="44" fill="#E5E7EB" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #E5E7EB"/>
+  <text x="904" y="1854" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#E5E7EB">#E5E7EB</text>
+  <text x="904" y="1872" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Connector">Connector</text>
+  <rect x="64" y="1918" width="44" height="44" fill="#C7CBD1" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #C7CBD1"/>
+  <text x="120" y="1938" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#C7CBD1">#C7CBD1</text>
+  <text x="120" y="1956" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Sensor dot">Sensor dot</text>
+  <rect x="260" y="1918" width="44" height="44" fill="#DC6B01" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #DC6B01"/>
+  <text x="316" y="1938" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#DC6B01">#DC6B01</text>
+  <text x="316" y="1956" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Accent orange">Accent orange</text>
+  <rect x="456" y="1918" width="44" height="44" fill="#111827" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #111827"/>
+  <text x="512" y="1938" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#111827">#111827</text>
+  <text x="512" y="1956" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Label ink">Label ink</text>
+  <rect x="652" y="1918" width="44" height="44" fill="#6B7280" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #6B7280"/>
+  <text x="708" y="1938" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#6B7280">#6B7280</text>
+  <text x="708" y="1956" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Muted">Muted</text>
+  <rect x="848" y="1918" width="44" height="44" fill="#9CA3AF" rx="8" stroke="#E2E4E6" stroke-width="1" id="Token #9CA3AF"/>
+  <text x="904" y="1938" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="700" fill="#0F1419" id="#9CA3AF">#9CA3AF</text>
+  <text x="904" y="1956" font-family="Inter, 'Inter Placeholder', system-ui, sans-serif" font-size="12" font-weight="400" fill="#6B7280" id="Muted 2">Muted 2</text>
+ </g>
+</svg>

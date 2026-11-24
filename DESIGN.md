@@ -1155,10 +1155,37 @@ lets them scroll sideways inside the column, with `tabIndex="0"`,
 guess.** A figure at column width is about 1180 CSS px, so it needs 2360 device
 pixels. The sheets were shipping at 2200 and were being upscaled on every
 retina screen, which is what "poor quality" meant. The render scripts now run
-at `SCALE=3 MAXW=2600`, and the small sheets (`comp-scope` at 960pt,
-`tree-old` at 1040pt) need the 3 rather than the 2 to clear the bar at all.
-The live test is `naturalWidth / (displayedWidth * 2)`, which must be at least
-1 for every figure on all three pages.
+at `SCALE=4 MAXW=2600`, so `MAXW` rather than `SCALE` decides every width and
+no crop can fall short: at `SCALE=3` the narrow `before` crop (706pt) came out
+2118px for a 1180px slot, which is 1.79x. The live test is
+`naturalWidth / (displayedWidth * 2)`, which must be at least 1 for every
+figure on all three pages.
+
+**A figure's type size is set by its crop, not by `SCALE`.** One user unit of
+the sheet lands on `1180 / crop-width` CSS px, so a 13pt label in a 1440pt
+screen reads at 10.7px however sharp the raster is. The renderer prints the
+factor and the effective sizes for every crop and flags anything under the
+12px floor. Seven of this page's eight figures were failing it.
+See [§9.24](#924-a-figures-crop-width-is-its-type-size-and-css-cannot-reach-it).
+
+**`Fig` — a sheet, a caption, and sometimes a numbered key.** Two kinds of
+figure, and the difference is where the annotation lives:
+
+- A **drawn sheet** writes its own notes beside the artwork. It takes `cap`
+  and no `keys`. `before`, `after`, `click-does`, `row-states`.
+- A **product screen** has no margin to write in. Numbered pins are drawn into
+  the raster from `pins` in `tools/smarter-nav-regions.json`, and their words
+  are `keys`, rendered by `.sm-figkey` as live text under the figure.
+  `scope-dropdown`, `station-overview`, `nav-in-page`, `long-content`.
+
+`keys[i]` is the note for badge `i + 1`, so the order is the numbering.
+
+| token | value | role |
+| --- | --- | --- |
+| `.sm-figkey` columns | 2, one under 760px | the notes are short; two columns keep the key from out-running its figure |
+| `.sm-figkey` gap | `16pt / 36pt` | |
+| `.sm-figkey__n` | `26pt` disc, `15pt` bold, `--sm-orange` on white | matched to the drawn pin, which is a 22pt disc and lands at 20.6px in this column |
+| `.sm-figkey__d` | `18pt`, `--sm-blue` | the same size as `figcaption`, floored at 12px on a phone |
 
 ---
 
@@ -1988,6 +2015,65 @@ Duplicates are not always wrong. `.sm-stat__k` is declared twice on purpose:
 once to push itself down the flex column, once for the band it draws. The
 check is for the conflicts, not the duplicates.
 
+### 9.24 A figure's crop width is its type size, and CSS cannot reach it
+
+Every case-study figure is fitted to the **1180px column**. So one user unit of
+the source sheet lands on
+
+```
+1180 / crop-width   CSS pixels
+```
+
+and that single number decides whether anything in the picture can be read.
+`SCALE` in `tools/render_svg_sheets.mjs` buys sharpness and nothing else; a
+2600px raster of a 1440pt sheet is a crisp picture of 10.7px text.
+
+The Station Navigator shipped for two months with **seven of its eight figures
+under the 12px floor** §9.17 sets for every other piece of type on the page:
+
+| figure | crop | factor | its 13pt body read at |
+| --- | --- | --- | --- |
+| `tree-old` | 1040pt | ×1.135 | 14.8px |
+| `before-after` | 1400pt | ×0.843 | 11.0px |
+| `click-does` | 1400pt | ×0.843 | 11.0px |
+| `row-states` | 1400pt | ×0.843 | 11.0px |
+| `scope-dropdown` | 1440pt | ×0.819 | 10.7px |
+| `station-overview` | 1440pt | ×0.819 | 10.7px |
+| `detail-in-situ` | 1440pt | ×0.819 | 10.7px |
+| `long-content` | 1440pt | ×0.819 | 10.7px |
+
+Three consequences, and none of them is a stylesheet change:
+
+- **Narrowing the crop is the only lever.** `before-after` was one 1400pt
+  sheet holding two annotated panels. Cropped apart into `before` and `after`
+  at 706pt each, the same annotations went from 11.0px to 18.4px. Two stacked
+  figures also read better than one squeezed pair, and the numbered notes
+  still match across them.
+- **A full product screen cannot be made to fit.** A 1440pt page has no crop
+  narrower than itself. It has to be cropped to the band that carries the
+  argument, which also drops `detail-in-situ` from 1753px of page height to
+  774px, and `long-content` from 1827px to 657px.
+- **Some figures legitimately fail it.** `click-does` is three selections and
+  the three panel headers they produce, side by side; at 1390pt its 12pt
+  sub-lines land at 10.2px. Laid out any other way it is over 2000px tall. Its
+  headline type (20pt step titles, 22–24pt panel titles) reads at 17–20px, and
+  the sub-lines repeat what `Steps` says in live text above it. A known,
+  reasoned failure beats a silent one, which is why the renderer prints the
+  figure for every crop and flags the ones under the floor.
+
+**Annotation splits in two.** Numbered pins are drawn into the raster, where
+their size is fixed by the crop; their words are live HTML in `.sm-figkey`
+under the figure, where they scale, take the phone floor, and can be selected.
+That split is also the only way to annotate a product screen at all: a 1440pt
+page has no margin to write a sentence in. A sheet that writes its own
+annotations, like `before` or `row-states`, takes a caption and no key.
+
+**The sheets live in `art/smarter-nav/`, not on a Desktop.** The paths this
+pipeline used to carry pointed at `~/Desktop/High Fidelity Screens/`, which was
+reorganised out from under them; a figure whose source has moved is a figure
+nobody can re-crop. `src` in a region spec is now relative to the repository
+root.
+
 ---
 
 ## 10. Verification protocol
@@ -2066,6 +2152,7 @@ Newest first. One line per meaningful change, with the commit.
 
 | Commit | Change |
 | --- | --- |
+| _pending_ | Station Navigator figures reworked: the before/after sheet is cropped into two readable halves, four unannotated product screens become cropped, pinned figures with live-text keys, and the sheets move into `art/smarter-nav/` so they can be re-cropped. The renderer now reports what each crop does to the type (§4.13, §9.24) |
 | _pending_ | Whole-site audit: `.sm` gets the 12px phone floor it never had, a second `.g-table` that cancelled the Guide's floor is removed, a duplicated `.work-card--text` is removed, `.sm-cards` is sized by its count, and an odd last work card takes the whole row (§4.5, §9.17, §9.23) |
 | _pending_ | SMARTER copy drops the forced narrative: no paradoxes, no scene-setting openers, no asides about my own process. The §11e voice rule that asked for scenes is replaced (§11e) |
 | _pending_ | Nav §02 drops to six problem cards; the prose stops counting and the §03 figure gains a caption carrying the seventh note (§4.13) |
@@ -2450,12 +2537,21 @@ SMARTER. The sources are the design work itself:
 
 | Page | Source |
 | --- | --- |
-| Station Navigator | `Desktop/High Fidelity Screens/Instrument Tree/`: five spec sheets, three nav state sheets, two working prototypes |
-| Sensor library | `Desktop/High Fidelity Screens/`: the high-fidelity screens, plus `04 New Components.svg` and the prototype in `Desktop/UU/CLAUDE PROTOTYPE/html/` |
-| EHIE process map | `Desktop/UU/Aim 4/BPMN revised/Aim4_FINAL/`: nine BPMN files, the plain-language guide, the open-questions register |
+| Station Navigator | **`art/smarter-nav/`**, in this repository: six sheets, copied in from Urvi's design folder so a figure can be re-cropped without them |
+| Sensor library | `~/Desktop/UU/01 SMARTER Product/Design Screens/High Fidelity Screens/`: the high-fidelity screens, plus `Instrument Tree/04 New Components.svg` and the prototype in `Prototype & Code/CLAUDE PROTOTYPE/html/` |
+| EHIE process map | `~/Desktop/UU/03 Aim 1 & Aim 4 Process Mapping/Aim 4/BPMN revised/`: nine BPMN files, the plain-language guide, the open-questions register |
 
 Each is read together with the decision record in the design sessions those
 folders came out of.
+
+**The Desktop paths above have moved once already.** They used to read
+`Desktop/High Fidelity Screens/…`, and the folder was reorganised, which broke
+every region spec that pointed at it and left the Station Navigator's figures
+un-rerenderable until the sheets were copied into `art/`. The two rows that are
+still Desktop paths have the same problem waiting for them; copy those sheets
+in too the next time either page's figures are touched, and point
+`tools/smarter-lib-regions.json` and `tools/smarter-lib-png-regions.json` at
+the copies.
 
 ### The voice is the Guide's
 
